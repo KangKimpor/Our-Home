@@ -29,22 +29,31 @@ export function TitleScreen() {
   };
 
   const decor: { id: string; left: string; bottom: string; width: string }[] = [
-    { id: 'living.plant', left: '3%', bottom: '7%', width: '9%' },
-    { id: 'living.sofa.sage', left: '17%', bottom: '4%', width: '32%' },
-    { id: 'living.floorLamp', left: '52%', bottom: '6%', width: '8%' },
-    { id: 'living.coffeeTable', left: '36%', bottom: '1%', width: '19%' },
-    { id: 'living.rug.oval', left: '22%', bottom: '0%', width: '34%' },
-    { id: 'living.fern', left: '66%', bottom: '3%', width: '8%' },
-    { id: 'living.painting', left: '26%', bottom: '38%', width: '12%' },
+    { id: 'living.bookshelf', left: '4%', bottom: '32%', width: '16%' },
+    { id: 'living.painting', left: '66%', bottom: '62%', width: '16%' },
+    { id: 'living.clock', left: '84%', bottom: '66%', width: '9%' },
+    { id: 'living.rug.oval', left: '16%', bottom: '4%', width: '48%' },
+    { id: 'living.sofa.sage', left: '20%', bottom: '18%', width: '40%' },
+    { id: 'living.floorLamp', left: '63%', bottom: '20%', width: '11%' },
+    { id: 'living.coffeeTable', left: '28%', bottom: '8%', width: '25%' },
+    { id: 'living.fern', left: '76%', bottom: '16%', width: '13%' },
   ];
 
   return (
     <div className="title-screen">
       <div className="title-scene" aria-hidden="true">
-        <div className="title-sun" />
-        <div className="title-cloud title-cloud-a" />
-        <div className="title-cloud title-cloud-b" />
         <div className="title-wall" />
+        <div className="title-wainscot" />
+        <div className="title-window">
+          <div className="title-sun" />
+          <div className="title-cloud title-cloud-a" />
+          <div className="title-cloud title-cloud-b" />
+          <div className="title-hill title-hill-a" />
+          <div className="title-hill title-hill-b" />
+          <div className="title-window-cross-v" />
+          <div className="title-window-cross-h" />
+        </div>
+        <div className="title-sunbeam" />
         <div className="title-floor" />
         {decor.map((entry) =>
           ITEMS_BY_ID[entry.id] ? (
@@ -56,11 +65,11 @@ export function TitleScreen() {
         <span className="title-pet">
           <AnimalArt species="cat" coat="ginger" size={190} />
         </span>
-        <div className="title-plants">
-          <span className="title-vine" />
-          <span className="title-vine title-vine-b" />
-        </div>
+        <span className="title-pet title-pet-b">
+          <AnimalArt species="dog" coat="golden" pose="sleep" size={170} />
+        </span>
       </div>
+
 
       <main className="title-card">
         <p className="title-kicker">

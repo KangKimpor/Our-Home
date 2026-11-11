@@ -1,11 +1,13 @@
 import { Application, Container, Graphics, Sprite, Text, Texture } from 'pixi.js';
 import { animalArt } from '../art/animals';
+import { babyArt, characterArt } from '../art/characters';
 import { itemArt } from '../art/items';
 import { ITEMS_BY_ID } from '../data/items';
 import { ROOMS, ROOM_PALETTES } from '../data/rooms';
 import { VISITORS_BY_ID } from '../data/visitors';
 import type { GameState, HeartBubble, PlacedItem, RoomId } from '../game/types';
 import { isFlatItem, itemSize } from '../game/placement';
+
 
 const INK = '#2E2A26';
 
@@ -40,7 +42,8 @@ const textureCache = new Map<string, Texture>();
 const textureLoading = new Set<string>();
 
 function svgDataUrl(body: string, w: number, h: number): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.max(2, Math.round(w * 2))}" height="${Math.max(2, Math.round(h * 2))}" viewBox="0 0 ${w} ${h}">${body}</svg>`;
+  const defs = `<defs><filter id="oh-drop" x="-12%" y="-12%" width="124%" height="128%"><feDropShadow dx="0" dy="2.2" stdDeviation="1.6" flood-color="#2B2521" flood-opacity="0.16"/></filter></defs>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.max(2, Math.round(w * 2))}" height="${Math.max(2, Math.round(h * 2))}" viewBox="0 0 ${w} ${h}">${defs}${body}</svg>`;
   return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
 }
 
@@ -65,25 +68,134 @@ function requestTexture(key: string, body: string, w: number, h: number, onReady
 }
 
 function drawWindow(g: Graphics, x: number, y: number, w: number, h: number, night: boolean, sky: string): void {
-  g.rect(x - 10, y - 10, w + 20, h + 20).fill('#FBF7EC');
-  g.rect(x - 10, y - 10, w + 20, h + 20).stroke({ width: 4, color: INK });
-  g.rect(x, y, w, h).fill(night ? '#3F5578' : sky);
+  // Soft drop shadow behind window frame
+  g.roundRect(x - 14, y - 8, w + 28, h + 30, 8).fill({ color: '#2B2521', alpha: 0.12 });
+
+  // Outer wooden casing
+  g.roundRect(x - 14, y - 14, w + 28, h + 28, 6).fill('#FBF7EC');
+  g.roundRect(x - 14, y - 14, w + 28, h + 28, 6).stroke({ width: 3.5, color: INK });
+  g.rect(x - 6, y - 6, w + 12, h + 12).fill('#E8DEC8');
+
+  // Sky glass pane
+  g.rect(x, y, w, h).fill(night ? '#2D4060' : sky);
+  g.rect(x, y, w, h * 0.45).fill({ color: night ? '#1F2E48' : '#FFFFFF', alpha: night ? 0.28 : 0.18 });
+
   if (night) {
-    g.circle(x + w * 0.7, y + h * 0.28, 14).fill('#FBF7EC');
-    g.circle(x + w * 0.7 + 6, y + h * 0.28 - 5, 12).fill('#3F5578');
-    for (let i = 0; i < 6; i++) {
-      g.circle(x + 16 + ((i * 47) % (w - 30)), y + 18 + ((i * 31) % (h - 40)), 2).fill('#FBF7EC');
+    // Glowing moon & stars
+    g.circle(x + w * 0.72, y + h * 0.28, 22).fill({ color: '#FBF7EC', alpha: 0.18 });
+    g.circle(x + w * 0.72, y + h * 0.28, 14).fill('#FBF7EC');
+    g.circle(x + w * 0.72 + 6, y + h * 0.28 - 5, 11).fill('#2D4060');
+    for (let i = 0; i < 8; i++) {
+      const sx = x + 18 + ((i * 43) % (w - 36));
+      const sy = y + 16 + ((i * 29) % Math.max(24, h * 0.56));
+      g.circle(sx, sy, i % 2 === 0 ? 2.2 : 1.5).fill('#FBF7EC');
     }
+    // Distant night hills & trees (strictly within [x, x + w])
+    g.ellipse(x + w * 0.35, y + h * 0.78, w * 0.33, h * 0.2).fill('#283A38');
+    g.ellipse(x + w * 0.68, y + h * 0.81, w * 0.3, h * 0.18).fill('#213130');
+    g.rect(x, y + h * 0.76, w, h * 0.24).fill('#243532');
   } else {
-    g.circle(x + w * 0.74, y + h * 0.24, 13).fill('#E9C65B');
-    g.ellipse(x + w * 0.28, y + h * 0.24, 22, 9).fill('#FBF7EC');
-    g.ellipse(x + w * 0.42, y + h * 0.28, 26, 10).fill('#FBF7EC');
-    g.rect(x, y + h * 0.66, w, h * 0.34).fill('#A8BE86');
-    g.ellipse(x + w * 0.3, y + h * 0.7, 40, 18).fill('#8FA96F');
+    // Warm sun with soft halo
+    g.circle(x + w * 0.74, y + h * 0.24, 22).fill({ color: '#FCE9A8', alpha: 0.42 });
+    g.circle(x + w * 0.74, y + h * 0.24, 14).fill('#F3CE68');
+    // Fluffy layered clouds
+    g.ellipse(x + w * 0.28, y + h * 0.25, 24, 10).fill('#FBF7EC');
+    g.ellipse(x + w * 0.36, y + h * 0.22, 18, 11).fill('#FFFFFF');
+    g.ellipse(x + w * 0.46, y + h * 0.27, 20, 9).fill('#FBF7EC');
+    // Rolling hills & distant trees outside window (strictly within [x, x + w])
+    g.ellipse(x + w * 0.35, y + h * 0.74, w * 0.33, h * 0.2).fill('#A3BF84');
+    g.ellipse(x + w * 0.68, y + h * 0.76, w * 0.3, h * 0.19).fill('#8EAA70');
+    g.rect(x, y + h * 0.73, w, h * 0.27).fill('#8FA96F');
+    g.circle(x + w * 0.22, y + h * 0.65, 15).fill('#759457');
+    g.circle(x + w * 0.3, y + h * 0.68, 12).fill('#84A364');
   }
-  g.moveTo(x + w / 2, y).lineTo(x + w / 2, y + h).stroke({ width: 4, color: INK });
-  g.moveTo(x, y + h / 2).lineTo(x + w, y + h / 2).stroke({ width: 4, color: INK });
-  g.rect(x - 16, y + h + 6, w + 32, 9).fill('#E4D9C2');
+
+  // Diagonal glass reflection streaks
+  g.poly([x + 12, y + h - 18, x + 46, y + 12, x + 62, y + 12, x + 28, y + h - 18]).fill({
+    color: '#FFFFFF',
+    alpha: night ? 0.08 : 0.22,
+  });
+  g.poly([x + 70, y + h - 18, x + 104, y + 12, x + 112, y + 12, x + 78, y + h - 18]).fill({
+    color: '#FFFFFF',
+    alpha: night ? 0.05 : 0.14,
+  });
+
+  // Inner frame & muntin bars
+  g.rect(x, y, w, h).stroke({ width: 3.5, color: INK });
+  g.rect(x + w / 2 - 3, y, 6, h).fill('#FBF7EC');
+  g.rect(x + w / 2 - 3, y, 6, h).stroke({ width: 2.5, color: INK });
+  g.rect(x, y + h / 2 - 3, w, 6).fill('#FBF7EC');
+  g.rect(x, y + h / 2 - 3, w, 6).stroke({ width: 2.5, color: INK });
+
+  // Cozy fabric curtains & wooden rod on left/right
+  const curtainCol = night ? '#9E8878' : '#E8D9C5';
+  const curtainFold = night ? '#826E60' : '#D4C1A9';
+  g.roundRect(x - 32, y - 24, w + 64, 8, 4).fill('#8C6B4C');
+  g.roundRect(x - 32, y - 24, w + 64, 8, 4).stroke({ width: 2.8, color: INK });
+  g.circle(x - 32, y - 20, 6).fill('#7A5A3C');
+  g.circle(x - 32, y - 20, 6).stroke({ width: 2.5, color: INK });
+  g.circle(x + w + 32, y - 20, 6).fill('#7A5A3C');
+  g.circle(x + w + 32, y - 20, 6).stroke({ width: 2.5, color: INK });
+
+  // Left drape
+  g.poly([
+    x - 24, y - 16,
+    x + 14, y - 16,
+    x + 6, y + h * 0.55,
+    x + 16, y + h + 14,
+    x - 26, y + h + 14,
+  ]).fill(curtainCol);
+  g.poly([
+    x - 24, y - 16,
+    x + 14, y - 16,
+    x + 6, y + h * 0.55,
+    x + 16, y + h + 14,
+    x - 26, y + h + 14,
+  ]).stroke({ width: 2.8, color: INK });
+  g.moveTo(x - 8, y - 12).lineTo(x - 10, y + h + 10).stroke({ width: 2, color: curtainFold });
+
+  // Right drape
+  g.poly([
+    x + w - 14, y - 16,
+    x + w + 24, y - 16,
+    x + w + 26, y + h + 14,
+    x + w - 16, y + h + 14,
+    x + w - 6, y + h * 0.55,
+  ]).fill(curtainCol);
+  g.poly([
+    x + w - 14, y - 16,
+    x + w + 24, y - 16,
+    x + w + 26, y + h + 14,
+    x + w - 16, y + h + 14,
+    x + w - 6, y + h * 0.55,
+  ]).stroke({ width: 2.8, color: INK });
+  g.moveTo(x + w + 8, y - 12).lineTo(x + w + 10, y + h + 10).stroke({ width: 2, color: curtainFold });
+
+  // Thick carved wooden windowsill
+  g.roundRect(x - 22, y + h + 6, w + 44, 14, 5).fill('#DFCBB0');
+  g.roundRect(x - 22, y + h + 6, w + 44, 14, 5).stroke({ width: 3.2, color: INK });
+  g.rect(x - 16, y + h + 20, w + 32, 6).fill({ color: '#2B2521', alpha: 0.14 });
+
+  // Softly feathered 3-step sunbeam / moonbeam cast across room
+  const beamColor = night ? '#B8D0F0' : '#FFF6D6';
+  g.poly([
+    x + 6, y + h + 20,
+    x + w - 6, y + h + 20,
+    x + w + 90, y + h + 160,
+    x - 14, y + h + 160,
+  ]).fill({ color: beamColor, alpha: night ? 0.035 : 0.075 });
+  g.poly([
+    x + 6, y + h + 20,
+    x + w - 6, y + h + 20,
+    x + w + 135, y + h + 235,
+    x - 24, y + h + 235,
+  ]).fill({ color: beamColor, alpha: night ? 0.025 : 0.05 });
+  g.poly([
+    x + 6, y + h + 20,
+    x + w - 6, y + h + 20,
+    x + w + 175, y + h + 305,
+    x - 32, y + h + 305,
+  ]).fill({ color: beamColor, alpha: night ? 0.015 : 0.03 });
 }
 
 function paintRoom(g: Graphics, roomId: RoomId, night: boolean): void {
@@ -93,71 +205,199 @@ function paintRoom(g: Graphics, roomId: RoomId, night: boolean): void {
   g.clear();
 
   if (room.outdoor) {
-    g.rect(0, 0, 1920, 884).fill(night ? '#33445E' : pal.sky);
-    // soft far hills
-    g.ellipse(320, floorTop + 30, 520, 190).fill(night ? '#31473E' : '#B8CFA8');
-    g.ellipse(1180, floorTop + 46, 640, 220).fill(night ? '#2C4239' : '#A9C596');
-    g.ellipse(1720, floorTop + 20, 460, 180).fill(night ? '#355047' : '#B4CB9E');
+    // Rich sky with horizon glow
+    g.rect(0, 0, 1920, 884).fill(night ? '#26354D' : pal.sky);
+    g.rect(0, 0, 1920, floorTop * 0.55).fill({ color: night ? '#1B273B' : '#FFFFFF', alpha: night ? 0.35 : 0.22 });
+    g.rect(0, floorTop - 110, 1920, 110).fill({ color: night ? '#3A4E6B' : '#FCEFD2', alpha: night ? 0.25 : 0.38 });
+
+    // Layered rolling hills
+    g.ellipse(340, floorTop + 24, 560, 210).fill(night ? '#2E453B' : '#B7CF9F');
+    g.ellipse(1180, floorTop + 42, 680, 240).fill(night ? '#273D34' : '#A4C08E');
+    g.ellipse(1720, floorTop + 18, 490, 195).fill(night ? '#314B41' : '#B0CA98');
+
+    // Distant trees along horizon
+    for (const tx of [140, 480, 820, 1340, 1620, 1830]) {
+      const ty = floorTop - 28;
+      g.circle(tx, ty - 20, 34).fill(night ? '#233830' : '#7E9E68');
+      g.circle(tx + 22, ty - 10, 26).fill(night ? '#294037' : '#8DAB74');
+    }
+
     if (night) {
-      g.circle(1640, 120, 62).fill('#FBF7EC');
-      g.circle(1668, 100, 54).fill('#33445E');
-      for (let i = 0; i < 18; i++) {
-        g.circle((i * 173 + 90) % 1880, 40 + ((i * 97) % 260), 2.4).fill('#FBF7EC');
+      g.circle(1640, 120, 84).fill({ color: '#FBF7EC', alpha: 0.12 });
+      g.circle(1640, 120, 58).fill('#FBF7EC');
+      g.circle(1666, 102, 50).fill('#26354D');
+      for (let i = 0; i < 24; i++) {
+        g.circle((i * 173 + 90) % 1880, 36 + ((i * 97) % 260), i % 3 === 0 ? 2.8 : 1.8).fill({
+          color: '#FBF7EC',
+          alpha: i % 2 === 0 ? 0.95 : 0.65,
+        });
       }
     } else {
-      g.circle(1640, 120, 58).fill('#F7DFA0');
-      g.ellipse(420, 110, 120, 30).fill('#FBF7EC');
-      g.ellipse(500, 96, 84, 26).fill('#FBF7EC');
-      g.ellipse(1240, 150, 140, 28).fill('#FBF7EC');
+      g.circle(1640, 120, 86).fill({ color: '#FCE9A8', alpha: 0.35 });
+      g.circle(1640, 120, 56).fill('#F5D77F');
+      // Soft layered clouds
+      for (const [cx, cy, s] of [
+        [420, 110, 1],
+        [920, 86, 0.82],
+        [1280, 146, 1.08],
+      ]) {
+        g.ellipse(cx, cy + 6, 118 * s, 28 * s).fill({ color: '#D8E6EC', alpha: 0.6 });
+        g.ellipse(cx, cy, 116 * s, 28 * s).fill('#FBF7EC');
+        g.ellipse(cx - 36 * s, cy - 12 * s, 56 * s, 24 * s).fill('#FFFFFF');
+        g.ellipse(cx + 34 * s, cy - 10 * s, 64 * s, 26 * s).fill('#FBF7EC');
+      }
     }
-    g.rect(0, floorTop, 1920, 884 - floorTop).fill(night ? '#3F5B49' : pal.floor);
-    g.rect(0, floorTop, 1920, 18).fill(night ? '#4B6B55' : pal.floorAlt);
+
+    // Lush lawn / ground
+    g.rect(0, floorTop, 1920, 884 - floorTop).fill(night ? '#354F3F' : pal.floor);
+    g.rect(0, floorTop, 1920, 22).fill(night ? '#42614D' : pal.floorAlt);
+    g.moveTo(0, floorTop).lineTo(1920, floorTop).stroke({ width: 3, color: INK, alpha: 0.45 });
+
+    // Subtle grass tufts across outdoor ground
+    for (let i = 0; i < 28; i++) {
+      const gx = 70 + ((i * 197) % 1780);
+      const gy = floorTop + 48 + ((i * 83) % (840 - floorTop - 60));
+      const col = night ? '#486954' : '#6E8F5B';
+      g.moveTo(gx, gy).lineTo(gx - 5, gy - 11).stroke({ width: 2.2, color: col, alpha: 0.65 });
+      g.moveTo(gx + 4, gy).lineTo(gx + 7, gy - 12).stroke({ width: 2.2, color: col, alpha: 0.65 });
+    }
+
     if (roomId === 'garden') {
+      // Charming garden fence along the horizon
+      for (let x = 40; x < 1900; x += 68) {
+        g.roundRect(x, floorTop - 52, 16, 54, 4).fill(night ? '#8A7B68' : '#F3ECE0');
+        g.roundRect(x, floorTop - 52, 16, 54, 4).stroke({ width: 2.2, color: INK });
+      }
+      g.rect(24, floorTop - 36, 1872, 7).fill(night ? '#7A6C5B' : '#E5DBC8');
+      g.rect(24, floorTop - 18, 1872, 7).fill(night ? '#7A6C5B' : '#E5DBC8');
       for (let x = 60; x < 1920; x += 130) {
-        g.moveTo(x, floorTop + 220).lineTo(x + 8, floorTop + 150).stroke({ width: 4, color: night ? '#4F6F52' : '#7FA06B' });
-        g.circle(x + 8, floorTop + 146, 7).fill(night ? '#6E6E68' : '#E8A6B0');
+        g.moveTo(x, floorTop + 220).lineTo(x + 8, floorTop + 150).stroke({ width: 4, color: night ? '#4F6F52' : '#6E8F5B' });
+        g.circle(x + 8, floorTop + 146, 8).fill(night ? '#9C7280' : '#E8A6B0');
+        g.circle(x + 8, floorTop + 146, 3.5).fill('#E9C65B');
       }
     }
     if (roomId === 'porch') {
-      g.rect(0, floorTop - 74, 1920, 16).fill(night ? '#7A5A3C' : '#B08A5E');
-      g.rect(0, floorTop - 74, 1920, 16).stroke({ width: 3, color: INK });
-      for (let x = 80; x <= 1880; x += 180) {
-        g.rect(x, floorTop - 58, 12, 58).fill(night ? '#7A5A3C' : '#B08A5E');
-        g.rect(x, floorTop - 58, 12, 58).stroke({ width: 3, color: INK });
+      // Wooden deck planks on porch floor
+      g.rect(0, floorTop, 1920, 884 - floorTop).fill(night ? '#684D35' : '#C49A6C');
+      for (let y = floorTop + 42; y < 884; y += 46) {
+        g.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: night ? '#523B28' : '#A67D52', alpha: 0.75 });
+      }
+      // Porch balustrade
+      g.rect(0, floorTop - 82, 1920, 18).fill(night ? '#7A5A3C' : '#B89062');
+      g.rect(0, floorTop - 82, 1920, 18).stroke({ width: 3, color: INK });
+      g.rect(0, floorTop - 14, 1920, 14).fill(night ? '#684C32' : '#A47D52');
+      g.rect(0, floorTop - 14, 1920, 14).stroke({ width: 3, color: INK });
+      for (let x = 70; x <= 1870; x += 120) {
+        g.rect(x, floorTop - 64, 14, 50).fill(night ? '#8A6949' : '#CCA679');
+        g.rect(x, floorTop - 64, 14, 50).stroke({ width: 2.5, color: INK });
       }
     }
     if (roomId === 'farm') {
-      g.rect(130, floorTop - 250, 320, 250).fill(night ? '#7A5A3C' : '#C4483B');
-      g.rect(130, floorTop - 250, 320, 250).stroke({ width: 4, color: INK });
-      g.poly([110, floorTop - 250, 290, floorTop - 340, 470, floorTop - 250]).fill(night ? '#5A4130' : '#8C6B4C');
-      g.poly([110, floorTop - 250, 290, floorTop - 340, 470, floorTop - 250]).stroke({ width: 4, color: INK });
-      g.rect(240, floorTop - 150, 100, 150).fill(night ? '#5A4130' : '#8C6B4C');
-      g.rect(240, floorTop - 150, 100, 150).stroke({ width: 4, color: INK });
+      // Cozy red timber barn with white trim & loft window
+      const bx = 120;
+      const by = floorTop - 256;
+      const bw = 330;
+      const bh = 256;
+      g.rect(bx, by, bw, bh).fill(night ? '#7A3E36' : '#C84B3C');
+      g.rect(bx, by, bw, bh).stroke({ width: 4, color: INK });
+      for (let x = bx + 42; x < bx + bw; x += 42) {
+        g.moveTo(x, by).lineTo(x, by + bh).stroke({ width: 2, color: night ? '#5E2D27' : '#A8382B', alpha: 0.55 });
+      }
+      // Gambrel roof
+      g.poly([bx - 24, by, bx + 65, by - 76, bx + bw / 2, by - 110, bx + bw - 65, by - 76, bx + bw + 24, by]).fill(
+        night ? '#4D3829' : '#7A5A3C',
+      );
+      g.poly([bx - 24, by, bx + 65, by - 76, bx + bw / 2, by - 110, bx + bw - 65, by - 76, bx + bw + 24, by]).stroke({
+        width: 4,
+        color: INK,
+      });
+      // Barn double doors with X-bracing
+      const dx = bx + 105;
+      const dy = floorTop - 154;
+      const dw = 120;
+      const dh = 154;
+      g.rect(dx, dy, dw, dh).fill(night ? '#5A4130' : '#8C6B4C');
+      g.rect(dx, dy, dw, dh).stroke({ width: 4, color: INK });
+      g.moveTo(dx, dy).lineTo(dx + dw, dy + dh).stroke({ width: 4, color: '#FBF7EC' });
+      g.moveTo(dx + dw, dy).lineTo(dx, dy + dh).stroke({ width: 4, color: '#FBF7EC' });
+      g.rect(dx, dy, dw, dh).stroke({ width: 3.5, color: '#FBF7EC' });
+      // Hayloft window
+      g.roundRect(bx + bw / 2 - 26, by + 26, 52, 46, 6).fill(night ? '#F5D77F' : '#3A2E25');
+      g.roundRect(bx + bw / 2 - 26, by + 26, 52, 46, 6).stroke({ width: 3.5, color: '#FBF7EC' });
     }
     return;
   }
 
-  g.rect(0, 0, 1920, floorTop).fill(night ? dim(pal.wall, 0.72) : pal.wall);
-  g.rect(0, 0, 1920, 26).fill(night ? dim(pal.wallShade, 0.7) : pal.wallShade);
-  g.rect(0, 0, 1920, 26).stroke({ width: 3, color: INK });
-  g.rect(0, floorTop - 20, 1920, 20).fill(night ? dim(pal.trim, 0.7) : pal.trim);
-  g.rect(0, floorTop - 20, 1920, 20).stroke({ width: 3, color: INK });
-  g.rect(0, floorTop, 1920, 884 - floorTop).fill(night ? dim(pal.floor, 0.62) : pal.floor);
+  // INDOOR ROOMS: Warm wallpaper, subtle vertical stripes, wainscoting, crown & baseboard
+  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
+  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
+  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
 
-  for (let y = floorTop + 46; y < 884; y += 58) {
-    g.moveTo(0, y).lineTo(1920, y).stroke({ width: 2, color: night ? dim(pal.floorAlt, 0.6) : pal.floorAlt, alpha: 0.7 });
+  g.rect(0, 0, 1920, floorTop).fill(wallFill);
+
+  // Subtle wallpaper stripes on upper wall
+  const wainscotTop = floorTop - 116;
+  for (let x = 48; x < 1920; x += 96) {
+    g.rect(x, 28, 36, wainscotTop - 28).fill({ color: wallAlt, alpha: 0.32 });
   }
-  for (let x = -200; x < 2100; x += 260) {
-    g.moveTo(x, floorTop).lineTo(x + 120, 884).stroke({ width: 2, color: night ? dim(pal.floorAlt, 0.55) : pal.floorAlt, alpha: 0.45 });
+
+  // Crown molding at top
+  g.rect(0, 0, 1920, 24).fill(wallAlt);
+  g.rect(0, 0, 1920, 24).stroke({ width: 3, color: INK });
+  g.rect(0, 24, 1920, 7).fill(trimFill);
+  g.moveTo(0, 31).lineTo(1920, 31).stroke({ width: 2, color: INK, alpha: 0.55 });
+
+  // Chair rail & recessed wainscoting panels along lower wall
+  g.rect(0, wainscotTop, 1920, floorTop - wainscotTop).fill(wallAlt);
+  g.rect(0, wainscotTop, 1920, 10).fill(trimFill);
+  g.rect(0, wainscotTop, 1920, 10).stroke({ width: 2.5, color: INK });
+
+  for (let x = 36; x < 1880; x += 184) {
+    g.roundRect(x, wainscotTop + 20, 152, floorTop - wainscotTop - 48, 5).fill({
+      color: wallFill,
+      alpha: 0.55,
+    });
+    g.roundRect(x, wainscotTop + 20, 152, floorTop - wainscotTop - 48, 5).stroke({
+      width: 2,
+      color: INK,
+      alpha: 0.28,
+    });
+  }
+
+  // Chunky baseboard with shoe molding
+  g.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
+  g.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
+  g.rect(0, floorTop - 20, 1920, 4).fill({ color: '#FFFDF8', alpha: 0.35 });
+
+  // Hardwood / tile floor with warm depth gradient and staggered plank joints
+  const floorFill = night ? dim(pal.floor, 0.66) : pal.floor;
+  const floorLine = night ? dim(pal.floorAlt, 0.58) : pal.floorAlt;
+  g.rect(0, floorTop, 1920, 884 - floorTop).fill(floorFill);
+  // Subtle ambient shadow directly below baseboard
+  g.rect(0, floorTop, 1920, 18).fill({ color: '#2B2521', alpha: 0.12 });
+  g.rect(0, 820, 1920, 64).fill({ color: '#2B2521', alpha: 0.07 });
+
+  let rowIdx = 0;
+  for (let y = floorTop + 44; y < 884; y += 54) {
+    rowIdx++;
+    // Alternating subtle plank tint
+    if (rowIdx % 2 === 0) {
+      g.rect(0, y - 54, 1920, 54).fill({ color: '#FFFDF8', alpha: 0.04 });
+    }
+    g.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: floorLine, alpha: 0.8 });
+    const offset = (rowIdx * 130) % 260;
+    for (let x = -120 + offset; x < 1980; x += 260) {
+      g.moveTo(x, y - 54).lineTo(x + 28, y).stroke({ width: 2, color: floorLine, alpha: 0.55 });
+    }
   }
 
   const windows: Partial<Record<RoomId, [number, number, number, number]>> = {
-    living: [250, 120, 250, 210],
-    bedroom: [196, 118, 210, 180],
-    kitchen: [1060, 116, 270, 190],
-    bathroom: [220, 150, 150, 120],
-    studio: [1440, 96, 300, 250],
-    nursery: [1420, 120, 230, 190],
+    living: [250, 112, 250, 206],
+    bedroom: [196, 112, 210, 178],
+    kitchen: [230, 112, 240, 184],
+    bathroom: [220, 144, 150, 120],
+    studio: [1440, 92, 300, 244],
+    nursery: [1420, 114, 230, 186],
   };
   const win = windows[roomId];
   if (win) {
@@ -166,15 +406,16 @@ function paintRoom(g: Graphics, roomId: RoomId, night: boolean): void {
 
   if (night) {
     for (const [x, y] of [
-      [360, 300],
-      [1640, 260],
-      [940, 120],
+      [380, 580],
+      [940, 540],
+      [1540, 580],
     ]) {
-      g.circle(x, y, 70).fill({ color: '#F7DFA0', alpha: 0.08 });
-      g.circle(x, y, 40).fill({ color: '#F7DFA0', alpha: 0.12 });
+      g.circle(x, y, 160).fill({ color: '#F7DFA0', alpha: 0.06 });
+      g.circle(x, y, 90).fill({ color: '#F7DFA0', alpha: 0.1 });
     }
   }
 }
+
 
 function dim(hex: string, factor: number): string {  const clean = hex.replace('#', '');
   if (clean.length !== 6) return hex;
@@ -203,6 +444,7 @@ export class StageRenderer {
   private petNodes = new Map<string, Sprite>();
   private visitorNodes = new Map<string, Sprite>();
   private critterNodes = new Map<string, Sprite>();
+  private humanNodes = new Map<string, Sprite>();
   private bubbleNodes = new Map<string, Container>();
   private selection = new Graphics();
 
@@ -339,6 +581,69 @@ export class StageRenderer {
     if (!view) return;
     const state = view.state;
 
+    // Resident humans relaxing in rooms
+    const humanSpots: Partial<
+      Record<RoomId, { charIndex: 0 | 1 | 'baby'; x: number; y: number; pose?: 'idle' | 'read' | 'cook' | 'paint' }[]>
+    > = {
+      living: [{ charIndex: 0, x: 525, y: 768, pose: 'read' }],
+      bedroom: [{ charIndex: 1, x: 1090, y: 764, pose: 'read' }],
+      kitchen: [{ charIndex: 0, x: 600, y: 768, pose: 'cook' }],
+      studio: [{ charIndex: 1, x: 740, y: 768, pose: 'paint' }],
+      porch: [{ charIndex: 0, x: 1090, y: 774, pose: 'idle' }],
+      garden: [{ charIndex: 1, x: 820, y: 782, pose: 'idle' }],
+      nursery: [
+        { charIndex: 0, x: 780, y: 768, pose: 'idle' },
+        ...(state.settings.showBaby ? [{ charIndex: 'baby' as const, x: 900, y: 776 }] : []),
+      ],
+    };
+    const activeHumans = humanSpots[view.roomId] ?? [];
+    const humanAlive = new Set(activeHumans.map((h) => `human:${view.roomId}:${h.charIndex}`));
+    for (const [id, sprite] of this.humanNodes) {
+      if (!humanAlive.has(id)) {
+        sprite.destroy();
+        this.humanNodes.delete(id);
+      }
+    }
+    for (const h of activeHumans) {
+      const id = `human:${view.roomId}:${h.charIndex}`;
+      let key: string;
+      let art: { w: number; h: number; body: string };
+      let targetW: number;
+      if (h.charIndex === 'baby') {
+        const c0 = state.characters[0];
+        key = `baby:${c0.skin}:${c0.outfit}:${c0.hair}`;
+        art = babyArt({ skin: c0.skin, outfit: c0.outfit, hair: c0.hair });
+        targetW = 86;
+      } else {
+        const look = state.characters[h.charIndex];
+        const pose = h.pose ?? 'idle';
+        key = `char:${look.skin}:${look.hair}:${look.hairStyle}:${look.outfit}:${pose}`;
+        art = characterArt({
+          skin: look.skin,
+          hair: look.hair,
+          hairStyle: look.hairStyle,
+          outfit: look.outfit,
+          pose,
+        });
+        targetW = 128;
+      }
+      const texture = requestTexture(key, art.body, art.w, art.h, this.onRefresh);
+      let sprite = this.humanNodes.get(id);
+      if (!sprite) {
+        sprite = new Sprite(texture ?? Texture.WHITE);
+        sprite.anchor.set(0.5, 1);
+        this.actorLayer.addChild(sprite);
+        this.humanNodes.set(id, sprite);
+      }
+      sprite.texture = texture ?? Texture.WHITE;
+      sprite.width = targetW;
+      sprite.height = (targetW * art.h) / art.w;
+      sprite.x = h.x;
+      sprite.y = h.y;
+      sprite.zIndex = h.y;
+      sprite.visible = !!texture;
+    }
+
     const pets = state.pets.filter((p) => p.roomId === view.roomId);
     const petAlive = new Set(pets.map((p) => p.id));
     for (const [id, sprite] of this.petNodes) {
@@ -366,10 +671,11 @@ export class StageRenderer {
         this.petNodes.set(pet.id, sprite);
       }
       sprite.texture = texture ?? Texture.WHITE;
-      sprite.width = pet.species === 'bird' ? 76 : 128;
-      sprite.height = pet.species === 'bird' ? 76 : 128;
+      sprite.width = pet.species === 'bird' ? 84 : 134;
+      sprite.height = pet.species === 'bird' ? 84 : 134;
       sprite.x = pet.x;
       sprite.y = pet.y + 6;
+      sprite.zIndex = pet.y + 10;
       sprite.visible = !!texture;
     }
 
@@ -401,10 +707,11 @@ export class StageRenderer {
         this.visitorNodes.set(visitor.id, sprite);
       }
       sprite.texture = texture ?? Texture.WHITE;
-      sprite.width = 132;
-      sprite.height = 132;
+      sprite.width = 136;
+      sprite.height = 136;
       sprite.x = visitor.x;
       sprite.y = visitor.y + 8;
+      sprite.zIndex = visitor.y + 12;
       sprite.visible = !!texture;
     }
 
@@ -428,14 +735,17 @@ export class StageRenderer {
         this.critterNodes.set(spot.id, sprite);
       }
       sprite.texture = texture ?? Texture.WHITE;
-      const size = spot.kind === 'owl' ? 120 : spot.kind === 'hedgehog' ? 86 : 58;
+      const size = spot.kind === 'owl' ? 114 : spot.kind === 'hedgehog' ? 88 : 58;
       sprite.width = size;
       sprite.height = size;
       sprite.x = spot.x;
       sprite.y = spot.y;
+      sprite.zIndex = spot.y;
       sprite.visible = !!texture;
     }
+    this.actorLayer.sortableChildren = true;
   }
+
 
   private syncBubbles(): void {
     const view = this.view;

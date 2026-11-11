@@ -70,7 +70,7 @@ export function findSurfaceHost(
     const item = ITEMS_BY_ID[p.itemId];
     if (!item?.surface) return false;
     const size = itemSize(p.itemId);
-    return Math.abs(p.x - x) <= Math.max(80, size.w * 0.45) && y <= p.y + 10 && y >= p.y - size.h - 60;
+    return Math.abs(p.x - x) <= Math.max(80, size.w * 0.45) && y <= p.y + 64 && y >= p.y - size.h - 60;
   });
   if (candidates.length === 0) return null;
   candidates.sort((a, b) => Math.abs(a.x - x) - Math.abs(b.x - x));

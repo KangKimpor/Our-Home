@@ -61,7 +61,9 @@ function quadrupedBody(o: AnimalOptions, coat: Coat, opts: { ears: string; tail:
       : r(46, 104, 9, 20, coat.body, 3) + r(62, 104, 9, 20, coat.patch, 3) + r(80, 104, 9, 20, coat.patch, 3) + r(96, 104, 9, 20, coat.body, 3);
 
   return (
-    (sleeping ? el(72, 124, 34, 4, INK, 'none', 0).replace('/>', ' opacity="0.10"/>') : el(72, 126, 30, 4, INK, 'none', 0).replace('/>', ' opacity="0.10"/>')) +
+    (sleeping
+      ? `<ellipse cx="72" cy="124" rx="38" ry="6" fill="#2B2521" opacity="0.14"/>`
+      : `<ellipse cx="72" cy="126" rx="34" ry="5.5" fill="#2B2521" opacity="0.14"/>`) +
     (sleeping ? '' : el(72, y, 36, 22, coat.body)) +
     (sleeping ? el(72, 114, 40, 16, coat.body) : '') +
     (sleeping ? '' : el(76, y + 8, 22, 12, coat.belly, 'none', 0)) +
@@ -75,13 +77,17 @@ function quadrupedBody(o: AnimalOptions, coat: Coat, opts: { ears: string; tail:
     (sleeping
       ? `<path d="M 92 106 q 5 3 10 0" fill="none" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/>`
       : face()) +
-    c(sleeping ? 94 : 104, sleeping ? 104 : 58, 2.4, INK, 'none', 0) +
+    (sleeping
+      ? c(94, 104, 2.4, INK, 'none', 0)
+      : c(105, 58, 3.2, INK, 'none', 0) + `<circle cx="106.2" cy="56.8" r="1.1" fill="#FFFDF8"/>`) +
+    `<ellipse cx="${headX + 4}" cy="${headY + 5}" rx="4.2" ry="2.4" fill="#E89CA8" opacity="0.48"/>` +
     c(headX + (sleeping ? 16 : 18), headY + (sleeping ? 4 : 6), 3.4, coat.nose, INK, 1.6) +
     (sleeping ? '' : `<path d="M ${headX + 12} ${headY + 6} l 18 -2 M ${headX + 12} ${headY + 10} l 16 3" stroke="${INK}" stroke-width="1.4" opacity="0.6"/>`) +
-    (sleeping ? `<text x="120" y="86" font-family="sans-serif" font-size="13" fill="${INK}" opacity="0.65">z</text><text x="130" y="74" font-family="sans-serif" font-size="9" fill="${INK}" opacity="0.5">z</text>` : '') +
+    (sleeping ? `<text x="120" y="86" font-family="sans-serif" font-size="13" font-weight="700" fill="${INK}" opacity="0.65">z</text><text x="130" y="74" font-family="sans-serif" font-size="9" font-weight="700" fill="${INK}" opacity="0.5">z</text>` : '') +
     (pose === 'special' ? `<path d="M 126 30 l 3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#E9C65B" stroke="${INK}" stroke-width="1.6"/>` : '')
   );
 }
+
 
 const speciesBuilders: Record<string, (o: AnimalOptions, coat: Coat) => string> = {
   cat: (o, coat) =>
@@ -184,7 +190,9 @@ function birdArt(o: AnimalOptions, coat: Coat, kind: 'duck' | 'swan' | 'hen' | '
   const body = el(66, 86, 30, 22, coat.body);
   const head = c(96, 56, 17, coat.body);
   const wing = el(60, 84, 18, 14, coat.patch);
-  const eye = sleeping ? `<path d="M 92 54 q 4 3 8 0" fill="none" stroke="${INK}" stroke-width="2.4"/>` : c(100, 54, 2.6, INK, 'none', 0);
+  const eye = sleeping
+    ? `<path d="M 92 54 q 4 3 8 0" fill="none" stroke="${INK}" stroke-width="2.4"/>`
+    : c(100, 54, 2.8, INK, 'none', 0) + `<circle cx="101" cy="53" r="1" fill="#FFFDF8"/>`;
   const beak =
     kind === 'swan'
       ? p('M 112 58 L 126 52 L 112 64 Z', '#E9A94B')
@@ -205,13 +213,21 @@ function birdArt(o: AnimalOptions, coat: Coat, kind: 'duck' | 'swan' | 'hen' | '
         : kind === 'owl'
           ? p('M 84 36 L 80 24 L 92 32 Z', coat.patch) + p('M 104 32 L 114 24 L 110 38 Z', coat.patch)
           : p('M 88 40 C 92 28 102 28 100 40', 'none', coat.patch, 4);
-  const eyeBig = kind === 'owl' ? c(92, 56, 6, '#FBF7EC') + c(102, 56, 6, '#FBF7EC') + c(92, 56, 2.4, INK, 'none', 0) + c(102, 56, 2.4, INK, 'none', 0) : eye;
+  const eyeBig =
+    kind === 'owl'
+      ? c(92, 56, 6, '#FBF7EC') +
+        c(102, 56, 6, '#FBF7EC') +
+        c(92, 56, 2.6, INK, 'none', 0) +
+        c(102, 56, 2.6, INK, 'none', 0) +
+        `<circle cx="93" cy="54.8" r="1" fill="#FFFDF8"/><circle cx="103" cy="54.8" r="1" fill="#FFFDF8"/>`
+      : eye;
   return (
-    el(64, 124, 34, 5, INK, 'none', 0).replace('/>', ' opacity="0.10"/>') +
+    `<ellipse cx="64" cy="124" rx="34" ry="5" fill="#2B2521" opacity="0.14"/>` +
     extras +
     body +
     wing +
     head +
+    `<ellipse cx="94" cy="61" rx="3.8" ry="2.2" fill="#E89CA8" opacity="0.45"/>` +
     eyeBig +
     beak +
     legs +
@@ -224,6 +240,7 @@ function birdArt(o: AnimalOptions, coat: Coat, kind: 'duck' | 'swan' | 'hen' | '
     (o.accessory === 'flower' ? c(112, 42, 5, '#E8A6B0') + c(112, 42, 2, '#E9C65B') : '')
   );
 }
+
 
 const BIRD_SPECIES = new Set(['bird', 'duck', 'swan', 'hen', 'owl']);
 const BIRD_KIND: Record<string, 'duck' | 'swan' | 'hen' | 'owl'> = {
