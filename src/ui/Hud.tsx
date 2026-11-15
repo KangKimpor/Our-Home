@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dayPhase, now } from '../config/time';
 import { EVENTS, eventActive, eventEndTimestamp } from '../data/events';
@@ -29,6 +29,18 @@ export function Hud() {
   const placed = useGameStore((s) => s.state.placed);
   const store = useGameStore.getState;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [heartPop, setHeartPop] = useState(false);
+  const prevHearts = useRef(hearts);
+
+  useEffect(() => {
+    if (hearts > prevHearts.current) {
+      setHeartPop(true);
+      const timer = window.setTimeout(() => setHeartPop(false), 360);
+      prevHearts.current = hearts;
+      return () => window.clearTimeout(timer);
+    }
+    prevHearts.current = hearts;
+  }, [hearts]);
 
   const room = ROOMS[roomId];
   const placingItem = placingItemId ? ITEMS_BY_ID[placingItemId] : undefined;
@@ -106,7 +118,12 @@ export function Hud() {
         </button>
       </div>
 
-      <button type="button" className="heart-plaque" onClick={() => open('shop')} aria-label={t('hud.hearts')}>
+      <button
+        type="button"
+        className={heartPop ? 'heart-plaque is-pop' : 'heart-plaque'}
+        onClick={() => open('shop')}
+        aria-label={t('hud.hearts')}
+      >
         <Icon name="heart" size={26} />
         <strong>{hearts}</strong>
         <span className="heart-plus">

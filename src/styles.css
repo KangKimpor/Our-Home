@@ -954,6 +954,7 @@ img {
   background: var(--butter);
   border: 2.5px solid var(--ink);
   box-shadow: 0 0 0 8px rgba(235, 202, 96, 0.34);
+  animation: sun-pulse 4.5s ease-in-out infinite;
 }
 .title-cloud {
   position: absolute;
@@ -967,12 +968,14 @@ img {
 .title-cloud-a {
   top: 18%;
   left: 10%;
+  animation: cloud-drift-a 16s ease-in-out infinite;
 }
 .title-cloud-b {
   top: 34%;
   left: 48%;
   transform: scale(0.75);
   opacity: 0.85;
+  animation: cloud-drift-b 20s ease-in-out infinite;
 }
 .title-sunbeam {
   position: absolute;
@@ -988,6 +991,7 @@ img {
   );
   clip-path: polygon(10% 0%, 68% 0%, 100% 100%, 0% 100%);
   pointer-events: none;
+  animation: beam-breathe 5s ease-in-out infinite;
 }
 .title-decor {
   position: absolute;
@@ -1005,13 +1009,14 @@ img {
   left: 63%;
   bottom: 12%;
   width: 15%;
-  animation: pet-bob 3.4s ease-in-out infinite;
+  transform-origin: 50% 95%;
+  animation: pet-bob 3.2s ease-in-out infinite;
 }
 .title-pet-b {
   left: 19%;
   bottom: 9%;
   width: 16%;
-  animation-delay: -1.6s;
+  animation: pet-breathe 3.8s ease-in-out infinite -1.6s;
 }
 .title-pet .animal-art {
   width: 100%;
@@ -1020,10 +1025,55 @@ img {
 @keyframes pet-bob {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1, 1);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-5px) scale(0.985, 1.025);
+  }
+}
+@keyframes pet-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.02, 0.975);
+  }
+}
+@keyframes sun-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(235, 202, 96, 0.32);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(235, 202, 96, 0.45);
+  }
+}
+@keyframes cloud-drift-a {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(26%);
+  }
+}
+@keyframes cloud-drift-b {
+  0%,
+  100% {
+    transform: translateX(0) scale(0.75);
+  }
+  50% {
+    transform: translateX(-28%) scale(0.75);
+  }
+}
+@keyframes beam-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
   }
 }
 .title-plants {
@@ -1331,6 +1381,20 @@ img {
 }
 .heart-plaque:hover {
   transform: translate(-50%, calc(-50% - 2px));
+}
+.heart-plaque.is-pop {
+  animation: heart-pop 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes heart-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  45% {
+    transform: translate(-50%, -50%) scale(1.13);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 .heart-plaque strong {
   font-family: var(--display);

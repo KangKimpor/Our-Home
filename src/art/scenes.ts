@@ -2,7 +2,7 @@
 
 import { animalArt } from './animals';
 import { characterArt, babyArt } from './characters';
-import { INK, c, el, line, p, r } from './svg';
+import { INK, c, el, line, p, r, svgDoc } from './svg';
 
 export const SCENE_W = 420;
 export const SCENE_H = 300;
@@ -173,8 +173,7 @@ const SCENES: Record<string, () => string> = {
     [40, 90, 340, 380].map((x) => line(x, 210, x, 190, '#6E8A55', 3) + c(x, 186, 7, x % 2 ? '#E8A6B0' : '#E9C65B')).join('') +
     animalGroup('cat', 'ginger', 160, 258, 0.95, 'sleep') +
     animalGroup('butterfly', 'golden', 300, 190, 0.5, 'idle') +
-    heart(260, 160, 0.7) +
-    'z',
+    heart(260, 160, 0.7),
 
   piano: () =>
     wall('#F3EFE0', '#C39A6B', 200) +
@@ -296,7 +295,7 @@ const MOMENT_SCENE_MAP: Record<string, string> = {
 
 export function momentSceneSvg(momentId: string): string {
   const scene = SCENES[MOMENT_SCENE_MAP[momentId] ?? 'firstHome'] ?? SCENES.firstHome;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SCENE_W}" height="${SCENE_H}" viewBox="0 0 ${SCENE_W} ${SCENE_H}">${scene()}</svg>`;
+  return svgDoc({ w: SCENE_W, h: SCENE_H, body: scene() });
 }
 
 export function momentSceneArt(momentId: string): { w: number; h: number; body: string } {
