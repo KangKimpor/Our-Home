@@ -42,6 +42,7 @@ export function InventoryPanel() {
   return (
     <Modal
       title={t('inventory.title')}
+      subtitle={t('inventory.hint')}
       size="lg"
       icon={<Icon name="bag" size={22} />}
       onClose={closeOverlay}

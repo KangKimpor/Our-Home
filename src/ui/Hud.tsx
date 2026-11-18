@@ -6,7 +6,16 @@ import { ITEMS_BY_ID } from '../data/items';
 import { ROOMS } from '../data/rooms';
 import { useGameStore, variantSwatches } from '../store/gameStore';
 import { ItemArt } from './bits';
-import { Icon, type IconName } from './icons';
+import {
+  HudCatBowl,
+  HudEventBadge,
+  HudHeartBadge,
+  HudHouse,
+  HudShoppingCart,
+  HudStorageBox,
+  Icon,
+  type IconName,
+} from './icons';
 
 function saveLabel(status: 'idle' | 'saving' | 'saved' | 'error', t: (key: string) => string): string {
   if (status === 'saving') return t('hud.saveSaving');
@@ -95,26 +104,31 @@ export function Hud() {
           className={menuOpen ? 'hud-peek is-open' : 'hud-peek'}
           aria-label={t('hud.menu')}
           aria-expanded={menuOpen}
+          title={t('hud.menu')}
           onClick={() => setMenuOpen((value) => !value)}
         >
-          <span className="peek-eye" />
-          <span className="peek-eye" />
+          <span className="peek-eye" aria-hidden="true" />
+          <span className="peek-eye" aria-hidden="true" />
         </button>
       </div>
 
       <div className="hud-room">
-        <button type="button" className="hud-round" aria-label={t('hud.roomPrev')} onClick={() => store().stepRoom(-1)}>
-          <Icon name="chevronLeft" size={22} />
+        <button type="button" className="hud-round" aria-label={t('hud.roomPrev')} title={t('hud.roomPrev')} onClick={() => store().stepRoom(-1)}>
+          <Icon name="chevronLeft" size={20} />
         </button>
         <button type="button" className="room-plaque" onClick={() => open('map')} title={t('map.hint')}>
+          <span className="plaque-nail plaque-nail-tl" aria-hidden="true" />
+          <span className="plaque-nail plaque-nail-tr" aria-hidden="true" />
+          <span className="plaque-nail plaque-nail-bl" aria-hidden="true" />
+          <span className="plaque-nail plaque-nail-br" aria-hidden="true" />
           <span>{t(room.nameKey)}</span>
           <small>
-            <Icon name={phase === 'night' ? 'moon' : 'sun'} size={13} />
+            <Icon name={phase === 'night' ? 'moon' : 'sun'} size={12} />
             {phase === 'night' ? t('hud.night') : t('hud.day')}
           </small>
         </button>
-        <button type="button" className="hud-round" aria-label={t('hud.roomNext')} onClick={() => store().stepRoom(1)}>
-          <Icon name="chevronRight" size={22} />
+        <button type="button" className="hud-round" aria-label={t('hud.roomNext')} title={t('hud.roomNext')} onClick={() => store().stepRoom(1)}>
+          <Icon name="chevronRight" size={20} />
         </button>
       </div>
 
@@ -123,12 +137,14 @@ export function Hud() {
         className={heartPop ? 'heart-plaque is-pop' : 'heart-plaque'}
         onClick={() => open('shop')}
         aria-label={t('hud.hearts')}
+        title={t('hud.hearts')}
       >
-        <Icon name="heart" size={26} />
-        <strong>{hearts}</strong>
-        <span className="heart-plus">
-          <Icon name="plus" size={14} />
+        <span className="heart-strap heart-strap-l" aria-hidden="true" />
+        <span className="heart-strap heart-strap-r" aria-hidden="true" />
+        <span className="heart-badge-wrap">
+          <HudHeartBadge size={34} />
         </span>
+        <strong>{hearts}</strong>
       </button>
 
       <div className="event-tags">
@@ -140,8 +156,10 @@ export function Hud() {
             onClick={() => open('event', event.id)}
             title={t(event.nameKey, { defaultValue: event.name })}
           >
-            <Icon name={event.icon === 'leaf' ? 'leaf' : event.icon === 'moon' ? 'moon' : 'star'} size={15} />
-            <span>{t('common.day', { count: days })}</span>
+            <span className="event-tag-badge">
+              <HudEventBadge kind={event.icon} size={28} />
+            </span>
+            <span className="event-tag-days">{t('common.day', { count: days })}</span>
             <span className="event-tag-progress">
               {Math.min(progress, event.target)}/{event.target}
               {claimed ? ' ✓' : ''}
@@ -150,29 +168,51 @@ export function Hud() {
         ))}
       </div>
 
-      <button type="button" className="hud-feed" onClick={() => open('feed')} aria-label={t('hud.feed')}>
-        <Icon name="bowl" size={28} />
-        <span>{t('hud.feed')}</span>
+      <button type="button" className="hud-feed" onClick={() => open('feed')} aria-label={t('hud.feed')} title={t('hud.feed')}>
+        <HudCatBowl size={46} />
+        <span className="sr-only">{t('hud.feed')}</span>
       </button>
 
       <div className="hud-right">
-        <button type="button" className="hud-square hud-inventory" onClick={() => open('inventory')} aria-label={t('hud.inventory')}>
-          <Icon name="bag" size={26} />
-          <span>{t('hud.inventory')}</span>
+        <button
+          type="button"
+          className="hud-square hud-inventory"
+          onClick={() => open('inventory')}
+          aria-label={t('hud.inventory')}
+          title={t('hud.inventory')}
+        >
+          <HudStorageBox size={44} />
+          <span className="sr-only">{t('hud.inventory')}</span>
         </button>
-        <button type="button" className="hud-square hud-shop" onClick={() => open('shop')} aria-label={t('hud.shop')}>
-          <Icon name="shop" size={26} />
-          <span>{t('hud.shop')}</span>
+        <button
+          type="button"
+          className="hud-square hud-shop"
+          onClick={() => open('shop')}
+          aria-label={t('hud.shop')}
+          title={t('hud.shop')}
+        >
+          <HudShoppingCart size={42} />
+          <span className="sr-only">{t('hud.shop')}</span>
+        </button>
+        <button
+          type="button"
+          className="hud-square hud-map"
+          onClick={() => open('map')}
+          aria-label={t('hud.map')}
+          title={t('hud.map')}
+        >
+          <HudHouse size={42} />
+          <span className="sr-only">{t('hud.map')}</span>
         </button>
       </div>
 
       <div className="hud-dock">
         <button type="button" className={editMode ? 'dock-btn is-active' : 'dock-btn'} onClick={() => store().setEditMode(!editMode)}>
-          <Icon name={editMode ? 'check' : 'edit'} size={21} />
+          <Icon name={editMode ? 'check' : 'edit'} size={20} />
           <span>{editMode ? t('hud.done') : t('hud.edit')}</span>
         </button>
         <button type="button" className="dock-btn" onClick={() => open('recipes')}>
-          <Icon name="book" size={21} />
+          <Icon name="book" size={20} />
           <span>{t('recipes.title')}</span>
         </button>
         <button
@@ -180,11 +220,11 @@ export function Hud() {
           className="dock-btn"
           onClick={() => open(roomId === 'farm' || roomId === 'garden' ? 'farm' : 'pet')}
         >
-          <Icon name={roomId === 'farm' || roomId === 'garden' ? 'seed' : 'paw'} size={21} />
+          <Icon name={roomId === 'farm' || roomId === 'garden' ? 'seed' : 'paw'} size={20} />
           <span>{roomId === 'farm' || roomId === 'garden' ? t('farm.title') : t('pets.title')}</span>
         </button>
         <button type="button" className="dock-btn" onClick={() => open('moments')}>
-          <Icon name="camera" size={21} />
+          <Icon name="camera" size={20} />
           <span>{t('moments.title')}</span>
         </button>
       </div>

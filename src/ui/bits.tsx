@@ -1,6 +1,7 @@
-import { useEffect, useId, useMemo, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { animalArt } from '../art/animals';
+import { getItemSprite, ITEM_SPRITE_MAP as PACK_ITEM_SPRITE_MAP } from '../art/assetPack';
 import { characterArt, type CharacterArtOptions } from '../art/characters';
 import { itemArt } from '../art/items';
 import { momentSceneArt } from '../art/scenes';
@@ -23,6 +24,32 @@ function dataUrl(key: string, make: () => string): string {
   return url;
 }
 
+const PACK_BASE = '/asset-pack-v1.1/';
+
+/** Transparent PNG sprites (manifest transparent_background: true) mapped by item ID. */
+export const ITEM_SPRITE_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(PACK_ITEM_SPRITE_MAP).map(([id, mapping]) => [id, mapping.url]),
+);
+
+/** Illustrated photo cards from the v1.1 moments gallery. */
+export const MOMENT_PHOTO_CARDS: Record<string, string> = {
+  moveIn: `${PACK_BASE}assets/ui_gallery/moments_photo_card_01.png`,
+  tenItems: `${PACK_BASE}assets/ui_gallery/moments_photo_card_02.png`,
+  sofaNap: `${PACK_BASE}assets/ui_gallery/moments_photo_card_03.png`,
+  sinkCat: `${PACK_BASE}assets/ui_gallery/moments_photo_card_04.png`,
+  drawerCat: `${PACK_BASE}assets/ui_gallery/moments_photo_card_05.png`,
+  snackBag: `${PACK_BASE}assets/ui_gallery/moments_photo_card_06.png`,
+};
+
+export function resolveItemSprite(item: ItemDef): string | undefined {
+  const custom = (item as ItemDef & { sprite?: string }).sprite;
+  if (custom) {
+    if (custom.startsWith('/') || custom.startsWith('data:') || custom.startsWith('http')) return custom;
+    return `${PACK_BASE}${custom.replace(/^\.?\//, '')}`;
+  }
+  return getItemSprite(item.id)?.url;
+}
+
 export function itemArtUrl(item: ItemDef): string {
   return dataUrl(`item:${item.id}`, () => svgDoc(itemArt(item)));
 }
@@ -34,13 +61,23 @@ export function useItemLabel(): (item: ItemDef) => string {
 
 export function ItemArt({ itemId, size = 92, className }: { itemId: string; size?: number; className?: string }) {
   const item = ITEMS_BY_ID[itemId];
+  const [fallback, setFallback] = useState(false);
+
+  useEffect(() => {
+    setFallback(false);
+  }, [itemId]);
+
   if (!item) return <span className={cx('art-fallback', className)} style={{ width: size, height: size }} />;
+  const spriteUrl = !fallback ? resolveItemSprite(item) : undefined;
+  const src = spriteUrl ?? itemArtUrl(item);
+
   return (
     <img
-      className={cx('item-art', className)}
-      src={itemArtUrl(item)}
+      className={cx('item-art', spriteUrl && 'item-art-sprite', className)}
+      src={src}
       alt=""
       draggable={false}
+      onError={spriteUrl ? () => setFallback(true) : undefined}
       style={{ maxWidth: size, maxHeight: size }}
     />
   );
@@ -75,8 +112,24 @@ export function CharacterArt({ look, size = 120 }: { look: CharacterLook; size?:
 }
 
 export function SceneArt({ momentId, className }: { momentId: string; className?: string }) {
-  const url = useMemo(() => dataUrl(`scene:${momentId}`, () => svgDoc(momentSceneArt(momentId))), [momentId]);
-  return <img className={cx('scene-art', className)} src={url} alt="" draggable={false} />;
+  const photoCardUrl = MOMENT_PHOTO_CARDS[momentId];
+  const svgUrl = useMemo(() => dataUrl(`scene:${momentId}`, () => svgDoc(momentSceneArt(momentId))), [momentId]);
+  const [fallback, setFallback] = useState(false);
+
+  useEffect(() => {
+    setFallback(false);
+  }, [momentId]);
+
+  const usePhotoCard = Boolean(photoCardUrl && !fallback);
+  return (
+    <img
+      className={cx('scene-art', usePhotoCard && 'scene-art-photo-card', className)}
+      src={usePhotoCard ? photoCardUrl : svgUrl}
+      alt=""
+      draggable={false}
+      onError={usePhotoCard ? () => setFallback(true) : undefined}
+    />
+  );
 }
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'soft';
@@ -121,6 +174,7 @@ export function Modal({
   footer,
   size = 'md',
   icon,
+  className,
 }: {
   title: string;
   subtitle?: string;
@@ -129,6 +183,7 @@ export function Modal({
   footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg';
   icon?: ReactNode;
+  className?: string;
 }) {
   const titleId = useId();
   useEffect(() => {
@@ -141,7 +196,7 @@ export function Modal({
 
   return (
     <div className="modal-backdrop" role="presentation" onPointerDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section className={cx('modal', `modal-${size}`)} role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <section className={cx('modal', `modal-${size}`, className)} role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <header className="modal-head">
           <div className="modal-head-text">
             <h2 id={titleId}>

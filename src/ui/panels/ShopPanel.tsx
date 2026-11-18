@@ -7,6 +7,7 @@ import type { Anchor, RoomId } from '../../game/types';
 import { useGameStore } from '../../store/gameStore';
 import { Button, Chip, Empty, ItemArt, Modal, Tabs, useItemLabel, cx } from '../bits';
 import { Icon } from '../icons';
+import { RoomMiniDiorama } from './MapPanel';
 
 type ShopTab = RoomId | 'new';
 type AnchorFilter = 'all' | Anchor;
@@ -64,8 +65,8 @@ export function ShopPanel() {
               const room = ROOMS[id];
               return (
                 <article key={id} className="room-unlock-card">
-                  <div className="room-mini" style={{ background: `linear-gradient(180deg, ${room.outdoor ? '#B4CB9E' : '#F3EFE0'} 58%, ${room.outdoor ? '#8FB07A' : '#C39A6B'} 58%)` }}>
-                    <Icon name={room.outdoor ? 'leaf' : 'home'} size={30} />
+                  <div className="room-mini map-card-scene">
+                    <RoomMiniDiorama roomId={id} />
                   </div>
                   <div className="room-unlock-text">
                     <strong>{t(room.nameKey)}</strong>

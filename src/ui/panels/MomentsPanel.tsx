@@ -4,6 +4,16 @@ import { useGameStore } from '../../store/gameStore';
 import { Empty, Modal, SceneArt, useDateLabel, cx } from '../bits';
 import { Icon } from '../icons';
 
+function formatStamp(ts: number): string {
+  try {
+    const d = new Date(ts);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  } catch {
+    return '';
+  }
+}
+
 export function MomentsPanel() {
   const { t } = useTranslation();
   const state = useGameStore((s) => s.state);
@@ -16,6 +26,7 @@ export function MomentsPanel() {
       title={t('moments.title')}
       subtitle={t('moments.subtitle')}
       size="lg"
+      className="modal-moments"
       icon={<Icon name="camera" size={22} />}
       onClose={closeOverlay}
     >
@@ -41,11 +52,19 @@ export function MomentsPanel() {
                 {captured ? <SceneArt momentId={moment.id} /> : <span className="moment-lock"><Icon name="lock" size={26} /></span>}
               </span>
               <span className="moment-caption">
-                <strong>{captured ? name : t('moments.unseen')}</strong>
                 {captured ? (
-                  <small>{t('moments.times', { count: captured.count })}</small>
+                  <>
+                    <time className="moment-stamp" dateTime={new Date(captured.firstAt).toISOString()}>
+                      {formatStamp(captured.firstAt)}
+                    </time>
+                    <strong>{name}</strong>
+                    <small>{t('moments.times', { count: captured.count })}</small>
+                  </>
                 ) : (
-                  <small>{t('moments.hint', { hint: t(moment.hintKey) })}</small>
+                  <>
+                    <strong>{t('moments.unseen')}</strong>
+                    <small>{t('moments.hint', { hint: t(moment.hintKey) })}</small>
+                  </>
                 )}
               </span>
             </button>
@@ -69,7 +88,7 @@ export function MomentDetailPanel({ momentId }: { momentId?: string }) {
 
   if (!moment || !captured) {
     return (
-      <Modal title={t('moments.title')} size="sm" icon={<Icon name="camera" size={22} />} onClose={back}>
+      <Modal title={t('moments.title')} size="sm" className="modal-moments" icon={<Icon name="camera" size={22} />} onClose={back}>
         <Empty icon="camera">{t('moments.empty')}</Empty>
       </Modal>
     );
@@ -80,6 +99,7 @@ export function MomentDetailPanel({ momentId }: { momentId?: string }) {
       title={t(moment.nameKey, { defaultValue: moment.name })}
       subtitle={t('moments.detail')}
       size="md"
+      className="modal-moments"
       icon={<Icon name="camera" size={22} />}
       onClose={closeOverlay}
       footer={
@@ -92,10 +112,17 @@ export function MomentDetailPanel({ momentId }: { momentId?: string }) {
         </>
       }
     >
-      <div className="moment-detail-photo">
-        <SceneArt momentId={moment.id} />
+      <div className="moment-detail-polaroid">
+        <div className="moment-detail-photo">
+          <SceneArt momentId={moment.id} />
+        </div>
+        <div className="moment-detail-meta">
+          <time className="moment-stamp" dateTime={new Date(captured.firstAt).toISOString()}>
+            {formatStamp(captured.firstAt)}
+          </time>
+          <p className="moment-detail-hint">{t('moments.firstAt', { date: date(captured.firstAt) })}</p>
+        </div>
       </div>
-      <p className="moment-detail-hint">{t('moments.firstAt', { date: date(captured.firstAt) })}</p>
     </Modal>
   );
 }

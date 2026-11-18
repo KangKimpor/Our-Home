@@ -207,22 +207,29 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
   }),
 
   crib: (p) => ({
-    w: 210,
-    h: 152,
+    w: 220,
+    h: 164,
     body:
-      path('M 20 38 C 20 8 190 8 190 38', 'none', p.wood, 6) +
-      el(66, 26, 13, 8, p.paper) +
-      el(142, 24, 11, 7, p.paper) +
-      c(105, 16, 5, p.accent) +
-      r(20, 38, 170, 84, p.second, 10) +
-      r(28, 54, 154, 58, p.paper, 6) +
-      cushion(34, 84, 142, 26, p.main, 8) +
-      Array.from({ length: 7 }, (_, i) => r(36 + i * 22, 50, 5.5, 64, p.wood, 2.5)).join('') +
-      r(18, 36, 174, 14, p.wood, 6) +
-      woodGrain(22, 36, 166, 14) +
-      r(14, 116, 182, 11, p.wood, 5) +
-      leg(26, 127, 19, p.dark, 7) +
-      leg(176, 127, 19, p.dark, 7),
+      // Back wooden A-frame & vertical spindles
+      path('M 24 132 L 24 44 L 68 16 L 152 16 L 196 44 L 196 132', 'none', INK, 8) +
+      path('M 24 132 L 24 44 L 68 16 L 152 16 L 196 44 L 196 132', 'none', p.wood, 4.5) +
+      line(68, 16, 68, 128, p.wood, 5) +
+      line(152, 16, 152, 128, p.wood, 5) +
+      Array.from({ length: 8 }, (_, i) => r(38 + i * 20, 48, 5, 76, p.wood, 2)).join('') +
+      // Cozy quilted mattress & blanket
+      cushion(28, 86, 164, 38, '#F6E8BA', 10) +
+      cushion(32, 82, 54, 24, p.paper, 8) +
+      // Front rail & A-frame beams
+      r(20, 42, 180, 9, p.wood, 4) +
+      r(18, 122, 184, 12, p.wood, 4) +
+      woodGrain(22, 122, 176, 12) +
+      leg(26, 134, 20, p.dark, 7) +
+      leg(186, 134, 20, p.dark, 7) +
+      // Hanging star & duck mobile
+      line(110, 16, 110, 46, INK, 2) +
+      line(136, 16, 136, 40, INK, 2) +
+      c(110, 50, 7, '#E9C65B') +
+      c(136, 44, 6, p.main),
   }),
 
   wardrobe: (p) => ({
@@ -619,14 +626,23 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
   }),
 
   laundryBasket: (p) => ({
-    w: 86,
-    h: 82,
+    w: 96,
+    h: 96,
     body:
-      cushion(28, 4, 30, 18, p.paper, 5) +
-      cushion(18, 10, 28, 16, p.second, 5) +
-      shadedPath('M 12 26 L 74 26 L 66 76 L 20 76 Z', p.main) +
-      r(8, 18, 70, 12, p.wood, 5) +
-      Array.from({ length: 6 }, (_, i) => line(20 + i * 10, 32, 22 + i * 9, 72, p.second, 2)).join(''),
+      // Woven rim & twisted rope handles (IMG_2704)
+      path('M 14 28 C 12 14 28 14 26 28 M 70 28 C 68 14 84 14 82 28', 'none', INK, 5) +
+      path('M 14 28 C 12 14 28 14 26 28 M 70 28 C 68 14 84 14 82 28', 'none', '#9B754B', 2.4) +
+      // Folded warm coral/cream/blue clothes mounded inside
+      cushion(28, 12, 34, 22, '#E69F5C', 7) +
+      cushion(46, 16, 30, 20, '#96B2CE', 7) +
+      // Woven wicker body
+      shadedPath('M 10 30 L 86 30 L 76 88 L 20 88 Z', '#A77D52') +
+      Array.from({ length: 5 }, (_, i) => line(15, 42 + i * 10, 81, 42 + i * 10, '#6B4E31', 1.8)).join('') +
+      Array.from({ length: 6 }, (_, i) => line(22 + i * 10, 32, 24 + i * 9, 86, '#5A4129', 1.8)).join('') +
+      // Braided top rim
+      r(8, 24, 80, 11, '#8D6740', 5) +
+      // Draped white bath towel over front left rim
+      shadedPath('M 16 28 C 28 24 38 28 40 42 L 36 74 C 28 76 20 72 18 64 Z', p.paper),
   }),
 
   shower: (p) => ({
@@ -644,40 +660,86 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
   }),
 
   bathtub: (p) => ({
-    w: 280,
-    h: 136,
+    w: 290,
+    h: 162,
     body:
-      leg(46, 112, 20, p.metal, 7.5) +
-      leg(224, 112, 20, p.metal, 7.5) +
-      r(248, 6, 7, 34, p.metal, 3) +
-      path('M 252 6 C 252 -6 268 -6 268 4', 'none', INK, 6.5) +
-      path('M 252 6 C 252 -6 268 -6 268 4', 'none', p.metal, 3.5) +
-      shadedPath('M 22 34 L 258 34 C 258 34 252 104 230 112 L 50 112 C 28 104 22 34 22 34 Z', p.paper) +
-      r(16, 24, 248, 16, p.paper, 8) +
-      path('M 42 44 C 48 90 64 100 84 100 L 196 100 C 216 100 232 90 238 44 Z', p.glass, 'none', 0).replace(
-        '/>',
-        ' opacity="0.58"/>',
-      ) +
-      // Iridescent soap bubbles along rim
-      c(84, 24, 11, '#FFFFFF') +
-      c(98, 20, 9, '#FFFFFF') +
-      c(112, 24, 10, '#FFFFFF') +
-      c(162, 25, 8, '#FFFFFF'),
+      // Back ledge faucet & soap bar (IMG_2704 rectangular modern soaking tub)
+      r(176, 16, 7, 26, p.metal, 3) +
+      path('M 179 16 C 179 6 193 6 193 15', 'none', INK, 6) +
+      path('M 179 16 C 179 6 193 6 193 15', 'none', p.metal, 3) +
+      r(84, 26, 24, 10, '#E9C65B', 4) +
+      r(206, 20, 14, 18, '#8FB2CE', 3) +
+      // Crisp white rectangular tub shell
+      shadedPath('M 18 36 L 236 36 L 236 128 L 18 128 Z', p.paper) +
+      r(28, 44, 198, 48, '#ECE3D3', 4) +
+      r(14, 34, 226, 12, '#FFFDF8', 4) +
+      // Draped slate-grey towel over front rim
+      shadedPath('M 62 46 L 114 46 L 106 116 L 56 114 Z', '#8B8F94') +
+      line(64, 108, 104, 110, INK, 1.8) +
+      // Tall dark ceramic vase with pink cherry-blossom branches at right
+      shadedPath('M 250 94 L 274 94 L 278 144 L 246 144 Z', '#7B746E') +
+      path('M 262 94 C 260 66 250 48 236 32 M 262 94 C 268 68 276 52 284 36', 'none', INK, 3.2) +
+      c(240, 34, 9, '#F1A7B5') +
+      c(254, 48, 8, '#F7C2CC') +
+      c(278, 42, 9, '#F1A7B5') +
+      c(266, 28, 7, '#F7C2CC') +
+      c(244, 62, 7, '#F1A7B5'),
   }),
 
   sink: (p) => ({
-    w: 136,
-    h: 132,
+    w: 164,
+    h: 148,
     body:
-      line(100, 36, 100, 15, INK, 6.5) +
-      line(100, 36, 100, 15, p.metal, 3.5) +
-      path('M 100 15 C 100 5 88 5 88 13', 'none', INK, 6.5) +
-      path('M 100 15 C 100 5 88 5 88 13', 'none', p.metal, 3.5) +
-      r(58, 58, 20, 44, p.paper, 6) +
-      r(44, 98, 48, 12, p.paper, 5) +
-      r(18, 28, 100, 22, p.paper, 10) +
-      r(32, 46, 72, 14, p.second, 7) +
-      c(66, 36, 3, p.dark),
+      // Wooden vanity cabinet with drawers & side towel bar (IMG_2704)
+      shadedPath('M 18 46 L 146 46 L 146 138 L 18 138 Z', '#C79D66') +
+      woodGrain(22, 52, 120, 80) +
+      r(26, 56, 54, 72, '#B68A52', 3) +
+      r(86, 56, 52, 20, '#B68A52', 3) +
+      r(86, 82, 52, 20, '#B68A52', 3) +
+      r(86, 108, 52, 20, '#B68A52', 3) +
+      line(104, 66, 120, 66, INK, 2.2) +
+      line(104, 92, 120, 92, INK, 2.2) +
+      line(104, 118, 120, 118, INK, 2.2) +
+      // Hanging white hand towel on side bar
+      r(14, 70, 8, 6, p.metal, 2) +
+      r(8, 74, 18, 36, p.paper, 4) +
+      // White quartz top & inset rectangular basin
+      r(10, 32, 144, 18, '#FBF9F4', 4) +
+      r(28, 36, 92, 10, '#DDE4E6', 3) +
+      // Wall-mount chrome faucet & cross handles
+      path('M 74 34 L 74 16 C 74 8 86 8 86 16', 'none', INK, 6) +
+      path('M 74 34 L 74 16 C 74 8 86 8 86 16', 'none', p.metal, 3) +
+      c(58, 28, 4, p.metal) +
+      c(90, 28, 4, p.metal) +
+      // Tiny succulent & soap dispenser on counter ledge
+      r(122, 18, 16, 14, '#A47D52', 3) +
+      c(130, 14, 7, p.leaf) +
+      r(14, 14, 12, 18, '#E48D6D', 4),
+  }),
+
+  kitchenSink: (_p) => ({
+    w: 220,
+    h: 124,
+    body:
+      // Blue kitchen lower cabinet under sink (IMG_2706)
+      r(12, 42, 196, 72, '#88A7C8', 5) +
+      r(22, 52, 84, 52, '#7B9AB9', 3) +
+      r(114, 52, 84, 52, '#7B9AB9', 3) +
+      line(88, 74, 88, 86, INK, 2.5) +
+      line(132, 74, 132, 86, INK, 2.5) +
+      // Crisp white countertop
+      r(6, 26, 208, 16, '#F4F2EC', 4) +
+      // Stainless steel double-bowl sink
+      r(28, 22, 134, 14, '#DCE2E4', 4) +
+      r(36, 25, 56, 8, '#BAC4C8', 2) +
+      r(98, 25, 56, 8, '#BAC4C8', 2) +
+      // Curved gooseneck faucet
+      path('M 95 26 L 95 10 C 95 2 110 2 110 12', 'none', INK, 6) +
+      path('M 95 26 L 95 10 C 95 2 110 2 110 12', 'none', '#EAEFEF', 3) +
+      // Green sponge & yellow dish soap bottle
+      r(42, 16, 22, 8, '#8EA866', 3) +
+      r(172, 6, 20, 22, '#E2B448', 5) +
+      r(179, 2, 6, 5, '#D9C9A8', 2),
   }),
 
   toilet: (p) => ({
@@ -698,53 +760,56 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
     w: 250,
     h: 120,
     body:
-      r(12, 42, 226, 62, p.main, 5) +
-      r(22, 52, 62, 42, p.second, 4) +
-      r(92, 52, 66, 42, p.second, 4) +
-      r(166, 52, 62, 42, p.second, 4) +
-      c(53, 73, 3.2, '#E9C65B') +
-      c(125, 73, 3.2, '#E9C65B') +
-      c(197, 73, 3.2, '#E9C65B') +
-      r(6, 22, 238, 20, p.paper, 5) +
-      r(6, 104, 238, 9, p.dark, 3),
+      // Blue cabinets & drawers (IMG_2706)
+      r(12, 40, 226, 66, '#88A7C8', 5) +
+      r(20, 48, 98, 24, '#7B9AB9', 3) +
+      r(20, 76, 98, 24, '#7B9AB9', 3) +
+      r(132, 48, 98, 24, '#7B9AB9', 3) +
+      r(132, 76, 98, 24, '#7B9AB9', 3) +
+      line(58, 56, 80, 56, INK, 2.5) +
+      line(58, 84, 80, 84, INK, 2.5) +
+      line(170, 56, 192, 56, INK, 2.5) +
+      line(170, 84, 192, 84, INK, 2.5) +
+      // Crisp white countertop overhang
+      r(6, 22, 238, 18, '#F4F2EC', 5) +
+      r(6, 106, 238, 8, p.dark, 3),
   }),
 
   stove: (p) => ({
     w: 250,
     h: 150,
     body:
-      r(8, 16, 234, 122, p.main, 9) +
-      r(18, 26, 214, 26, p.dark, 5) +
-      c(46, 39, 9.5, INK) +
-      c(96, 39, 9.5, INK) +
-      c(146, 39, 9.5, INK) +
-      c(196, 39, 9.5, INK) +
-      r(24, 62, 176, 58, p.second, 6) +
-      r(36, 72, 152, 36, '#F2C06E', 5) +
-      `<rect x="36" y="72" width="152" height="36" rx="5" fill="url(#oh-glass)" pointer-events="none"/>` +
-      r(38, 66, 148, 5, p.metal, 2) +
-      c(34, 104, 3, p.accent) +
-      c(46, 104, 3, p.accent) +
-      r(208, 72, 20, 9, p.metal, 3) +
-      r(208, 89, 20, 9, p.metal, 3) +
+      r(8, 16, 234, 122, '#88A7C8', 9) +
+      r(18, 24, 214, 24, '#3D4043', 5) +
+      c(46, 36, 9.5, INK) +
+      c(96, 36, 9.5, INK) +
+      c(146, 36, 9.5, INK) +
+      c(196, 36, 9.5, INK) +
+      r(26, 56, 198, 72, '#B6BCC0', 6) +
+      r(38, 62, 174, 18, '#D5D9DC', 4) +
+      r(44, 84, 162, 36, '#3C4043', 5) +
+      `<rect x="44" y="84" width="162" height="36" rx="5" fill="url(#oh-glass)" pointer-events="none"/>` +
+      r(48, 78, 154, 5, '#E4E7E9', 2) +
       r(14, 132, 222, 8, p.dark, 3),
   }),
 
   oven: (p) => ({
-    w: 190,
+    w: 210,
     h: 170,
     body:
-      r(10, 12, 170, 144, p.main, 8) +
-      r(22, 24, 146, 22, p.dark, 5) +
-      c(40, 35, 7, p.metal) +
-      c(74, 35, 7, p.metal) +
-      c(108, 35, 7, p.metal) +
-      r(22, 54, 146, 72, p.second, 5) +
-      r(32, 62, 126, 50, '#F2C06E', 4) +
-      `<rect x="32" y="62" width="126" height="50" rx="4" fill="url(#oh-glass)" pointer-events="none"/>` +
-      r(22, 136, 146, 10, p.metal, 4) +
-      r(58, 146, 16, 8, p.dark, 2) +
-      r(116, 146, 16, 8, p.dark, 2),
+      // Blue cabinet surround + stainless built-in oven (IMG_2706)
+      r(8, 10, 194, 148, '#88A7C8', 7) +
+      r(20, 20, 170, 130, '#B7BDC1', 6) +
+      // Control panel with 5 rotary dials
+      r(26, 26, 158, 24, '#D5DADF', 4) +
+      [44, 68, 105, 142, 166].map((x) => c(x, 38, 7.5, '#9EA6AC')).join('') +
+      // Full-width stainless handle & dark glass oven window
+      r(32, 56, 146, 74, '#D5DADF', 5) +
+      r(38, 66, 134, 54, '#3B3F42', 4) +
+      `<rect x="38" y="66" width="134" height="54" rx="4" fill="url(#oh-glass)" pointer-events="none"/>` +
+      r(36, 58, 138, 6, '#EEF2F4', 3) +
+      r(20, 136, 170, 12, '#8F969B', 3) +
+      r(8, 152, 194, 8, p.dark, 3),
   }),
 
   fridge: (p) => ({
@@ -767,11 +832,11 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
     w: 190,
     h: 76,
     body:
-      shadedPath('M 22 60 L 168 60 L 150 18 L 40 18 Z', p.metal) +
-      r(38, 12, 114, 10, p.metal, 4) +
-      r(28, 58, 134, 8, p.dark, 3) +
-      r(46, 64, 8, 8, p.metal, 2) +
-      r(136, 64, 8, 8, p.metal, 2),
+      shadedPath('M 22 60 L 168 60 L 150 18 L 40 18 Z', '#E6E9EC') +
+      r(38, 12, 114, 10, '#C8CFD4', 4) +
+      r(28, 56, 134, 10, '#D4DADF', 3) +
+      r(132, 59, 10, 4, p.dark, 1) +
+      r(146, 59, 10, 4, p.dark, 1),
   }),
 
   pot: (p) => ({
@@ -837,6 +902,66 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
       el(78, 152, 14, 4, p.dark),
   }),
 
+  studioCabinet: (p) => ({
+    w: 168,
+    h: 214,
+    body:
+      // Storage tray & brush jars on top (IMG_2705)
+      r(24, 6, 54, 18, '#B78C56', 4) +
+      r(94, 4, 16, 20, p.leaf, 3) +
+      r(116, 8, 18, 16, '#E9C65B', 3) +
+      // Tall dark-walnut glass-door artist supply cabinet
+      r(12, 20, 144, 12, '#6A4D36', 4) +
+      r(16, 30, 136, 166, '#7C5A3F', 6) +
+      woodGrain(20, 34, 128, 150) +
+      // Interior shelves behind glass doors
+      r(24, 40, 56, 142, '#4A3828', 4) +
+      r(88, 40, 56, 142, '#4A3828', 4) +
+      [76, 112, 148].map((y) => r(24, y, 120, 5, '#7C5A3F', 1)).join('') +
+      // Paint jars, sketchbooks, palettes inside
+      r(30, 52, 12, 22, '#D8E3E7', 3) +
+      r(46, 48, 14, 26, '#E9C65B', 3) +
+      r(94, 56, 28, 18, '#FBF7EC', 3) +
+      r(30, 88, 36, 20, '#96B2CE', 3) +
+      r(94, 84, 18, 26, '#C4483B', 3) +
+      r(118, 92, 18, 18, '#7F9B5C', 3) +
+      r(30, 124, 34, 22, '#FBF7EC', 3) +
+      r(94, 120, 26, 26, '#C79D66', 3) +
+      // Glass sheen & brass knobs
+      `<rect x="24" y="40" width="56" height="142" rx="4" fill="url(#oh-glass)" pointer-events="none"/>` +
+      `<rect x="88" y="40" width="56" height="142" rx="4" fill="url(#oh-glass)" pointer-events="none"/>` +
+      c(74, 114, 4, '#E9C65B') +
+      c(94, 114, 4, '#E9C65B') +
+      leg(26, 196, 14, p.dark, 8) +
+      leg(134, 196, 14, p.dark, 8),
+  }),
+
+  kitchenRack: (p) => ({
+    w: 180,
+    h: 110,
+    body:
+      // Wooden rail with pegs (IMG_2706)
+      r(12, 18, 156, 10, p.wood, 3) +
+      woodGrain(16, 18, 148, 10) +
+      c(20, 23, 4, p.dark) +
+      c(160, 23, 4, p.dark) +
+      // Hanging striped kitchen towel
+      line(38, 28, 38, 40, INK, 2) +
+      r(28, 40, 20, 42, '#D77A5C', 3) +
+      line(34, 42, 34, 80, '#FBF7EC', 3) +
+      line(42, 42, 42, 80, '#FBF7EC', 3) +
+      // Wooden cutting board
+      line(82, 28, 82, 36, INK, 2) +
+      r(72, 36, 22, 40, '#DFC8A2', 4) +
+      woodGrain(74, 40, 18, 30) +
+      // Hanging cast-iron skillet
+      line(128, 28, 128, 48, INK, 4) +
+      c(128, 72, 22, '#6A6E72') +
+      c(128, 72, 13, '#4E5256') +
+      // Dried herb sprig
+      leafSprig(156, 72, 0.75, p.leaf),
+  }),
+
   nightstand: (p) => ({
     w: 92,
     h: 92,
@@ -868,14 +993,20 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
 
 export const SMALL_SHAPES: Record<string, Shape> = {
   petBowl: (p) => ({
-    w: 70,
-    h: 40,
+    w: 76,
+    h: 44,
     body:
-      shadedPath('M 8 16 L 62 16 L 54 34 L 16 34 Z', p.main) +
-      el(35, 16, 27, 7, p.second) +
-      c(28, 13, 4, p.accent) +
-      c(39, 12, 3.2, p.leaf) +
-      c(46, 14, 3.2, p.accent),
+      // Ceramic pet bowl with inner rim & paw-print / dot motif (IMG_2700)
+      shadedPath('M 10 18 L 66 18 L 58 38 C 44 41 32 41 18 38 Z', p.main) +
+      el(38, 17, 28, 7.5, p.paper) +
+      el(38, 18, 22, 5, p.second) +
+      // Cute paw print / spots on front face
+      c(38, 29, 3, p.paper, 'none', 0) +
+      c(34, 25, 1.8, p.paper, 'none', 0) +
+      c(38, 23.5, 1.8, p.paper, 'none', 0) +
+      c(42, 25, 1.8, p.paper, 'none', 0) +
+      c(21, 28, 2.2, p.paper, 'none', 0) +
+      c(55, 28, 2.2, p.paper, 'none', 0),
   }),
 
   ball: (p) => ({
@@ -887,39 +1018,49 @@ export const SMALL_SHAPES: Record<string, Shape> = {
       path('M 10 30 C 22 34 30 32 38 26', 'none', p.second, 4),
   }),
 
-  slippers: (p) => ({
-    w: 80,
-    h: 40,
+  slippers: (_p) => ({
+    w: 88,
+    h: 46,
     body:
-      el(24, 26, 18, 9, p.main) +
-      el(56, 26, 18, 9, p.second) +
-      path('M 12 22 C 20 12 30 12 36 22', 'none', p.accent, 3) +
-      path('M 44 22 C 52 12 62 12 68 22', 'none', p.accent, 3),
+      // Cozy yellow & grey open-toe porch slippers (IMG_2700)
+      `<g transform="rotate(14 26 24)">` +
+      el(26, 24, 12, 18, '#D5D8DA') +
+      el(26, 24, 9, 14, '#BCC2C6', 'none', 0) +
+      r(15, 13, 22, 11, '#E8C04F', 5) +
+      line(18, 18, 34, 18, '#B88D2A', 1.8) +
+      `</g>` +
+      `<g transform="rotate(14 60 24)">` +
+      el(60, 24, 12, 18, '#D5D8DA') +
+      el(60, 24, 9, 14, '#BCC2C6', 'none', 0) +
+      r(49, 13, 22, 11, '#E8C04F', 5) +
+      line(52, 18, 68, 18, '#B88D2A', 1.8) +
+      `</g>`,
   }),
 
   steppingStone: (p) => ({
-    w: 100,
-    h: 44,
-    body: el(50, 22, 44, 18, p.second) + el(50, 18, 32, 11, p.main, 'none', 0),
+    w: 112,
+    h: 50,
+    body:
+      // Beveled flat garden stepping slab (IMG_2700)
+      shadedPath('M 14 20 L 96 14 L 104 38 L 10 42 Z', '#8C9496') +
+      shadedPath('M 16 16 L 94 11 L 100 32 L 12 36 Z', '#A7AFB0') +
+      line(28, 22, 42, 21, INK, 1.8) +
+      line(64, 19, 80, 18, INK, 1.8) +
+      c(12, 40, 4, p.second) +
+      c(98, 40, 3.5, p.second),
   }),
 
   doorMat: (p) => ({
-    w: 110,
-    h: 40,
+    w: 126,
+    h: 48,
     body:
-      r(6, 12, 98, 24, p.main, 4) +
-      r(16, 18, 78, 12, 'none', 2, p.second, 2) +
-      dots(
-        [
-          [26, 24],
-          [40, 24],
-          [54, 24],
-          [68, 24],
-          [82, 24],
-        ],
-        p.second,
-        2,
-      ),
+      // Fringed grid bath / entry mat (IMG_2704)
+      Array.from({ length: 6 }, (_, i) => line(4, 15 + i * 4.5, 16, 15 + i * 4.5, '#FBF9F4', 2.4)).join('') +
+      Array.from({ length: 6 }, (_, i) => line(110, 15 + i * 4.5, 122, 15 + i * 4.5, '#FBF9F4', 2.4)).join('') +
+      r(14, 10, 98, 30, '#F5F2EC', 3) +
+      r(20, 14, 86, 22, p.second, 2, p.main, 1.5) +
+      [40, 62, 84].map((x) => line(x, 14, x, 36, '#B8C2C4', 1.8)).join('') +
+      [21, 29].map((y) => line(20, y, 106, y, '#B8C2C4', 1.8)).join(''),
   }),
 
   mushroom: (p) => ({
@@ -1172,17 +1313,12 @@ export const SMALL_SHAPES: Record<string, Shape> = {
     w: 130,
     h: 96,
     body:
-      r(10, 20, 110, 62, p.second, 10) +
-      Array.from({ length: 5 }, (_, i) => line(22 + i * 22, 24, 22 + i * 22, 78, p.dark, 2)).join('') +
-      r(30, 8, 70, 16, p.second, 6) +
-      dots(
-        [
-          [20, 88],
-          [110, 88],
-        ],
-        p.dark,
-        2,
-      ),
+      // Fluffy golden hay stack with loose wisps (IMG_2707)
+      shadedPath('M 14 78 C 8 56 18 32 42 26 C 52 14 82 14 92 28 C 114 34 122 58 114 78 Z', '#E7B955') +
+      r(22, 42, 84, 34, p.second, 12, INK, 2) +
+      line(30, 54, 98, 54, '#B5842A', 2.4) +
+      line(34, 68, 94, 68, '#B5842A', 2.4) +
+      path('M 14 70 L 4 64 M 18 76 L 6 82 M 114 68 L 126 62 M 112 76 L 124 82 M 58 20 L 52 8 M 74 20 L 82 10', 'none', '#D6A43C', 2.4),
   }),
 
   trough: (p) => ({
@@ -1196,55 +1332,65 @@ export const SMALL_SHAPES: Record<string, Shape> = {
       el(85, 18, 64, 6, p.leaf),
   }),
 
-  nest: (p) => ({
-    w: 100,
-    h: 66,
+  nest: (_p) => ({
+    w: 106,
+    h: 68,
     body:
-      el(50, 38, 38, 18, p.wood) +
-      el(50, 30, 28, 11, p.second) +
-      Array.from({ length: 7 }, (_, i) => {
-        const a = (i / 7) * Math.PI;
-        return line(50 - Math.cos(a) * 34, 34 + Math.sin(a) * 12, 50 - Math.cos(a) * 40, 30 + Math.sin(a) * 18, p.dark, 2);
+      // Woven straw nest with speckles & tucked eggs (IMG_2707)
+      el(53, 42, 42, 18, '#C89B4C') +
+      el(53, 33, 33, 12, '#DFB86C') +
+      Array.from({ length: 9 }, (_, i) => {
+        const a = (i / 8) * Math.PI;
+        return line(53 - Math.cos(a) * 38, 36 + Math.sin(a) * 12, 53 - Math.cos(a) * 44, 32 + Math.sin(a) * 19, '#9C6D2E', 2.2);
       }).join('') +
-      el(44, 26, 9, 7, p.paper) +
-      el(57, 27, 8, 6, p.glass),
+      el(41, 29, 9.5, 7.5, '#FFF8EA') +
+      el(54, 26, 9, 7, '#E8F0EB') +
+      el(65, 30, 8.5, 7, '#FFF4DA'),
   }),
 
   fence: (p) => ({
     w: 210,
     h: 106,
     body:
-      r(10, 34, 190, 10, p.wood, 3) +
-      r(10, 66, 190, 10, p.wood, 3) +
-      [18, 68, 118, 168].map((x) => shadedPath(`M ${x} 98 L ${x} 26 L ${x + 8} 14 L ${x + 20} 26 L ${x + 20} 98 Z`, p.main)).join(''),
+      // Crisp white country picket fence (IMG_2707)
+      r(8, 36, 194, 10, '#F6F2E8', 3) +
+      r(8, 68, 194, 10, '#F6F2E8', 3) +
+      [16, 56, 96, 136, 176]
+        .map((x) => shadedPath(`M ${x} 98 L ${x} 26 L ${x + 10} 12 L ${x + 20} 26 L ${x + 20} 98 Z`, '#FCF9F2') + c(x + 10, 41, 1.8, p.dark) + c(x + 10, 73, 1.8, p.dark))
+        .join(''),
   }),
 
   doghouse: (p) => ({
-    w: 200,
-    h: 178,
+    w: 204,
+    h: 182,
     body:
-      r(20, 66, 150, 102, p.wood, 6) +
-      woodGrain(26, 72, 138, 90) +
-      shadedPath('M 8 72 L 96 12 L 184 72 Z', p.accent) +
-      path('M 58 168 L 58 116 C 58 92 132 92 132 116 L 132 168 Z', p.dark) +
-      r(30, 78, 32, 22, p.paper, 3) +
-      c(96, 44, 7, p.second) +
-      r(40, 148, 10, 20, p.dark, 2) +
-      r(146, 148, 10, 20, p.dark, 2) +
-      r(84, 86, 24, 7, p.paper, 3),
+      // Cozy painted wood cabin with red pitched roof & porch (IMG_2707)
+      r(22, 68, 152, 104, '#E8DCC8', 6) +
+      woodGrain(26, 74, 144, 92) +
+      shadedPath('M 6 74 L 98 12 L 190 74 L 178 82 L 98 26 L 18 82 Z', '#D65B4A') +
+      path('M 60 172 L 60 116 C 60 90 136 90 136 116 L 136 172 Z', '#4B3A30') +
+      r(32, 82, 26, 22, '#BFD8E3', 3) +
+      line(45, 82, 45, 104, INK, 2) +
+      line(32, 93, 58, 93, INK, 2) +
+      c(98, 46, 9, '#FFF7EA') +
+      line(98, 46, 98, 40, INK, 1.8) +
+      line(98, 46, 103, 48, INK, 1.8) +
+      r(80, 82, 36, 10, '#E9C65B', 4) +
+      r(38, 154, 10, 18, p.dark, 2) +
+      r(148, 154, 10, 18, p.dark, 2),
   }),
 
   coop: (p) => ({
     w: 210,
     h: 180,
     body:
-      r(20, 60, 156, 106, p.wood, 6) +
+      r(20, 60, 156, 106, '#E8D3B0', 6) +
       woodGrain(26, 66, 144, 90) +
-      shadedPath('M 10 64 L 100 8 L 190 64 Z', p.accent) +
+      shadedPath('M 10 64 L 100 8 L 190 64 Z', '#D65B4A') +
       r(52, 96, 36, 70, p.dark, 3) +
-      r(116, 88, 42, 30, p.second, 3) +
+      r(116, 88, 42, 30, '#F5E5B8', 3) +
       Array.from({ length: 4 }, (_, i) => line(120 + i * 10, 90, 120 + i * 10, 116, p.wood, 2)).join('') +
-      c(100, 44, 5, p.second) +
+      c(100, 44, 7, '#FFF7EA') +
       r(30, 154, 10, 18, p.dark, 2) +
       r(156, 154, 10, 18, p.dark, 2),
   }),
@@ -1287,15 +1433,20 @@ export const SMALL_SHAPES: Record<string, Shape> = {
       c(76, 15, 7, p.accent),
   }),
 
-  picnicBlanket: (p) => ({
-    w: 260,
-    h: 110,
+  picnicBlanket: (_p) => ({
+    w: 270,
+    h: 118,
     body:
-      shadedPath('M 20 40 L 240 40 L 220 100 L 40 100 Z', p.main) +
-      Array.from({ length: 5 }, (_, i) => line(40 + i * 42, 44, 54 + i * 40, 96, p.second, 2.2)).join('') +
-      Array.from({ length: 2 }, (_, i) => line(30, 58 + i * 26, 230, 58 + i * 26, p.second, 2.2)).join('') +
-      r(112, 58, 36, 22, p.wood, 4) +
-      path('M 106 58 C 108 34 152 34 154 58', 'none', p.wood, 3),
+      // Blue-and-white gingham picnic blanket with woven basket & treats (IMG_2701)
+      shadedPath('M 18 44 L 252 44 L 232 108 L 38 108 Z', '#FBF8F0') +
+      Array.from({ length: 6 }, (_, i) => line(42 + i * 36, 46, 54 + i * 34, 106, '#8CB1D4', 6)).join('') +
+      Array.from({ length: 3 }, (_, i) => line(32, 58 + i * 18, 238, 58 + i * 18, '#8CB1D4', 4.5)).join('') +
+      // Woven basket & cake plate
+      r(154, 48, 52, 30, '#C79355', 5) +
+      path('M 150 48 C 154 22 206 22 210 48', 'none', '#9A6933', 3.5) +
+      el(104, 78, 22, 8, '#FFFDF8') +
+      r(90, 62, 28, 15, '#F5D67B', 4) +
+      c(104, 59, 4, '#D65B4A'),
   }),
 
   pool: (p) => ({
@@ -1351,44 +1502,55 @@ export const SMALL_SHAPES: Record<string, Shape> = {
   }),
 
   tree: (p) => ({
-    w: 250,
-    h: 300,
+    w: 256,
+    h: 304,
     body:
-      `<ellipse cx="126" cy="292" rx="86" ry="8" fill="#2B2521" opacity="0.14"/>` +
-      r(116, 178, 20, 106, p.dark, 5) +
-      path('M 126 240 L 82 190 M 130 224 L 176 176', 'none', p.dark, 8) +
-      c(84, 150, 44, p.leaf) +
-      c(172, 146, 42, p.leaf) +
-      c(126, 120, 76, p.leaf) +
-      c(126, 62, 44, p.second) +
-      c(76, 106, 24, p.second) +
-      c(180, 100, 20, p.second) +
+      // Warm autumn canopy tree with red hanging lantern (IMG_2701)
+      `<ellipse cx="126" cy="295" rx="88" ry="8" fill="#2B2521" opacity="0.14"/>` +
+      r(114, 174, 24, 114, '#7E5A3E', 5) +
+      path('M 124 236 L 78 184 M 130 222 L 178 170', 'none', '#7E5A3E', 9) +
+      // Hanging red paper lantern on branch
+      line(166, 180, 166, 202, INK, 2) +
+      el(166, 214, 10, 12, '#DF5F4A') +
+      r(161, 201, 10, 4, '#E9C65B', 1) +
+      // Layered golden-orange autumn foliage
+      c(80, 146, 46, '#E2893B') +
+      c(174, 144, 44, '#DF7D36') +
+      c(126, 118, 76, '#EA9A45') +
+      c(126, 62, 46, '#F4B65B') +
+      c(76, 104, 26, '#F4B65B') +
+      c(180, 100, 22, '#F4B65B') +
       dots(
         [
-          [100, 80],
-          [150, 76],
-          [70, 140],
-          [170, 160],
-          [110, 170],
-          [140, 124],
+          [100, 78],
+          [150, 74],
+          [72, 138],
+          [168, 152],
+          [110, 166],
+          [140, 122],
         ],
         p.accent,
-        5,
+        4.5,
       ),
   }),
 
-  tent: (p) => ({
-    w: 240,
-    h: 170,
+  tent: (_p) => ({
+    w: 244,
+    h: 178,
     body:
-      shadedPath('M 20 160 L 120 20 L 220 160 Z', p.main) +
-      shadedPath('M 120 20 L 120 160 L 220 160 Z', p.second) +
-      path('M 96 160 L 120 84 L 144 160 Z', p.dark) +
-      line(120, 20, 120, 84, INK, 3) +
-      path('M 120 20 L 100 6 L 120 12 L 140 6 Z', p.accent) +
-      r(38, 132, 26, 28, p.paper, 3) +
-      c(48, 142, 4, p.accent) +
-      el(48, 156, 16, 4, p.second),
+      // Cream string-light canopy teepee tent with soft cushions & plush (IMG_2703)
+      shadedPath('M 20 166 L 122 18 L 224 166 Z', '#F7F1E2') +
+      shadedPath('M 122 18 L 122 166 L 224 166 Z', '#EAE0CB') +
+      path('M 92 166 L 122 78 L 152 166 Z', '#7B6958') +
+      // String of warm fairy lights across entrance
+      path('M 72 88 C 102 108 142 108 172 88', 'none', INK, 1.8) +
+      c(88, 96, 4, '#F9DB78') +
+      c(122, 102, 4, '#F9DB78') +
+      c(156, 96, 4, '#F9DB78') +
+      line(122, 18, 122, 78, INK, 2.5) +
+      path('M 122 18 L 104 6 L 122 12 L 140 6 Z', '#9CC2C9') +
+      cushion(96, 142, 48, 22, '#B6D3D8', 8) +
+      c(120, 142, 10, '#FFFFFF'),
   }),
 
   rockingChair: (p) => ({
@@ -1432,18 +1594,19 @@ export const SMALL_SHAPES: Record<string, Shape> = {
   }),
 
   mobile: (p) => ({
-    w: 110,
-    h: 128,
+    w: 112,
+    h: 132,
     body:
-      line(55, 4, 55, 30, p.wood, 3) +
-      path('M 14 40 C 30 26 80 26 96 40', 'none', p.wood, 4) +
-      line(22, 40, 22, 64, p.metal, 2) +
-      line(55, 34, 55, 74, p.metal, 2) +
-      line(88, 40, 88, 58, p.metal, 2) +
-      el(22, 72, 10, 6, p.main) +
-      el(55, 82, 11, 6, p.accent) +
-      el(88, 66, 9, 5, p.leaf) +
-      c(55, 12, 5, p.accent),
+      // Mint constellation nursery mobile with moon, star & clouds (IMG_2703)
+      line(56, 4, 56, 26, p.wood, 3) +
+      el(56, 30, 38, 8, '#A9D0C8') +
+      line(24, 34, 24, 68, p.metal, 1.8) +
+      line(56, 38, 56, 82, p.metal, 1.8) +
+      line(88, 34, 88, 62, p.metal, 1.8) +
+      c(24, 74, 8, '#F7DF84') +
+      el(56, 88, 13, 8, '#FFFDF7') +
+      c(88, 68, 7, '#B6D3E3') +
+      c(56, 14, 5, '#E9C65B'),
   }),
 
   babyMobileAlt: (p) => ({
@@ -1453,13 +1616,17 @@ export const SMALL_SHAPES: Record<string, Shape> = {
   }),
 
   wallArtSmall: (p) => ({
-    w: 80,
-    h: 70,
+    w: 84,
+    h: 74,
     body:
-      r(6, 6, 68, 58, p.wood, 4) +
-      r(12, 12, 56, 46, p.paper, 2) +
-      shadedPath('M 16 52 L 32 30 L 44 42 L 56 24 L 66 52 Z', p.leaf) +
-      c(54, 22, 5, p.accent),
+      // Pastel rainbow & cloud nursery print in wood frame (IMG_2703)
+      r(6, 6, 72, 62, p.wood, 4) +
+      r(12, 12, 60, 50, '#FBF7EC', 2) +
+      path('M 22 48 C 22 24 62 24 62 48', 'none', '#E49B8C', 6) +
+      path('M 28 48 C 28 30 56 30 56 48', 'none', '#E9C65B', 5) +
+      path('M 34 48 C 34 36 50 36 50 48', 'none', '#9CC2C9', 4) +
+      el(24, 50, 8, 5, '#FFFFFF') +
+      el(60, 50, 8, 5, '#FFFFFF'),
   }),
 
   curtain: (p) => ({
@@ -1469,6 +1636,162 @@ export const SMALL_SHAPES: Record<string, Shape> = {
       r(6, 4, 108, 10, p.wood, 3) +
       shadedPath('M 12 14 C 30 30 28 80 18 190 L 52 190 C 46 120 50 60 58 14 Z', p.main) +
       shadedPath('M 108 14 C 90 30 92 80 102 190 L 68 190 C 74 120 70 60 62 14 Z', p.second),
+  }),
+
+  // Fallback SVG shapes for new Asset Pack v1.1 items (matching PNGs in aspect & silhouette)
+  noticeBoard: (p) => ({
+    w: 130,
+    h: 96,
+    body:
+      r(8, 10, 114, 76, p.wood, 5) +
+      r(15, 17, 100, 62, '#D7B587', 3) +
+      r(24, 24, 28, 24, '#FFF8E8', 2) +
+      r(62, 22, 34, 28, '#DFEFF2', 2) +
+      r(38, 50, 32, 22, '#F7DF94', 2) +
+      c(38, 26, 2.5, '#D65B4A') +
+      c(79, 24, 2.5, '#7F9B5C'),
+  }),
+
+  umbrellaStand: (p) => ({
+    w: 76,
+    h: 124,
+    body:
+      line(30, 18, 30, 80, INK, 4) +
+      path('M 30 18 C 30 10 20 10 20 18', 'none', p.wood, 3.5) +
+      line(46, 22, 46, 80, INK, 4) +
+      path('M 46 22 C 46 14 56 14 56 22', 'none', p.wood, 3.5) +
+      shadedPath('M 18 54 L 58 54 L 54 116 L 22 116 Z', p.main) +
+      r(15, 48, 46, 8, p.second, 3),
+  }),
+
+  catCarrier: (p) => ({
+    w: 112,
+    h: 88,
+    body:
+      path('M 42 18 C 42 10 70 10 70 18', 'none', p.dark, 5) +
+      r(12, 20, 88, 60, p.main, 14) +
+      r(16, 48, 80, 32, p.second, 10) +
+      r(28, 30, 36, 38, '#4A4E52', 6) +
+      line(38, 30, 38, 68, '#D5D8DA', 2) +
+      line(48, 30, 48, 68, '#D5D8DA', 2) +
+      line(56, 30, 56, 68, '#D5D8DA', 2),
+  }),
+
+  bookStack: (p) => ({
+    w: 84,
+    h: 62,
+    body:
+      r(10, 40, 64, 14, '#C4483B', 3) +
+      r(14, 26, 56, 14, '#8EA7C6', 3) +
+      r(18, 12, 48, 14, p.second, 3) +
+      line(18, 47, 66, 47, p.paper, 2) +
+      line(22, 33, 62, 33, p.paper, 2),
+  }),
+
+  spiceJars: (p) => ({
+    w: 96,
+    h: 58,
+    body:
+      r(8, 44, 80, 8, p.wood, 3) +
+      r(16, 18, 16, 26, '#E8EFF1', 4) +
+      r(40, 14, 16, 30, '#E8EFF1', 4) +
+      r(64, 20, 16, 24, '#E8EFF1', 4) +
+      r(18, 14, 12, 5, p.wood, 2) +
+      r(42, 10, 12, 5, p.wood, 2) +
+      r(66, 16, 12, 5, p.wood, 2) +
+      r(19, 26, 10, 14, '#D66A3E', 2) +
+      r(43, 24, 10, 16, '#7F9B5C', 2) +
+      r(67, 28, 10, 12, '#E9C65B', 2),
+  }),
+
+  rockingHorse: (p) => ({
+    w: 120,
+    h: 108,
+    body:
+      path('M 14 90 C 42 104 78 104 106 90', 'none', p.wood, 6) +
+      line(34, 62, 28, 92, p.wood, 6) +
+      line(84, 62, 90, 92, p.wood, 6) +
+      r(28, 44, 62, 24, '#C99B6B', 10) +
+      shadedPath('M 74 48 L 88 18 L 106 26 L 96 42 L 86 58 Z', '#C99B6B') +
+      r(44, 40, 24, 12, '#D65B4A', 4) +
+      path('M 28 48 C 16 54 14 72 22 80', 'none', p.dark, 5),
+  }),
+
+  lampPost: (_p) => ({
+    w: 76,
+    h: 224,
+    body:
+      `<circle cx="38" cy="34" r="28" fill="url(#oh-glow)" pointer-events="none"/>` +
+      r(26, 202, 24, 14, '#3A4246', 4) +
+      r(34, 54, 8, 150, '#3A4246', 2) +
+      shadedPath('M 22 54 L 54 54 L 58 22 L 18 22 Z', '#3A4246') +
+      r(24, 26, 28, 24, '#F7CE70', 4) +
+      shadedPath('M 14 22 L 38 8 L 62 22 Z', '#3A4246'),
+  }),
+
+  tropicalPlants: (_p) => ({
+    w: 112,
+    h: 136,
+    body:
+      shadedPath('M 30 88 L 82 88 L 74 128 L 38 128 Z', '#C97B56') +
+      r(26, 82, 60, 10, '#DF936C', 4) +
+      path('M 56 82 C 36 50 18 46 14 24 C 36 26 48 50 56 82 Z', '#5F8E54') +
+      path('M 56 82 C 56 42 46 20 58 8 C 70 24 64 48 56 82 Z', '#78A866') +
+      path('M 56 82 C 74 52 92 44 98 22 C 76 28 66 52 56 82 Z', '#639257'),
+  }),
+
+  treeStumps: (p) => ({
+    w: 120,
+    h: 72,
+    body:
+      r(14, 30, 42, 34, '#8A6442', 6) +
+      el(35, 30, 21, 7, '#DFC197') +
+      el(35, 30, 13, 4, '#C49A68') +
+      r(64, 42, 36, 22, '#7C5839', 5) +
+      el(82, 42, 18, 6, '#DFC197') +
+      c(20, 62, 5, p.leaf),
+  }),
+
+  rockCluster: (p) => ({
+    w: 110,
+    h: 64,
+    body:
+      shadedPath('M 14 54 C 12 30 34 18 54 24 C 70 28 74 44 70 54 Z', '#98A2A4') +
+      shadedPath('M 52 54 C 54 36 74 28 92 36 C 102 42 100 52 94 54 Z', '#B2BCBE') +
+      c(22, 54, 4, p.leaf),
+  }),
+
+  cow: (_p) => ({
+    w: 150,
+    h: 116,
+    body:
+      // Spotted milk cow (IMG_2707)
+      leg(40, 82, 26, '#F6F2EA', 8) +
+      leg(104, 82, 26, '#F6F2EA', 8) +
+      r(32, 38, 86, 48, '#FCF9F2', 20) +
+      c(64, 54, 11, '#3A3531', 'none', 0) +
+      c(96, 66, 9, '#3A3531', 'none', 0) +
+      r(12, 26, 36, 32, '#FCF9F2', 12) +
+      el(24, 52, 14, 9, '#F2B8B8') +
+      c(22, 36, 2.5, INK, 'none', 0) +
+      c(34, 36, 2.5, INK, 'none', 0) +
+      el(14, 24, 6, 4, '#D9C49E') +
+      el(44, 24, 6, 4, '#D9C49E'),
+  }),
+
+  chicken: (_p) => ({
+    w: 72,
+    h: 68,
+    body:
+      // Round farm hen (IMG_2707)
+      line(30, 52, 28, 62, '#E29D3B', 3) +
+      line(42, 52, 44, 62, '#E29D3B', 3) +
+      el(38, 38, 22, 17, '#FFF7EA') +
+      c(24, 24, 11, '#FFF7EA') +
+      c(24, 11, 4, '#D65B4A') +
+      c(29, 12, 3.5, '#D65B4A') +
+      path('M 13 24 L 6 27 L 13 30 Z', '#E9A944') +
+      c(21, 23, 2, INK, 'none', 0),
   }),
 };
 

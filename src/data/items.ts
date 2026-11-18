@@ -1,11 +1,24 @@
+import { getItemSprite } from '../art/assetPack';
 import type { ItemDef, RoomId } from '../game/types';
 
 type Extra = Partial<
-  Pick<ItemDef, 'anchor' | 'palette' | 'width' | 'variantGroup' | 'tags' | 'starter' | 'babyOnly' | 'surface'>
+  Pick<ItemDef, 'anchor' | 'palette' | 'width' | 'variantGroup' | 'tags' | 'starter' | 'babyOnly' | 'surface' | 'sprite' | 'spriteW' | 'spriteH'>
 >;
 
 function it(id: string, name: string, room: RoomId, art: string, price: number, width: number, extra: Extra = {}): ItemDef {
-  return { id, name, room, art, price, width, anchor: 'floor', palette: 'cream', ...extra };
+  const packSprite = getItemSprite(id);
+  return {
+    id,
+    name,
+    room,
+    art,
+    price,
+    width,
+    anchor: 'floor',
+    palette: 'cream',
+    ...(packSprite ? { sprite: packSprite.url, spriteW: packSprite.w, spriteH: packSprite.h } : {}),
+    ...extra,
+  };
 }
 
 const living: ItemDef[] = [
@@ -13,24 +26,34 @@ const living: ItemDef[] = [
   it('living.sofa.dusk', 'Dusk-blue sofa', 'living', 'sofa', 420, 340, { palette: 'dusty', variantGroup: 'sofa' }),
   it('living.sofa.butter', 'Butter sofa', 'living', 'sofa', 420, 340, { palette: 'butter', variantGroup: 'sofa' }),
   it('living.sofa.plum', 'Plum sofa', 'living', 'sofa', 420, 340, { palette: 'plum', variantGroup: 'sofa' }),
+  it('living.coupleSofa', 'Couple sofa', 'living', 'sofa', 560, 340, { palette: 'dusty', tags: ['cosy'] }),
   it('living.coffeeTable', 'Oak coffee table', 'living', 'coffeeTable', 120, 220, { palette: 'wood', starter: true, surface: true }),
+  it('living.warmRugTable', 'Warm tea table & rug', 'living', 'coffeeTable', 240, 260, { palette: 'rust', surface: true }),
   it('living.rug.oval', 'Meadow oval rug', 'living', 'rug', 120, 440, { palette: 'sage', starter: true }),
   it('living.rug.sunset', 'Sunset oval rug', 'living', 'rug', 120, 440, { palette: 'rust', variantGroup: 'livingRug' }),
+  it('living.entryRug', 'Woven entry rug', 'living', 'rug', 110, 240, { palette: 'rust' }),
   it('living.tvCabinet', 'Little TV cabinet', 'living', 'tvcabinet', 180, 260, { palette: 'darkwood', tags: ['window'], surface: true }),
   it('living.tv', 'Box television', 'living', 'tv', 240, 260, { palette: 'charcoal', anchor: 'surface' }),
   it('living.piano', 'Upright piano', 'living', 'piano', 950, 330, { palette: 'darkwood', tags: ['music'] }),
   it('living.pianoBench', 'Piano bench', 'living', 'pianoBench', 70, 120, { palette: 'darkwood' }),
   it('living.bookshelf', 'Tall bookshelf', 'living', 'bookshelf', 260, 150, { palette: 'wood', tags: ['cosy'] }),
+  it('living.catBookshelf', 'Cat perch bookshelf', 'living', 'bookshelf', 310, 170, { palette: 'wood', tags: ['cat', 'cosy'] }),
+  it('living.bookStack', 'Stacked storybooks', 'living', 'bookStack', 45, 85, { palette: 'brick', anchor: 'surface' }),
   it('living.floorLamp', 'Paper floor lamp', 'living', 'floorLamp', 140, 105, { palette: 'cream', starter: true }),
+  it('living.brassFloorLamp', 'Brass dome lamp', 'living', 'floorLamp', 160, 100, { palette: 'butter' }),
   it('living.fern', 'Potted fern', 'living', 'plant', 60, 105, { palette: 'teal', starter: true, tags: ['plant'] }),
   it('living.vase', 'Ceramic vase', 'living', 'vase', 45, 65, { palette: 'dusty', anchor: 'surface' }),
+  it('living.blueVase', 'Blue patterned vase', 'living', 'vase', 65, 65, { palette: 'dusty', anchor: 'surface' }),
   it('living.painting', 'Meadow painting', 'living', 'painting', 170, 130, { palette: 'wood', anchor: 'wall', variantGroup: 'livingPainting' }),
   it('living.paintingBlue', 'Blue-hill painting', 'living', 'painting', 170, 130, { palette: 'dusty', anchor: 'wall', variantGroup: 'livingPainting' }),
+  it('living.noticeBoard', 'Cork notice board', 'living', 'noticeBoard', 110, 140, { palette: 'wood', anchor: 'wall' }),
   it('living.clock', 'Round wall clock', 'living', 'wallClock', 90, 75, { palette: 'cream', anchor: 'wall' }),
   it('living.diningTable', 'Family dining table', 'living', 'diningTable', 380, 300, { palette: 'wood', surface: true }),
   it('living.diningChair', 'Rush dining chair', 'living', 'chair', 90, 95, { palette: 'wood' }),
   it('living.sideTable', 'Round side table', 'living', 'sideTable', 110, 100, { palette: 'darkwood', surface: true }),
   it('living.shelf', 'Open wall shelf', 'living', 'shelf', 110, 170, { palette: 'wood', anchor: 'wall' }),
+  it('living.umbrellaStand', 'Umbrella stand', 'living', 'umbrellaStand', 90, 80, { palette: 'sage' }),
+  it('living.catCarrier', 'Cozy cat carrier', 'living', 'catCarrier', 140, 120, { palette: 'powder', tags: ['cat'] }),
 ];
 
 const bedroom: ItemDef[] = [
@@ -57,13 +80,14 @@ const kitchen: ItemDef[] = [
   it('kitchen.stove', 'Farmhouse stove', 'kitchen', 'stove', 440, 280, { palette: 'cream', starter: true, surface: true }),
   it('kitchen.oven', 'Built-in oven', 'kitchen', 'oven', 380, 210, { palette: 'cream' }),
   it('kitchen.fridge', 'Cream larder fridge', 'kitchen', 'fridge', 520, 180, { palette: 'white', starter: true }),
-  it('kitchen.sink', 'Apron sink', 'kitchen', 'sink', 260, 160, { palette: 'cream' }),
+  it('kitchen.sink', 'Apron sink', 'kitchen', 'kitchenSink', 260, 160, { palette: 'cream' }),
   it('kitchen.hood', 'Range hood', 'kitchen', 'rangeHood', 220, 210, { palette: 'stone', anchor: 'wall' }),
   it('kitchen.pot', 'Red stock pot', 'kitchen', 'pot', 60, 100, { palette: 'brick', anchor: 'surface' }),
   it('kitchen.pan', 'Black frying pan', 'kitchen', 'pan', 60, 110, { palette: 'charcoal', anchor: 'surface' }),
   it('kitchen.bowl', 'Mixing bowl', 'kitchen', 'mixingBowl', 45, 90, { palette: 'dusty', anchor: 'surface' }),
   it('kitchen.fruit', 'Fruit bowl', 'kitchen', 'fruitBowl', 70, 90, { palette: 'butter', anchor: 'surface' }),
-  it('kitchen.shelf', 'Spice shelf', 'kitchen', 'shelf', 120, 170, { palette: 'wood', anchor: 'wall' }),
+  it('kitchen.shelf', 'Spice shelf', 'kitchen', 'kitchenRack', 120, 170, { palette: 'wood', anchor: 'wall' }),
+  it('kitchen.spiceJars', 'Glass spice jars', 'kitchen', 'spiceJars', 55, 95, { palette: 'wood', anchor: 'surface' }),
   it('kitchen.clock', 'Kitchen clock', 'kitchen', 'wallClock', 80, 70, { palette: 'cream', anchor: 'wall' }),
   it('kitchen.herb', 'Herb pot', 'kitchen', 'plant', 50, 80, { palette: 'sage', anchor: 'surface', tags: ['plant'] }),
   it('kitchen.table', 'Scrubbed kitchen table', 'kitchen', 'diningTable', 330, 280, { palette: 'darkwood', surface: true }),
@@ -82,6 +106,8 @@ const bathroom: ItemDef[] = [
   it('bathroom.towels', 'Towel rack', 'bathroom', 'towelRack', 90, 100, { palette: 'cream', anchor: 'wall' }),
   it('bathroom.plant', 'Steamy plant', 'bathroom', 'plant', 60, 90, { palette: 'moss', tags: ['plant'] }),
   it('bathroom.shelf', 'Bath shelf', 'bathroom', 'shelf', 100, 140, { palette: 'white', anchor: 'wall' }),
+  it('bathroom.storageShelf', 'Corner bath shelf', 'bathroom', 'shelf', 130, 130, { palette: 'wood', surface: true }),
+  it('bathroom.sleepingCat', 'Bathroom cat cushion', 'bathroom', 'plush', 95, 95, { palette: 'cream', tags: ['cat'] }),
   it('bathroom.art', 'Bath wall print', 'bathroom', 'wallArtSmall', 100, 90, { palette: 'dusty', anchor: 'wall' }),
   it('bathroom.stool', 'Wooden bath stool', 'bathroom', 'stool', 60, 70, { palette: 'wood' }),
   it('bathroom.lantern', 'Bath lantern', 'bathroom', 'lantern', 70, 60, { palette: 'cream', anchor: 'surface' }),
@@ -89,16 +115,18 @@ const bathroom: ItemDef[] = [
 
 const studio: ItemDef[] = [
   it('studio.easel', 'Painter easel', 'studio', 'easel', 400, 190, { palette: 'wood', starter: true }),
+  it('studio.drawingDesk', 'Drafting easel desk', 'studio', 'easel', 420, 210, { palette: 'wood', surface: true }),
   it('studio.table', 'Paint-splattered table', 'studio', 'artTable', 480, 280, { palette: 'darkwood', starter: true, surface: true }),
   it('studio.chair', 'Studio chair', 'studio', 'chair', 100, 95, { palette: 'sage' }),
   it('studio.chaise', 'Cream chaise', 'studio', 'chaise', 700, 320, { palette: 'cream', tags: ['cosy'] }),
   it('studio.shelf', 'Sketchbook shelf', 'studio', 'bookshelf', 280, 150, { palette: 'wood' }),
-  it('studio.cabinet', 'Paint cabinet', 'studio', 'cabinet', 360, 180, { palette: 'darkwood', surface: true }),
+  it('studio.cabinet', 'Paint cabinet', 'studio', 'studioCabinet', 360, 180, { palette: 'darkwood', surface: true }),
   it('studio.lamp', 'Studio floor lamp', 'studio', 'floorLamp', 150, 110, { palette: 'cream' }),
   it('studio.plant', 'Big studio plant', 'studio', 'plant', 70, 110, { palette: 'moss', tags: ['plant'] }),
   it('studio.paintingA', 'Golden field painting', 'studio', 'painting', 180, 140, { palette: 'butter', anchor: 'wall', variantGroup: 'studioPainting' }),
   it('studio.paintingB', 'Sea painting', 'studio', 'painting', 180, 140, { palette: 'dusty', anchor: 'wall', variantGroup: 'studioPainting' }),
   it('studio.paintingC', 'Red abstract painting', 'studio', 'painting', 180, 140, { palette: 'brick', anchor: 'wall', variantGroup: 'studioPainting' }),
+  it('studio.wallArt', 'Gallery wall collage', 'studio', 'painting', 210, 180, { palette: 'wood', anchor: 'wall' }),
   it('studio.rug', 'Olive studio rug', 'studio', 'rug', 150, 360, { palette: 'olive' }),
   it('studio.stool', 'Paint stool', 'studio', 'stool', 65, 70, { palette: 'wood' }),
   it('studio.vase', 'Brush jar', 'studio', 'vase', 50, 60, { palette: 'teal', anchor: 'surface' }),
@@ -149,7 +177,10 @@ const garden: ItemDef[] = [
   it('garden.hedge', 'Clipped hedge', 'garden', 'hedge', 180, 240, { palette: 'green' }),
   it('garden.mushrooms', 'Mushroom cluster', 'garden', 'mushroom', 40, 65, { palette: 'brick' }),
   it('garden.lantern', 'Path lantern', 'garden', 'lantern', 90, 65, { palette: 'cream' }),
+  it('garden.lampPost', 'Iron garden lamp post', 'garden', 'lampPost', 190, 90, { palette: 'charcoal' }),
   it('garden.swing', 'Garden swing', 'garden', 'swing', 500, 230, { palette: 'wood' }),
+  it('garden.rockingHorse', 'Wooden rocking horse', 'garden', 'rockingHorse', 210, 130, { palette: 'wood' }),
+  it('garden.sideTableVase', 'Garden table & vase', 'garden', 'sideTable', 130, 100, { palette: 'wood', surface: true }),
   it('garden.feeder', 'Seed feeder', 'garden', 'birdFeeder', 150, 100, { palette: 'cream', tags: ['bird'] }),
   it('garden.fountain', 'Birdbath fountain', 'garden', 'fountain', 800, 250, { palette: 'stone', tags: ['water', 'bird'] }),
   it('garden.arch', 'Rose arch', 'garden', 'roseArch', 450, 210, { palette: 'sage', tags: ['flower'] }),
@@ -157,12 +188,16 @@ const garden: ItemDef[] = [
   it('garden.butterflyHouse', 'Butterfly house', 'garden', 'butterflyHouse', 160, 80, { palette: 'dusty', tags: ['critter'] }),
   it('garden.bench', 'Garden bench', 'garden', 'bench', 240, 200, { palette: 'sage', tags: ['cosy'] }),
   it('garden.chime', 'Glass wind chime', 'garden', 'windChime', 100, 65, { palette: 'teal', anchor: 'wall' }),
+  it('garden.tropicalPlants', 'Tropical patio plants', 'garden', 'tropicalPlants', 140, 120, { palette: 'moss', tags: ['plant'] }),
+  it('garden.treeStumps', 'Woodland tree stumps', 'garden', 'treeStumps', 85, 130, { palette: 'wood' }),
+  it('garden.rockCluster', 'Mossy garden rocks', 'garden', 'rockCluster', 75, 120, { palette: 'stone' }),
 ];
 
 const farm: ItemDef[] = [
   it('farm.doghouse', 'Moss doghouse', 'farm', 'doghouse', 500, 230, { palette: 'sage', tags: ['dog'] }),
   it('farm.hay', 'Hay bale', 'farm', 'hayBale', 120, 150, { palette: 'butter' }),
   it('farm.trough', 'Feeding trough', 'farm', 'trough', 170, 190, { palette: 'wood' }),
+  it('farm.raisedBeds', 'Raised veggie beds', 'farm', 'trough', 210, 200, { palette: 'wood', tags: ['plant'] }),
   it('farm.nest', 'Hen nest', 'farm', 'nest', 130, 110, { palette: 'wood', tags: ['bird'] }),
   it('farm.pond', 'Duck pond', 'farm', 'pool', 600, 370, { palette: 'teal', tags: ['water', 'bird'], variantGroup: 'pond' }),
   it('farm.fence', 'Field fence', 'farm', 'fence', 200, 230, { palette: 'wood' }),
@@ -171,6 +206,8 @@ const farm: ItemDef[] = [
   it('farm.wheelbarrow', 'Wheelbarrow', 'farm', 'wheelbarrow', 220, 190, { palette: 'wood' }),
   it('farm.beehive', 'Busy beehive', 'farm', 'beehive', 300, 110, { palette: 'butter', tags: ['critter'] }),
   it('farm.coop', 'Chicken coop', 'farm', 'coop', 480, 230, { palette: 'sage', tags: ['bird'] }),
+  it('farm.cow', 'Spotted milk cow', 'farm', 'cow', 550, 160, { palette: 'cream', tags: ['critter'] }),
+  it('farm.chicken', 'Clucking farm hen', 'farm', 'chicken', 160, 80, { palette: 'butter', tags: ['bird'] }),
   it('farm.milkCan', 'Milk can', 'farm', 'milkCan', 60, 70, { palette: 'cream' }),
   it('farm.crate', 'Apple crate', 'farm', 'crate', 90, 110, { palette: 'wood' }),
   it('farm.sign', 'Farm sign', 'farm', 'wallArtSmall', 80, 90, { palette: 'wood', anchor: 'wall' }),

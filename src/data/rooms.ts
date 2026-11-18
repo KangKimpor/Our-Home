@@ -30,7 +30,7 @@ export const ROOMS: Record<RoomId, RoomDef> = {
       { id: 'chair', x: 1640, y: 720, kind: 'sleep' },
       { id: 'floor', x: 1120, y: 790, kind: 'sleep' },
     ],
-    critterSpots: [{ id: 'owl', x: 300, y: 360, kind: 'owl' }],
+    critterSpots: [{ id: 'owl', x: 205, y: 455, kind: 'owl' }],
     surfaceSpots: [],
   },
   bedroom: {
@@ -193,13 +193,13 @@ export const ROOM_PALETTES: Record<
   RoomId,
   { wall: string; wallShade: string; floor: string; floorAlt: string; trim: string; sky: string }
 > = {
-  living: { wall: '#F3EFE0', wallShade: '#E8E1D0', floor: '#C39A6B', floorAlt: '#B4875A', trim: '#D9CFBB', sky: '#BFD8E3' },
-  bedroom: { wall: '#F0E3DC', wallShade: '#E4D3CA', floor: '#CCA77A', floorAlt: '#BC9367', trim: '#E2D3C8', sky: '#D7E7EA' },
-  kitchen: { wall: '#E7EBD9', wallShade: '#D8DEC6', floor: '#D9C9A8', floorAlt: '#C9B794', trim: '#D4D9C1', sky: '#CBE2E6' },
-  bathroom: { wall: '#DCE7EA', wallShade: '#CBDADE', floor: '#C9D3D4', floorAlt: '#B7C4C6', trim: '#EAF1F2', sky: '#D8EBEF' },
-  studio: { wall: '#F2EADB', wallShade: '#E6DAC7', floor: '#D8B78A', floorAlt: '#C9A679', trim: '#E5D9C4', sky: '#C9DFE5' },
-  nursery: { wall: '#F6E7E4', wallShade: '#EED8D4', floor: '#E0C7A5', floorAlt: '#D1B68F', trim: '#F0E0DC', sky: '#E4EDF2' },
-  porch: { wall: '#C9A87C', wallShade: '#B8966A', floor: '#B98E5F', floorAlt: '#A97E51', trim: '#D9BE96', sky: '#BFDCE3' },
-  garden: { wall: '#8FB37A', wallShade: '#7BA067', floor: '#8FB07A', floorAlt: '#7FA06B', trim: '#A9C596', sky: '#CDE5EE' },
-  farm: { wall: '#A7BE8A', wallShade: '#91AA75', floor: '#93AF7C', floorAlt: '#84A06E', trim: '#C0D2A8', sky: '#D3E7EA' },
+  living: { wall: '#FBF7EC', wallShade: '#EFE9D8', floor: '#8D745C', floorAlt: '#77604A', trim: '#E3DAC5', sky: '#C8E2EA' },
+  bedroom: { wall: '#FBF7EC', wallShade: '#EFE9DA', floor: '#8E7358', floorAlt: '#786048', trim: '#E8DFCE', sky: '#CFE6EC' },
+  kitchen: { wall: '#FBF7EC', wallShade: '#ECE6D5', floor: '#E6DFD1', floorAlt: '#8EAAC4', trim: '#D6DEE6', sky: '#CBE4DA' },
+  bathroom: { wall: '#F9F4E6', wallShade: '#DFD5BE', floor: '#9AC8DF', floorAlt: '#7CAEC8', trim: '#E5DEC9', sky: '#BFE0DC' },
+  studio: { wall: '#FBF7EC', wallShade: '#F0E9D8', floor: '#D9C8AA', floorAlt: '#C2AE8E', trim: '#E7DEC9', sky: '#D8EBF2' },
+  nursery: { wall: '#FBF7EC', wallShade: '#F0E6D6', floor: '#D5C09D', floorAlt: '#BEA782', trim: '#EADFCF', sky: '#5C7088' },
+  porch: { wall: '#C8CED4', wallShade: '#A59C94', floor: '#7A9A4E', floorAlt: '#6A8941', trim: '#B6ADA4', sky: '#D3E5E8' },
+  garden: { wall: '#1F7A4C', wallShade: '#2D8C5B', floor: '#98B45B', floorAlt: '#88A64E', trim: '#FBF7EC', sky: '#D5E9EE' },
+  farm: { wall: '#2D8C5B', wallShade: '#1F7A4C', floor: '#8CA852', floorAlt: '#7C9846', trim: '#FBF7EC', sky: '#CFE5E6' },
 };

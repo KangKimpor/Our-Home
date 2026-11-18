@@ -212,6 +212,12 @@ export interface ItemDef {
   babyOnly?: boolean;
   /** Furniture that small surface items can sit on. */
   surface?: boolean;
+  /** Optional transparent PNG sprite path from the v1.1 asset pack. */
+  sprite?: string;
+  /** Natural width in px of the mapped PNG sprite. */
+  spriteW?: number;
+  /** Natural height in px of the mapped PNG sprite. */
+  spriteH?: number;
 }
 
 export interface VisitorDef {

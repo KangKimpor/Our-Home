@@ -72,7 +72,7 @@ test('shop buys a floor item and places it', async ({ page }) => {
 
 test('the house survives a reload', async ({ page }) => {
   await openGame(page);
-  await page.waitForTimeout(2500);
+  await expect(page.locator('.save-pill')).toHaveClass(/save-saved/);
   await page.reload();
   await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
 });
@@ -85,21 +85,31 @@ test('edit mode shows the decorating bar', async ({ page }) => {
   await expect(page.locator('.edit-bar')).toHaveCount(0);
 });
 
+async function waitForStageFrame(page: Page) {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+}
+
 test('navigates across rooms and captures review shots', async ({ page }, testInfo) => {
   const errors = watchConsole(page);
   await openGame(page);
-  await page.waitForTimeout(250);
+  await page.evaluate(() => document.fonts.ready);
+  await waitForStageFrame(page);
 
   await page.screenshot({ path: `tests/__shots__/living-${testInfo.project.name}.png` });
 
   await page.getByRole('button', { name: 'Next room' }).click();
   await expect(page.locator('.room-plaque')).toContainText(/Bedroom/i);
-  await page.waitForTimeout(200);
+  await waitForStageFrame(page);
   await page.screenshot({ path: `tests/__shots__/bedroom-${testInfo.project.name}.png` });
 
   await page.getByRole('button', { name: 'Next room' }).click();
   await expect(page.locator('.room-plaque')).toContainText(/Kitchen/i);
-  await page.waitForTimeout(200);
+  await waitForStageFrame(page);
   await page.screenshot({ path: `tests/__shots__/kitchen-${testInfo.project.name}.png` });
 
   expect(errors, errors.join('\n')).toEqual([]);

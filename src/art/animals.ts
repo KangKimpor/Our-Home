@@ -76,8 +76,8 @@ function pawLeg(x: number, y: number, h: number, fill: string, pawFill: string, 
   const rX = x + w / 2;
   const bot = y + h;
   return (
-    `<path d="M ${x + 1} ${y} C ${x - 1} ${y + h * 0.48} ${x + 0.5} ${bot - 5} ${x + 1.5} ${bot - 2} C ${x + 2} ${bot + 1} ${x + w + 2} ${bot + 1} ${x + w + 2.5} ${bot - 2.5} C ${x + w + 2.5} ${bot - 6} ${x + w} ${y + h * 0.45} ${x + w - 0.5} ${y} Z" fill="${fill}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` +
-    `<ellipse cx="${rX + 1.5}" cy="${bot - 2}" rx="${w * 0.42}" ry="2.6" fill="${pawFill}" opacity="0.8"/>`
+    `<path d="M ${x + 1} ${y} C ${x - 1} ${y + h * 0.48} ${x + 0.5} ${bot - 5} ${x + 1.5} ${bot - 2} C ${x + 2} ${bot + 1} ${x + w + 2} ${bot + 1} ${x + w + 2.5} ${bot - 2.5} C ${x + w + 2.5} ${bot - 6} ${x + w} ${y + h * 0.45} ${x + w - 0.5} ${y} Z" fill="${fill}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>` +
+    `<ellipse cx="${rX + 1.5}" cy="${bot - 2}" rx="${w * 0.44}" ry="2.7" fill="${pawFill}" opacity="0.88"/>`
   );
 }
 
@@ -89,30 +89,80 @@ interface SpeciesVisual {
   headMarkings?: string;
   snout?: string;
   snoutSize?: [number, number];
+  legFill?: string;
+  pawFill?: string;
 }
 
 function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVisual {
   const isSleep = o.pose === 'sleep';
   switch (species) {
-    case 'dog':
+    case 'dog': {
+      const isShiba = o.coat === 'golden' || o.coat === 'rust';
       return {
-        ears:
-          shadedPath('M 86 50 C 73 48 70 74 82 74 C 89 74 91 60 88 50 Z', coat.patch, INK, 2.5) +
-          shadedPath('M 115 48 C 127 50 128 74 117 72 C 112 71 112 58 115 48 Z', coat.patch, INK, 2.5),
-        tail:
-          p('M 42 86 C 24 80 22 60 32 54 C 37 51 42 56 38 62 C 34 69 36 77 45 81 Z', coat.body, INK, 2.5) +
-          p('M 29 58 C 31 53 37 54 37 59', 'none', coat.patch, 3),
+        ears: isShiba
+          ? shadedPath('M 87 52 L 87 28 L 103 44 Z', coat.body, INK, 2.7) +
+            shadedPath('M 108 44 L 122 28 L 122 52 Z', coat.body, INK, 2.7) +
+            p('M 91 47 L 91 34 L 99 44 Z', coat.ear, 'none', 0) +
+            p('M 111 44 L 119 34 L 118 47 Z', coat.ear, 'none', 0)
+          : shadedPath('M 86 50 C 73 48 70 74 82 74 C 89 74 91 60 88 50 Z', coat.patch, INK, 2.7) +
+            shadedPath('M 115 48 C 127 50 128 74 117 72 C 112 71 112 58 115 48 Z', coat.patch, INK, 2.7),
+        tail: isShiba
+          ? shadedPath('M 42 86 C 22 82 20 55 34 50 C 44 47 48 59 41 67 C 37 72 38 78 46 82 Z', coat.body, INK, 2.7) +
+            p('M 34 56 C 38 52 43 56 41 62', 'none', coat.belly, 4)
+          : p('M 42 86 C 24 80 22 60 32 54 C 37 51 42 56 38 62 C 34 69 36 77 45 81 Z', coat.body, INK, 2.7) +
+            p('M 29 58 C 31 53 37 54 37 59', 'none', coat.patch, 3),
         tailPivot: [42, 84],
+        bodyMarkings: isShiba
+          ? p('M 84 74 C 96 76 102 96 86 102 C 78 96 78 80 84 74 Z', coat.belly, 'none', 0)
+          : undefined,
+        headMarkings: isShiba
+          ? el(108, 69, 13, 9, coat.belly, 'none', 0) +
+            c(98, 53, 2.6, coat.belly, 'none', 0) +
+            c(111, 53, 2.6, coat.belly, 'none', 0)
+          : undefined,
         snout: coat.belly,
         snoutSize: [12, 8.5],
       };
+    }
+
+    case 'redPanda': {
+      const fur = o.coat === 'rust' || o.coat === 'ginger' ? coat.body : '#C96D3B';
+      const dark = '#45342C';
+      const cream = '#FBF2E1';
+      return {
+        ears:
+          shadedPath('M 84 52 C 80 34 92 28 102 42 Z', cream, INK, 2.7) +
+          shadedPath('M 106 42 C 116 28 128 34 122 52 Z', cream, INK, 2.7) +
+          p('M 89 47 C 87 38 93 35 98 42 Z', fur, 'none', 0) +
+          p('M 110 42 C 115 35 121 38 118 47 Z', fur, 'none', 0),
+        tail:
+          shadedPath('M 42 90 C 12 96 8 56 30 48 C 42 44 48 62 39 74 C 36 80 41 83 46 85 Z', fur, INK, 2.7) +
+          line(20, 79, 32, 82, cream, 4.5) +
+          line(23, 64, 35, 67, cream, 4.5) +
+          c(33, 53, 5, dark, 'none', 0),
+        tailPivot: [42, 87],
+        bodyMarkings:
+          el(72, 95, 25, 13, dark, 'none', 0) +
+          p('M 86 72 C 95 78 96 96 82 100 Z', dark, 'none', 0),
+        headMarkings:
+          el(112, 68, 12, 8, cream, 'none', 0) +
+          el(96, 67, 8, 6.5, cream, 'none', 0) +
+          c(97, 54, 2.7, cream, 'none', 0) +
+          c(111, 54, 2.7, cream, 'none', 0) +
+          line(99, 64, 96, 72, '#864223', 3),
+        snout: cream,
+        snoutSize: [11.5, 7.5],
+        legFill: dark,
+        pawFill: '#2E231E',
+      };
+    }
 
     case 'rabbit':
       return {
         ears:
-          `<g transform="rotate(-12 94 34)">${el(94, 30, 7.5, 22, coat.body, INK, 2.5)}${el(94, 31, 3.5, 14, coat.ear, 'none', 0)}</g>` +
-          `<g transform="rotate(8 111 32)">${el(111, 29, 7.5, 22, coat.body, INK, 2.5)}${el(111, 30, 3.5, 14, coat.ear, 'none', 0)}</g>`,
-        tail: c(38, 92, 10, coat.belly, INK, 2.5),
+          `<g transform="rotate(-12 94 34)">${el(94, 30, 7.5, 22, coat.body, INK, 2.6)}${el(94, 31, 3.5, 14, coat.ear, 'none', 0)}</g>` +
+          `<g transform="rotate(8 111 32)">${el(111, 29, 7.5, 22, coat.body, INK, 2.6)}${el(111, 30, 3.5, 14, coat.ear, 'none', 0)}</g>`,
+        tail: c(38, 92, 10, coat.belly, INK, 2.6),
         tailPivot: [42, 92],
         snout: coat.belly,
         snoutSize: [9.5, 6.5],
@@ -121,12 +171,12 @@ function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVi
     case 'fox':
       return {
         ears:
-          shadedPath('M 86 52 L 87 24 L 104 42 Z', coat.body, INK, 2.5) +
-          shadedPath('M 108 42 L 124 24 L 122 52 Z', coat.body, INK, 2.5) +
+          shadedPath('M 86 52 L 87 24 L 104 42 Z', coat.body, INK, 2.7) +
+          shadedPath('M 108 42 L 124 24 L 122 52 Z', coat.body, INK, 2.7) +
           p('M 91 45 L 91 31 L 100 42 Z', coat.ear, 'none', 0) +
           p('M 112 42 L 119 31 L 118 45 Z', coat.ear, 'none', 0),
         tail:
-          shadedPath('M 42 88 C 12 96 10 52 34 48 C 44 46 46 66 36 76 C 39 81 44 82 46 84 Z', coat.body, INK, 2.5) +
+          shadedPath('M 42 88 C 12 96 10 52 34 48 C 44 46 46 66 36 76 C 39 81 44 82 46 84 Z', coat.body, INK, 2.7) +
           p('M 25 56 C 27 49 34 47 38 51 C 34 56 30 59 25 56 Z', coat.belly, 'none', 0),
         tailPivot: [42, 86],
         bodyMarkings: p('M 88 70 C 98 76 102 92 90 98 C 82 94 82 78 88 70 Z', coat.belly, 'none', 0),
@@ -136,8 +186,8 @@ function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVi
 
     case 'otter':
       return {
-        ears: c(93, 47, 6.2, coat.patch, INK, 2.4) + c(114, 47, 6.2, coat.patch, INK, 2.4),
-        tail: shadedPath('M 42 90 C 14 96 6 82 22 76 C 32 72 38 78 44 84 Z', coat.body, INK, 2.5),
+        ears: c(93, 47, 6.2, coat.patch, INK, 2.5) + c(114, 47, 6.2, coat.patch, INK, 2.5),
+        tail: shadedPath('M 42 90 C 14 96 6 82 22 76 C 32 72 38 78 44 84 Z', coat.body, INK, 2.6),
         tailPivot: [42, 88],
         snout: coat.belly,
         snoutSize: [11, 7.5],
@@ -146,10 +196,10 @@ function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVi
     case 'raccoon':
       return {
         ears:
-          shadedPath('M 88 52 L 87 32 L 102 45 Z', coat.body, INK, 2.5) +
-          shadedPath('M 109 44 L 123 32 L 122 52 Z', coat.body, INK, 2.5),
+          shadedPath('M 88 52 L 87 32 L 102 45 Z', coat.body, INK, 2.6) +
+          shadedPath('M 109 44 L 123 32 L 122 52 Z', coat.body, INK, 2.6),
         tail:
-          shadedPath('M 42 88 C 14 96 10 62 30 54 C 37 51 42 58 38 68 C 36 74 39 80 45 83 Z', coat.body, INK, 2.5) +
+          shadedPath('M 42 88 C 14 96 10 62 30 54 C 37 51 42 58 38 68 C 36 74 39 80 45 83 Z', coat.body, INK, 2.6) +
           line(22, 82, 32, 84, coat.belly, 4) +
           line(25, 68, 34, 70, coat.belly, 4),
         tailPivot: [42, 86],
@@ -160,7 +210,7 @@ function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVi
 
     case 'hedgehog':
       return {
-        ears: c(94, 50, 5.5, coat.ear, INK, 2.2) + c(112, 50, 5.5, coat.ear, INK, 2.2),
+        ears: c(94, 50, 5.5, coat.ear, INK, 2.4) + c(112, 50, 5.5, coat.ear, INK, 2.4),
         tail: '',
         tailPivot: [42, 90],
         bodyMarkings: Array.from({ length: 10 }, (_, i) => {
@@ -171,27 +221,34 @@ function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVi
         snoutSize: [11, 7],
       };
 
-    case 'cow':
+    case 'cow': {
+      const spot = '#4A423C';
       return {
         ears:
-          `<g transform="rotate(-18 92 52)">${el(92, 52, 9, 4.2, coat.patch, INK, 2.2)}</g>` +
-          `<g transform="rotate(18 113 52)">${el(113, 52, 9, 4.2, coat.patch, INK, 2.2)}</g>` +
-          p('M 94 44 C 91 36 95 34 98 42', 'none', '#EDE6D6', 3.5) +
-          p('M 111 44 C 114 36 110 34 107 42', 'none', '#EDE6D6', 3.5),
-        tail: p('M 40 86 C 24 92 22 106 30 110', 'none', coat.body, 4) + el(31, 112, 4.5, 6.5, coat.patch, INK, 2),
-        tailPivot: [40, 86],
-        bodyMarkings: c(65, 76, 8.5, coat.patch, 'none', 0) + c(86, 90, 6.5, coat.patch, 'none', 0),
-        snout: '#F3C6CC',
-        snoutSize: [12, 8],
+          `<g transform="rotate(-18 90 52)">${el(90, 52, 9.5, 4.5, spot, INK, 2.4)}</g>` +
+          `<g transform="rotate(18 115 52)">${el(115, 52, 9.5, 4.5, coat.body, INK, 2.4)}</g>` +
+          p('M 94 44 C 91 35 95 33 98 42', 'none', '#EDE6D6', 4) +
+          p('M 111 44 C 114 35 110 33 107 42', 'none', '#EDE6D6', 4),
+        tail: p('M 40 84 C 24 90 22 106 30 110', 'none', coat.body, 4) + el(31, 112, 4.8, 6.8, spot, INK, 2.2),
+        tailPivot: [40, 84],
+        bodyMarkings:
+          p('M 54 72 C 66 64 78 72 72 86 C 64 92 52 84 54 72 Z', spot, 'none', 0) +
+          c(87, 89, 7, spot, 'none', 0) +
+          el(71, 105, 9, 5, '#F3C6CC', INK, 1.8),
+        headMarkings: p('M 84 54 C 92 46 100 52 96 63 C 88 64 82 60 84 54 Z', spot, 'none', 0),
+        snout: '#F4C7CE',
+        snoutSize: [14, 9],
+        pawFill: spot,
       };
+    }
 
     case 'squirrel':
       return {
         ears:
-          shadedPath('M 91 50 L 90 32 L 101 45 Z', coat.body, INK, 2.4) +
-          shadedPath('M 109 45 L 122 32 L 120 50 Z', coat.body, INK, 2.4),
+          shadedPath('M 91 50 L 90 32 L 101 45 Z', coat.body, INK, 2.5) +
+          shadedPath('M 109 45 L 122 32 L 120 50 Z', coat.body, INK, 2.5),
         tail:
-          shadedPath('M 44 90 C 8 98 6 42 38 38 C 48 37 50 54 40 66 C 36 73 42 80 48 84 Z', coat.body, INK, 2.5) +
+          shadedPath('M 44 90 C 8 98 6 42 38 38 C 48 37 50 54 40 66 C 36 73 42 80 48 84 Z', coat.body, INK, 2.6) +
           p('M 36 44 C 42 48 43 56 40 62', 'none', coat.patch, 4),
         tailPivot: [44, 88],
         snout: coat.belly,
@@ -205,23 +262,25 @@ function speciesVisual(species: string, o: AnimalOptions, coat: Coat): SpeciesVi
       const stripes = isSleep
         ? ''
         : isCalico
-          ? c(64, 78, 8, coat.patch, 'none', 0) + c(86, 82, 6.5, '#4A4A46', 'none', 0)
+          ? c(64, 78, 8.5, coat.patch, 'none', 0) + c(86, 82, 7, '#4A4A46', 'none', 0) + c(53, 86, 5.5, '#4A4A46', 'none', 0)
           : isTabby
-            ? line(62, 66, 62, 74, coat.patch, 2.6) +
-              line(71, 65, 71, 75, coat.patch, 2.6) +
-              line(80, 66, 80, 74, coat.patch, 2.6)
+            ? line(62, 66, 62, 74, coat.patch, 2.8) +
+              line(71, 65, 71, 75, coat.patch, 2.8) +
+              line(80, 66, 80, 74, coat.patch, 2.8)
             : '';
-      const foreheadStripes = isTabby
-        ? line(99, 47, 99, 52, coat.patch, 2.2) + line(104, 46, 104, 52, coat.patch, 2.2) + line(109, 47, 109, 52, coat.patch, 2.2)
-        : '';
+      const foreheadStripes = isCalico
+        ? c(91, 53, 6.5, coat.patch, 'none', 0) + c(113, 52, 5.5, '#4A4A46', 'none', 0)
+        : isTabby
+          ? line(99, 47, 99, 52, coat.patch, 2.2) + line(104, 46, 104, 52, coat.patch, 2.2) + line(109, 47, 109, 52, coat.patch, 2.2)
+          : '';
       return {
         ears:
-          shadedPath('M 87 52 L 89 28 L 104 43 Z', coat.body, INK, 2.5) +
-          shadedPath('M 108 43 L 121 28 L 123 52 Z', coat.body, INK, 2.5) +
+          shadedPath('M 87 52 L 89 28 L 104 43 Z', coat.body, INK, 2.7) +
+          shadedPath('M 108 43 L 121 28 L 123 52 Z', coat.body, INK, 2.7) +
           p('M 91 47 L 92 35 L 100 43 Z', coat.ear, 'none', 0) +
           p('M 111 43 L 119 35 L 118 46 Z', coat.ear, 'none', 0),
         tail:
-          p('M 42 88 C 16 92 16 58 34 54 C 40 53 43 59 39 64 C 31 68 32 82 45 84 Z', coat.body, INK, 2.5) +
+          p('M 42 88 C 16 92 16 58 34 54 C 40 53 43 59 39 64 C 31 68 32 82 45 84 Z', coat.body, INK, 2.7) +
           p('M 29 59 C 32 55 37 56 38 60', 'none', coat.patch, 3),
         tailPivot: [42, 86],
         bodyMarkings: stripes,
@@ -267,8 +326,8 @@ function renderQuadrupedHead(o: AnimalOptions, coat: Coat, vis: SpeciesVisual, s
 
   return (
     (sleeping
-      ? el(headX, headY, 21, 17.5, coat.body, INK, 2.7)
-      : el(headX, headY, 22, 20.5, coat.body, INK, 2.7)) +
+      ? el(headX, headY, 21, 17.5, coat.body, INK, 2.8)
+      : el(headX, headY, 22, 20.5, coat.body, INK, 2.8)) +
     (sleeping ? '' : vis.ears) +
     (vis.headMarkings ?? '') +
     (vis.snout ? el(headX + 14, headY + 7, sw, sh, vis.snout, INK, 1.8) : '') +
@@ -288,18 +347,21 @@ function quadrupedBody(o: AnimalOptions, coat: Coat, vis: SpeciesVisual): string
   const sleeping = pose === 'sleep';
   const walking = pose === 'walk';
   const y = sleeping ? 104 : 86;
+  const nearLeg = vis.legFill ?? coat.body;
+  const farLeg = vis.legFill ?? coat.patch;
+  const paw = vis.pawFill ?? coat.belly;
 
   const legs = sleeping
-    ? pawLeg(50, 113, 12, coat.body, coat.belly, 9) + pawLeg(74, 113, 12, coat.body, coat.belly, 9)
+    ? pawLeg(50, 113, 12, nearLeg, paw, 9) + pawLeg(74, 113, 12, nearLeg, paw, 9)
     : walking
-      ? pawLeg(44, 102, 21, coat.patch, coat.belly, 9) +
-        pawLeg(63, 102, 17, coat.patch, coat.belly, 9) +
-        pawLeg(82, 102, 21, coat.body, coat.belly, 9.5) +
-        pawLeg(97, 102, 16, coat.body, coat.belly, 9)
-      : pawLeg(45, 102, 23, coat.patch, coat.belly, 9) +
-        pawLeg(62, 102, 23, coat.body, coat.belly, 9.5) +
-        pawLeg(80, 102, 23, coat.patch, coat.belly, 9) +
-        pawLeg(95, 102, 23, coat.body, coat.belly, 9.5);
+      ? pawLeg(44, 102, 21, farLeg, paw, 9) +
+        pawLeg(63, 102, 17, farLeg, paw, 9) +
+        pawLeg(82, 102, 21, nearLeg, paw, 9.5) +
+        pawLeg(97, 102, 16, nearLeg, paw, 9)
+      : pawLeg(45, 102, 23, farLeg, paw, 9) +
+        pawLeg(62, 102, 23, nearLeg, paw, 9.5) +
+        pawLeg(80, 102, 23, farLeg, paw, 9) +
+        pawLeg(95, 102, 23, nearLeg, paw, 9.5);
 
   return (
     (sleeping
@@ -318,7 +380,7 @@ function quadrupedBody(o: AnimalOptions, coat: Coat, vis: SpeciesVisual): string
   );
 }
 
-function birdPartsSvg(o: AnimalOptions, coat: Coat, kind: 'duck' | 'swan' | 'hen' | 'owl') {
+function birdPartsSvg(o: AnimalOptions, coat: Coat, kind: 'canary' | 'duck' | 'swan' | 'hen' | 'owl') {
   const sleeping = o.pose === 'sleep';
   const shadow = `<ellipse cx="66" cy="124" rx="34" ry="5.5" fill="#2B2521" opacity="0.14"/>`;
   const legs = sleeping
@@ -330,27 +392,39 @@ function birdPartsSvg(o: AnimalOptions, coat: Coat, kind: 'duck' | 'swan' | 'hen
     kind === 'swan'
       ? p('M 70 84 C 52 66 44 50 54 38', 'none', coat.body, 9) + el(58, 88, 24, 16, coat.body)
       : kind === 'hen'
-        ? p('M 44 84 C 28 78 24 66 34 62', 'none', coat.patch, 3.5)
+        ? p('M 42 84 C 26 76 22 62 34 58 C 36 66 39 74 44 80 Z', coat.patch, INK, 2.5) +
+          c(64, 92, 2.2, coat.patch, 'none', 0) +
+          c(74, 95, 2, coat.patch, 'none', 0)
         : '';
 
   const headTop =
     kind === 'hen'
-      ? p('M 92 40 C 88 28 96 24 96 34 C 100 22 108 26 104 36', 'none', '#C4483B', 6)
+      ? p('M 88 41 C 85 28 93 24 95 34 C 98 21 106 25 103 36 C 107 28 112 32 108 41 Z', '#C4483B', INK, 2.2) +
+        c(109, 68, 3.6, '#C4483B', INK, 1.8)
       : kind === 'owl'
         ? shadedPath('M 83 41 L 79 27 L 92 36 Z', coat.patch) + shadedPath('M 101 36 L 113 27 L 110 41 Z', coat.patch)
-        : kind === 'duck'
+        : kind === 'duck' || kind === 'canary'
           ? p('M 88 41 C 92 29 102 29 100 41', 'none', coat.patch, 4)
           : '';
 
-  const body = extras + el(66, 86, 30, 22, coat.body);
-  const wing = el(60, 84, 19, 14, coat.patch) + p('M 48 84 q 10 5 22 0', 'none', coat.belly, 2);
+  const body =
+    extras +
+    el(66, 86, 30, 22, coat.body) +
+    (kind === 'owl' ? el(71, 91, 18, 14, coat.belly, 'none', 0) : '');
+
+  const owlLetter =
+    kind === 'owl'
+      ? `<g transform="rotate(-12 83 88)">${r(72, 79, 22, 15, '#FBF7EC', 2.5, INK, 2.2)}${p('M 72 80 L 83 88 L 94 80', 'none', INK, 1.8)}${c(83, 88, 2.4, '#C4483B', 'none', 0)}</g>`
+      : '';
+
+  const wing = el(60, 84, 19, 14, coat.patch) + p('M 48 84 q 10 5 22 0', 'none', coat.belly, 2) + owlLetter;
 
   const beak =
     kind === 'swan'
       ? p('M 111 57 L 126 51 L 111 63 Z', '#E9A94B')
-      : kind === 'hen'
-        ? p('M 111 55 L 124 59 L 111 65 Z', '#E9A94B')
-        : p('M 111 57 L 128 61 L 111 67 Z', '#E9A94B');
+      : kind === 'hen' || kind === 'canary' || kind === 'owl'
+        ? p('M 111 55 L 123 59 L 111 65 Z', '#E9A94B')
+        : p('M 111 57 L 129 61 L 111 67 Z', '#E9A94B');
 
   const head =
     headTop +
@@ -381,15 +455,15 @@ function birdPartsSvg(o: AnimalOptions, coat: Coat, kind: 'duck' | 'swan' | 'hen
 }
 
 const BIRD_SPECIES = new Set(['bird', 'duck', 'swan', 'hen', 'owl']);
-const BIRD_KIND: Record<string, 'duck' | 'swan' | 'hen' | 'owl'> = {
-  bird: 'duck',
+const BIRD_KIND: Record<string, 'canary' | 'duck' | 'swan' | 'hen' | 'owl'> = {
+  bird: 'canary',
   duck: 'duck',
   swan: 'swan',
   hen: 'hen',
   owl: 'owl',
 };
 
-const QUADRUPED_SPECIES = new Set(['cat', 'dog', 'rabbit', 'fox', 'otter', 'raccoon', 'hedgehog', 'cow', 'squirrel']);
+const QUADRUPED_SPECIES = new Set(['cat', 'dog', 'rabbit', 'fox', 'otter', 'raccoon', 'hedgehog', 'cow', 'squirrel', 'redPanda']);
 
 /** Multi-part articulated sprite pieces in 140x140 coordinates for 60fps PixiJS animation. */
 export function animalRigParts(o: AnimalOptions): AnimalRigParts {
@@ -445,6 +519,9 @@ export function animalRigParts(o: AnimalOptions): AnimalRigParts {
   if (QUADRUPED_SPECIES.has(o.species)) {
     const vis = speciesVisual(o.species, o, coat);
     const sleeping = o.pose === 'sleep';
+    const nearLeg = vis.legFill ?? coat.body;
+    const farLeg = vis.legFill ?? coat.patch;
+    const paw = vis.pawFill ?? coat.belly;
     if (sleeping) {
       return {
         kind: 'quadruped',
@@ -459,8 +536,8 @@ export function animalRigParts(o: AnimalOptions): AnimalRigParts {
           pivotY: 118,
           body:
             el(72, 113, 40, 16, coat.body) +
-            pawLeg(50, 113, 12, coat.body, coat.belly, 9) +
-            pawLeg(74, 113, 12, coat.body, coat.belly, 9) +
+            pawLeg(50, 113, 12, nearLeg, paw, 9) +
+            pawLeg(74, 113, 12, nearLeg, paw, 9) +
             renderQuadrupedHead(o, coat, vis, true, true, true),
         },
       };
@@ -488,7 +565,7 @@ export function animalRigParts(o: AnimalOptions): AnimalRigParts {
         h,
         pivotX: 70,
         pivotY: 102,
-        body: pawLeg(45, 102, 23, coat.patch, coat.belly, 9) + pawLeg(80, 102, 23, coat.patch, coat.belly, 9),
+        body: pawLeg(45, 102, 23, farLeg, paw, 9) + pawLeg(80, 102, 23, farLeg, paw, 9),
       },
       body: {
         id: 'body',
@@ -504,7 +581,7 @@ export function animalRigParts(o: AnimalOptions): AnimalRigParts {
         h,
         pivotX: 66,
         pivotY: 102,
-        body: pawLeg(62, 102, 23, coat.body, coat.belly, 9.5),
+        body: pawLeg(62, 102, 23, nearLeg, paw, 9.5),
       },
       nearLegFront: {
         id: 'nearLegFront',
@@ -512,7 +589,7 @@ export function animalRigParts(o: AnimalOptions): AnimalRigParts {
         h,
         pivotX: 99,
         pivotY: 102,
-        body: pawLeg(95, 102, 23, coat.body, coat.belly, 9.5),
+        body: pawLeg(95, 102, 23, nearLeg, paw, 9.5),
       },
       head: { id: 'head', w, h, pivotX: 96, pivotY: 74, body: headNoEyes },
       eyesOpen: { id: 'eyesOpen', w, h, pivotX: 96, pivotY: 74, body: eyesOpen },

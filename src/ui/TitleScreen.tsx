@@ -1,12 +1,39 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ITEMS_BY_ID } from '../data/items';
 import { useGameStore } from '../store/gameStore';
 import { unlockAudio } from '../audio/engine';
-import { AnimalArt, Button, ItemArt } from './bits';
+import { Button } from './bits';
 import { Icon } from './icons';
 
 const VERSION = '0.1.0';
+const PACK = '/asset-pack-v1.1/assets/';
+
+interface DioramaSprite {
+  src: string;
+  left: string;
+  bottom: string;
+  width: string;
+  zIndex?: number;
+  className?: string;
+}
+
+const DIORAMA_SPRITES: DioramaSprite[] = [
+  { src: `${PACK}music_living/living_entry_bookcase.png`, left: '2%', bottom: '28%', width: '13%', zIndex: 1 },
+  { src: `${PACK}music_living/living_wall_love_frame.png`, left: '63%', bottom: '63%', width: '18%', zIndex: 1 },
+  { src: `${PACK}music_living/music_upright_piano.png`, left: '60%', bottom: '32%', width: '25%', zIndex: 2 },
+  { src: `${PACK}music_living/living_blue_decorative_vase.png`, left: '86%', bottom: '35%', width: '9%', zIndex: 2 },
+  { src: `${PACK}indoor/potted_indoor_tree.png`, left: '13%', bottom: '33%', width: '17%', zIndex: 2 },
+  { src: `${PACK}music_living/living_coffee_table_green_rug.png`, left: '24%', bottom: '18%', width: '36%', zIndex: 2 },
+  { src: `${PACK}music_living/living_green_sofa.png`, left: '18%', bottom: '4%', width: '48%', zIndex: 4 },
+  { src: `${PACK}indoor/floor_lamp.png`, left: '68%', bottom: '8%', width: '15%', zIndex: 4 },
+];
+
+const DIORAMA_PETS: DioramaSprite[] = [
+  { src: `${PACK}animals/yellow_bird.png`, left: '72%', bottom: '59%', width: '7%', zIndex: 3, className: 'title-pet-bird' },
+  { src: `${PACK}animals/red_panda_sitting.png`, left: '8%', bottom: '11%', width: '12%', zIndex: 5, className: 'title-pet-b' },
+  { src: `${PACK}animals/calico_cat_lounging.png`, left: '37%', bottom: '25%', width: '13%', zIndex: 3, className: 'title-pet-cat' },
+  { src: `${PACK}animals/shiba_dog_standing.png`, left: '79%', bottom: '11%', width: '15%', zIndex: 5, className: 'title-pet' },
+];
 
 export function TitleScreen() {
   const { t } = useTranslation();
@@ -28,17 +55,6 @@ export function TitleScreen() {
     setConfirmNew(false);
   };
 
-  const decor: { id: string; left: string; bottom: string; width: string }[] = [
-    { id: 'living.bookshelf', left: '4%', bottom: '32%', width: '16%' },
-    { id: 'living.painting', left: '66%', bottom: '62%', width: '16%' },
-    { id: 'living.clock', left: '84%', bottom: '66%', width: '9%' },
-    { id: 'living.rug.oval', left: '16%', bottom: '4%', width: '48%' },
-    { id: 'living.sofa.sage', left: '20%', bottom: '18%', width: '40%' },
-    { id: 'living.floorLamp', left: '63%', bottom: '20%', width: '11%' },
-    { id: 'living.coffeeTable', left: '28%', bottom: '8%', width: '25%' },
-    { id: 'living.fern', left: '76%', bottom: '16%', width: '13%' },
-  ];
-
   return (
     <div className="title-screen">
       <div className="title-scene" aria-hidden="true">
@@ -55,26 +71,38 @@ export function TitleScreen() {
         </div>
         <div className="title-sunbeam" />
         <div className="title-floor" />
-        {decor.map((entry) =>
-          ITEMS_BY_ID[entry.id] ? (
-            <span key={`${entry.id}-${entry.left}`} className="title-decor" style={{ left: entry.left, bottom: entry.bottom, width: entry.width }}>
-              <ItemArt itemId={entry.id} size={420} />
-            </span>
-          ) : null,
-        )}
-        <span className="title-pet">
-          <AnimalArt species="cat" coat="ginger" size={190} />
-        </span>
-        <span className="title-pet title-pet-b">
-          <AnimalArt species="dog" coat="golden" pose="sleep" size={170} />
-        </span>
+        {DIORAMA_SPRITES.map((sprite) => (
+          <img
+            key={sprite.src}
+            src={sprite.src}
+            alt=""
+            draggable={false}
+            className="title-decor title-sprite"
+            style={{ left: sprite.left, bottom: sprite.bottom, width: sprite.width, zIndex: sprite.zIndex }}
+          />
+        ))}
+        {DIORAMA_PETS.map((pet) => (
+          <img
+            key={pet.src}
+            src={pet.src}
+            alt=""
+            draggable={false}
+            className={`title-sprite ${pet.className ?? 'title-pet'}`}
+            style={{ left: pet.left, bottom: pet.bottom, width: pet.width, zIndex: pet.zIndex }}
+          />
+        ))}
       </div>
 
-
       <main className="title-card">
-        <p className="title-kicker">
-          <Icon name="home" size={16} /> {t('app.tagline')}
-        </p>
+        <div className="title-plaque-bar">
+          <span className="plaque-nail plaque-nail-tl" aria-hidden="true" />
+          <span className="plaque-nail plaque-nail-tr" aria-hidden="true" />
+          <span className="plaque-nail plaque-nail-bl" aria-hidden="true" />
+          <span className="plaque-nail plaque-nail-br" aria-hidden="true" />
+          <p className="title-kicker">
+            <Icon name="home" size={16} /> {t('app.tagline')}
+          </p>
+        </div>
         <h1>{t('app.name')}</h1>
         <p className="title-lede">{t('about.body')}</p>
 

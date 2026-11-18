@@ -284,3 +284,190 @@ export function Icon({ name, size = 22, title, className, ...rest }: IconProps) 
     </svg>
   );
 }
+
+/** Hand-drawn coral heart overlapped by a golden yellow '+' badge (ui_heart_counter_368 style). */
+export function HudHeartBadge({ size = 34 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 40 36" width={size} height={Math.round((size * 36) / 40)} aria-hidden="true" focusable="false">
+      <path
+        d="M16.5 30.5C15.5 29.8 4.2 21.8 4.2 12.6C4.2 7.5 8.1 4.2 12.2 4.2C14.7 4.2 16.2 5.6 16.8 6.9C17.4 5.6 18.9 4.2 21.4 4.2C25.5 4.2 29.4 7.5 29.4 12.6C29.4 21.8 18.1 29.8 17.1 30.5C16.9 30.6 16.7 30.6 16.5 30.5Z"
+        fill="#E5684C"
+        stroke="#2B2521"
+        strokeWidth="2.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 10.5C9.4 8.7 10.8 7.5 12.5 7.4"
+        fill="none"
+        stroke="#F6B09D"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+      />
+      <path
+        d="M27.2 13.5C28.8 13.5 29.8 14.5 29.8 16.1V19.6H33.3C34.9 19.6 35.9 20.6 35.9 22.2C35.9 23.8 34.9 24.8 33.3 24.8H29.8V28.3C29.8 29.9 28.8 30.9 27.2 30.9C25.6 30.9 24.6 29.9 24.6 28.3V24.8H21.1C19.5 24.8 18.5 23.8 18.5 22.2C18.5 20.6 19.5 19.6 21.1 19.6H24.6V16.1C24.6 14.5 25.6 13.5 27.2 13.5Z"
+        fill="#F7D859"
+        stroke="#2B2521"
+        strokeWidth="2.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Hand-drawn ceramic pet bowl with "CAT" label (ui_cat_food_button_368 style). */
+export function HudCatBowl({ size = 44 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 56 44" width={size} height={Math.round((size * 44) / 56)} aria-hidden="true" focusable="false">
+      {/* Bowl body */}
+      <path
+        d="M11 15.5L6.5 32C6.2 36.2 15.8 39.5 28 39.5C40.2 39.5 49.8 36.2 49.5 32L45 15.5Z"
+        fill="#FFFDF6"
+        stroke="#2B2521"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* Top rim */}
+      <ellipse cx="28" cy="15.5" rx="17" ry="6.2" fill="#FFFDF6" stroke="#2B2521" strokeWidth="3" />
+      {/* Inner recessed well */}
+      <ellipse cx="28" cy="16" rx="12.5" ry="3.8" fill="#DCD2BE" stroke="#2B2521" strokeWidth="2.2" />
+      {/* Golden kibble mound */}
+      <path d="M19 16.5C21 13.2 25 12.8 28 13.5C31 12.6 35 13.4 36.8 16.4Z" fill="#DDA14B" stroke="#2B2521" strokeWidth="1.8" strokeLinejoin="round" />
+      <circle cx="24" cy="15.3" r="1.2" fill="#B57524" />
+      <circle cx="29" cy="14.9" r="1.2" fill="#B57524" />
+      <circle cx="32.5" cy="15.8" r="1.1" fill="#B57524" />
+      {/* Hand-lettered "CAT" */}
+      <text
+        x="28"
+        y="33.5"
+        textAnchor="middle"
+        fill="#8E6424"
+        fontFamily="var(--display)"
+        fontWeight="700"
+        fontSize="11.5"
+        letterSpacing="1.6"
+      >
+        CAT
+      </text>
+    </svg>
+  );
+}
+
+/** Hand-drawn cardboard storage box with armchair and yellow lamp (ui_storage_chest_button style). */
+export function HudStorageBox({ size = 44 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 56 56" width={size} height={size} aria-hidden="true" focusable="false">
+      {/* Ground shadow */}
+      <ellipse cx="28" cy="48.5" rx="19" ry="3" fill="rgba(43,37,33,0.22)" />
+      {/* White chair in box */}
+      <path d="M16 14L27 11L30 24L19 27Z" fill="#FFFDF8" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M18 25L29 22L36 27L25 31Z" fill="#EFE8D8" stroke="#2B2521" strokeWidth="2.4" strokeLinejoin="round" />
+      <path d="M18 25V34M25 31V37" stroke="#2B2521" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Yellow lamp */}
+      <path d="M35 20V31" stroke="#2B2521" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M31.5 19.5L34.5 11.5H40.5L43.5 19.5Z" fill="#E9C75A" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
+      {/* Cardboard box front */}
+      <path d="M14 29L28 34L42 29V44L28 48.5L14 44Z" fill="#C9965B" stroke="#2B2521" strokeWidth="2.6" strokeLinejoin="round" />
+      <path d="M28 34V48.5" stroke="#2B2521" strokeWidth="2.4" />
+      {/* Open box flaps */}
+      <path d="M14 29L9.5 24.5L23.5 27.5L28 34Z" fill="#D9A96E" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M42 29L46.5 24.5L32.5 27.5L28 34Z" fill="#D9A96E" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Hand-drawn shopping cart with coral handle & front plate (ui_shopping_cart_button style). */
+export function HudShoppingCart({ size = 42 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 56 56" width={size} height={size} aria-hidden="true" focusable="false">
+      {/* Handle bar */}
+      <path d="M31 12L46 14L44 17.5L30 15.5Z" fill="#E17055" stroke="#2B2521" strokeWidth="2.4" strokeLinejoin="round" />
+      {/* Basket frame */}
+      <path d="M12 21L38 18L35 34L15 36Z" fill="none" stroke="#2B2521" strokeWidth="2.8" strokeLinejoin="round" />
+      <path d="M38 18L44 15.5L40 32.5L35 34" fill="none" stroke="#2B2521" strokeWidth="2.6" strokeLinejoin="round" />
+      {/* Grid wires */}
+      <path d="M13.5 28.5L36.5 26M18 20.5L20 35.5M25 19.5L26 35M32 19L31.5 34" stroke="#2B2521" strokeWidth="2" strokeLinecap="round" />
+      {/* Coral front badge */}
+      <path d="M13 23L22 24.5L21.5 31L13.5 29.5Z" fill="#E17055" stroke="#2B2521" strokeWidth="2.2" strokeLinejoin="round" />
+      {/* Lower chassis */}
+      <path d="M16 36L14 40.5L37 37.5L35 34" fill="none" stroke="#2B2521" strokeWidth="2.6" strokeLinejoin="round" />
+      {/* Wheels */}
+      <circle cx="17" cy="43.5" r="3.4" fill="#6E6B68" stroke="#2B2521" strokeWidth="2.4" />
+      <circle cx="27" cy="44.5" r="3.4" fill="#6E6B68" stroke="#2B2521" strokeWidth="2.4" />
+      <circle cx="38" cy="41.5" r="3.4" fill="#6E6B68" stroke="#2B2521" strokeWidth="2.4" />
+    </svg>
+  );
+}
+
+/** Hand-drawn red-roofed little house (ui_home_button_368 style). */
+export function HudHouse({ size = 42 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 56 56" width={size} height={size} aria-hidden="true" focusable="false">
+      {/* House walls */}
+      <rect x="13" y="25" width="30" height="20" rx="1.5" fill="#FFFDF8" stroke="#2B2521" strokeWidth="2.8" strokeLinejoin="round" />
+      {/* Red striped roof */}
+      <path d="M8.5 26L15 12H41L47.5 26Z" fill="#DF6A4E" stroke="#2B2521" strokeWidth="2.8" strokeLinejoin="round" />
+      <path d="M21 12L18 26M28 12V26M35 12L38 26" stroke="#2B2521" strokeWidth="2.2" />
+      {/* Window */}
+      <rect x="17.5" y="29.5" width="8" height="6" rx="1" fill="#A6D4E8" stroke="#2B2521" strokeWidth="2.4" />
+      {/* Door */}
+      <rect x="29.5" y="32" width="8.5" height="13" rx="1" fill="#9E9B97" stroke="#2B2521" strokeWidth="2.4" />
+    </svg>
+  );
+}
+
+/** Event tag left-edge celestial/tropical badge (ui_timer_event_stack style). */
+export function HudEventBadge({ kind, size = 28 }: { kind: 'leaf' | 'moon' | 'star'; size?: number }) {
+  if (kind === 'leaf') {
+    return (
+      <svg viewBox="0 0 34 32" width={size} height={size} aria-hidden="true" focusable="false">
+        <circle cx="13" cy="14" r="10.5" fill="#C8339C" stroke="#2B2521" strokeWidth="2.2" />
+        <path d="M4 13H22M5 17H21" stroke="#6F177E" strokeWidth="1.6" />
+        <ellipse cx="18" cy="25.5" rx="11" ry="2.8" fill="#7BC96F" stroke="#2B2521" strokeWidth="2" />
+        <path d="M18 25C18 18 19 14 21 11" fill="none" stroke="#2B2521" strokeWidth="2.4" strokeLinecap="round" />
+        <path
+          d="M21 11C16 9 12 11 11 14C15 13 18 13 21 11ZM21 11C24 8 28 9 30 12C27 12 24 12 21 11ZM21 11C25 12 27 16 26 19C24 16 23 13 21 11Z"
+          fill="#63D492"
+          stroke="#2B2521"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  if (kind === 'moon') {
+    return (
+      <svg viewBox="0 0 34 32" width={size} height={size} aria-hidden="true" focusable="false">
+        <path
+          d="M20 5C12.5 5 7 10.6 7 17.5C7 24.4 12.5 29.5 20 29.5C22.8 29.5 25.4 28.6 27.4 27C21.2 26.8 16.8 22.4 16.8 17C16.8 11.6 21 7.3 26.8 6.8C24.8 5.6 22.5 5 20 5Z"
+          fill="#E8C266"
+          stroke="#2B2521"
+          strokeWidth="2.4"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M23.5 9L25.2 12.8L29.4 13.3L26.2 16.1L27.1 20.2L23.5 18L19.9 20.2L20.8 16.1L17.6 13.3L21.8 12.8Z"
+          fill="#F4D77B"
+          stroke="#2B2521"
+          strokeWidth="2.1"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 34 32" width={size} height={size} aria-hidden="true" focusable="false">
+      <path
+        d="M17 2.5L20 7.5L25.8 6.2L24.5 12L29.5 15.5L24.8 19.2L26.2 25L20.4 24L17 29L13.6 24L7.8 25L9.2 19.2L4.5 15.5L9.5 12L8.2 6.2L14 7.5Z"
+        fill="#D69E4E"
+        stroke="#2B2521"
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+      <circle cx="17" cy="15.8" r="7.5" fill="#F2CB78" stroke="#2B2521" strokeWidth="2.1" />
+      <path d="M17 8.3A7.5 7.5 0 0 1 17 23.3C14.8 20.5 14.8 11.1 17 8.3Z" fill="#D28F4A" stroke="#2B2521" strokeWidth="1.7" />
+      <circle cx="13.5" cy="15.5" r="0.9" fill="#2B2521" />
+      <circle cx="20.2" cy="15.5" r="0.9" fill="#2B2521" />
+    </svg>
+  );
+}
+

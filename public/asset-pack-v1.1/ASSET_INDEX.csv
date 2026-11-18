@@ -1,0 +1,131 @@
+﻿name,category,file,width_px,height_px,transparent_background,quality,source_file,notes
+rocking_horse,outdoor,assets/outdoor/rocking_horse.png,326,242,True,legacy_best_effort_cutout,garden,The rocking horse is isolated from the lawn; small interior gaps remain transparent.
+swing_set_with_cat,outdoor,assets/outdoor/swing_set_with_cat.png,311,398,True,legacy_best_effort_cutout,garden,Swing structure and the small cat are kept as one composite because they overlap.
+deck_chair_with_white_cat,outdoor,assets/outdoor/deck_chair_with_white_cat.png,285,333,True,legacy_best_effort_cutout,garden,Chair and seated cat are kept together as shown.
+side_table_with_vase,outdoor,assets/outdoor/side_table_with_vase.png,168,210,True,legacy_best_effort_cutout,garden,Table and vase composite.
+garden_lamp_post,outdoor,assets/outdoor/garden_lamp_post.png,124,388,True,legacy_best_effort_cutout,garden,Lamp post; background fence fragments may remain where they touch the lamp.
+potted_tropical_plants,outdoor,assets/outdoor/potted_tropical_plants.png,272,371,True,legacy_best_effort_cutout,garden,Two potted plants; some fence overlap is present in the source illustration.
+tree_stumps,outdoor,assets/outdoor/tree_stumps.png,216,130,True,legacy_best_effort_cutout,garden,Pair of tree stumps.
+pool_scene_with_swimming_pets,outdoor,assets/outdoor/pool_scene_with_swimming_pets.png,708,477,True,legacy_best_effort_cutout,garden,"Pool, coping, ladder, duck and dog are kept together as a full scene composite."
+flower_planter_sack,outdoor,assets/outdoor/flower_planter_sack.png,172,239,True,legacy_best_effort_cutout,garden,Flower planter and sack.
+rock_cluster,outdoor,assets/outdoor/rock_cluster.png,248,145,True,legacy_best_effort_cutout,garden,Large rock and nearby small stones.
+shrub_cluster,outdoor,assets/outdoor/shrub_cluster.png,339,206,True,legacy_best_effort_cutout,garden,Cluster of shrubs; some ground details may remain.
+garden_fence_backdrop_strip,outdoor,assets/outdoor/garden_fence_backdrop_strip.png,1445,273,False,reference_fragment,garden,"Left and center fence/hedge backdrop strip, cropped before the HUD counter."
+grass_ground_patch,tiles,assets/tiles/grass_ground_patch.png,260,163,False,reference_fragment,garden,"Grass texture patch from an uncluttered lawn area; use as visual reference, not guaranteed seamless."
+pool_water_grid_tile,tiles,assets/tiles/pool_water_grid_tile.png,145,89,False,reference_fragment,garden,Clear pool water and tile-grid sample without the swimming pets.
+red_panda_sitting,animals,assets/animals/red_panda_sitting.png,121,146,True,legacy_best_effort_cutout,garden,"Red panda character, static pose."
+yellow_bird,animals,assets/animals/yellow_bird.png,93,75,True,legacy_best_effort_cutout,garden,"Small yellow bird, static pose."
+white_cat_lounging,animals,assets/animals/white_cat_lounging.png,128,102,True,legacy_best_effort_cutout,garden,"White cat, static pose."
+ginger_cat_lounging,animals,assets/animals/ginger_cat_lounging.png,144,97,True,legacy_best_effort_cutout,garden,"Ginger cat, static pose."
+yellow_duck_swimming,animals,assets/animals/yellow_duck_swimming.png,97,117,True,legacy_best_effort_cutout,garden,Duck in water; ripples may be retained as part of the sprite.
+dog_swimming,animals,assets/animals/dog_swimming.png,200,198,True,legacy_best_effort_cutout,garden,Swimming dog; ripples and a little water edge may be retained.
+cat_on_swing,animals,assets/animals/cat_on_swing.png,134,82,True,legacy_best_effort_cutout,garden,Cat seated on the swing platform; slight swing overlap possible.
+hud_heart_counter,ui,assets/ui/hud_heart_counter.png,245,107,True,legacy_best_effort_cutout,garden,Heart and plus counter panel with value 360 from the source image.
+ui_cat_food_button,ui,assets/ui/ui_cat_food_button.png,132,125,True,legacy_best_effort_cutout,garden,Cat food button.
+ui_item_button,ui,assets/ui/ui_item_button.png,134,134,True,legacy_best_effort_cutout,garden,Blank item slot button.
+ui_home_button,ui,assets/ui/ui_home_button.png,133,134,True,legacy_best_effort_cutout,garden,Home button.
+wall_notice_board,indoor,assets/indoor/wall_notice_board.png,196,149,True,legacy_best_effort_cutout,indoor,Noticeboard with pinned notes.
+wall_cabinet,indoor,assets/indoor/wall_cabinet.png,456,180,True,legacy_best_effort_cutout,indoor,Wall-mounted cabinet.
+framed_photo,indoor,assets/indoor/framed_photo.png,291,179,True,legacy_best_effort_cutout,indoor,Framed photo with people depicted inside the frame.
+potted_indoor_tree,indoor,assets/indoor/potted_indoor_tree.png,230,323,True,legacy_best_effort_cutout,indoor,Potted indoor tree.
+umbrella_stand,indoor,assets/indoor/umbrella_stand.png,117,319,True,legacy_best_effort_cutout,indoor,Umbrella stand.
+console_cabinet,indoor,assets/indoor/console_cabinet.png,453,171,True,legacy_best_effort_cutout,indoor,Low console cabinet.
+bookshelf_with_cat,indoor,assets/indoor/bookshelf_with_cat.png,416,337,True,legacy_best_effort_cutout,indoor,"Bookshelf, vase, carrier and cat on top kept as a composite."
+sofa_with_people,indoor,assets/indoor/sofa_with_people.png,904,384,True,legacy_best_effort_cutout,indoor,Sofa with seated people; kept together as a decorative scene asset.
+coffee_table_and_rug,indoor,assets/indoor/coffee_table_and_rug.png,676,237,True,legacy_best_effort_cutout,indoor,Coffee table and oval rug composite.
+floor_lamp,indoor,assets/indoor/floor_lamp.png,228,463,True,legacy_best_effort_cutout,indoor,Standing floor lamp.
+dining_table_and_left_chair,indoor,assets/indoor/dining_table_and_left_chair.png,286,433,True,legacy_best_effort_cutout,indoor,Partial dining table and left chair; cropped to avoid the UI buttons at the right edge.
+cat_carrier,indoor,assets/indoor/cat_carrier.png,109,108,True,legacy_best_effort_cutout,indoor,Small pet carrier in the lower bookshelf compartment.
+vase_on_bookshelf,indoor,assets/indoor/vase_on_bookshelf.png,94,106,True,legacy_best_effort_cutout,indoor,Decorative glass vase; a little shelf edge may remain.
+wood_floor_texture_sample,tiles,assets/tiles/wood_floor_texture_sample.png,285,97,False,reference_fragment,indoor,"Wood floor plank texture sample; source texture reference, not guaranteed seamless."
+entry_rug,indoor,assets/indoor/entry_rug.png,154,182,True,legacy_best_effort_cutout,indoor,Small entry rug.
+book_stack,indoor,assets/indoor/book_stack.png,109,188,True,legacy_best_effort_cutout,indoor,Books and magazines stack.
+gray_cat_sitting,animals,assets/animals/gray_cat_sitting.png,76,116,True,legacy_best_effort_cutout,indoor,Gray cat sitting on console; static pose.
+orange_cat_on_shelf,animals,assets/animals/orange_cat_on_shelf.png,115,117,True,legacy_best_effort_cutout,indoor,Orange cat leaning over bookshelf.
+calico_cat_lounging,animals,assets/animals/calico_cat_lounging.png,145,94,True,legacy_best_effort_cutout,indoor,"Calico cat, static pose."
+shiba_dog_standing,animals,assets/animals/shiba_dog_standing.png,168,163,True,legacy_best_effort_cutout,indoor,Standing Shiba-style dog.
+black_white_cat_walking,animals,assets/animals/black_white_cat_walking.png,181,151,True,legacy_best_effort_cutout,indoor,Black and white cat walking.
+white_cat_sitting,animals,assets/animals/white_cat_sitting.png,73,98,True,legacy_best_effort_cutout,indoor,Small white cat.
+nursery_rocking_chair,nursery,assets/nursery/nursery_rocking_chair.png,242,301,True,best_effort_cutout,IMG_2703.jpeg,Chair cutout. Clean single prop from the nursery scene.
+nursery_dollhouse_bookshelf,nursery,assets/nursery/nursery_dollhouse_bookshelf.png,231,286,True,composite_cutout,IMG_2703.jpeg,Dollhouse-shaped shelf with its small decor; one composite prop.
+nursery_baby_walker,nursery,assets/nursery/nursery_baby_walker.png,149,147,True,composite_cutout,IMG_2703.jpeg,Baby and walker are intentionally one character-plus-prop composite.
+nursery_plush_toy_basket,nursery,assets/nursery/nursery_plush_toy_basket.png,199,179,True,composite_cutout,IMG_2703.jpeg,Basket and plush toys are kept together.
+nursery_strawberry_rug,nursery,assets/nursery/nursery_strawberry_rug.png,444,173,True,best_effort_cutout,IMG_2703.jpeg,Oval strawberry-pattern rug cutout.
+nursery_changing_dresser_pet_bed,nursery,assets/nursery/nursery_changing_dresser_pet_bed.png,235,372,True,composite_cutout,IMG_2703.jpeg,Changing dresser with pet bed and resting pet; composite.
+nursery_lamp_nightstand,nursery,assets/nursery/nursery_lamp_nightstand.png,130,222,True,composite_cutout,IMG_2703.jpeg,Lamp and nightstand grouped as one prop.
+nursery_mother_crib_scene,nursery,assets/nursery/nursery_mother_crib_scene.png,284,393,False,reference_fragment,IMG_2703.jpeg,"Adult, baby-care activity and crib overlap; opaque reference fragment for tracing, not a standalone sprite."
+nursery_canopy_tent_scene,nursery,assets/nursery/nursery_canopy_tent_scene.png,104,396,False,reference_fragment,IMG_2703.jpeg,Canopy tent and pet with partial event UI overlap; opaque reference fragment.
+bedroom_bed_sleeping_cat,bedroom,assets/bedroom/bedroom_bed_sleeping_cat.png,607,431,True,composite_cutout,IMG_2702.jpeg,"Bed, bedding and sleeping cat are a deliberate composite."
+bedroom_clothes_rail,bedroom,assets/bedroom/bedroom_clothes_rail.png,238,252,True,composite_cutout,IMG_2702.jpeg,Clothes rail and hanging garments.
+bedroom_bedside_table_lamp,bedroom,assets/bedroom/bedroom_bedside_table_lamp.png,177,210,True,composite_cutout,IMG_2702.jpeg,"Bedside table, lamp and small books grouped."
+bedroom_vanity_workspace,bedroom,assets/bedroom/bedroom_vanity_workspace.png,260,263,True,best_effort_cutout,IMG_2702.jpeg,Desk/vanity with desktop items; includes its own composition.
+bedroom_yellow_desk_chair,bedroom,assets/bedroom/bedroom_yellow_desk_chair.png,155,190,True,best_effort_cutout,IMG_2702.jpeg,Yellow desk chair.
+bedroom_indoor_tree,bedroom,assets/bedroom/bedroom_indoor_tree.png,219,273,True,best_effort_cutout,IMG_2702.jpeg,Large potted indoor tree.
+bedroom_chaise_lounge,bedroom,assets/bedroom/bedroom_chaise_lounge.png,403,135,False,reference_fragment,IMG_2702.jpeg,Chaise/bench with throw; lower edge is clipped by the screenshot.
+bedroom_plant_cluster,bedroom,assets/bedroom/bedroom_plant_cluster.png,330,270,False,reference_fragment,IMG_2702.jpeg,Large cluster of indoor plants; source fragment includes floor and rug edge.
+bedroom_window_cat_scene,bedroom,assets/bedroom/bedroom_window_cat_scene.png,298,369,False,reference_fragment,IMG_2702.jpeg,"Window, pet and heart bubble overlap; reference composite."
+bathroom_shower_unit,bathroom,assets/bathroom/bathroom_shower_unit.png,253,387,True,composite_cutout,IMG_2704.jpeg,Shower enclosure and fittings.
+bathroom_toilet,bathroom,assets/bathroom/bathroom_toilet.png,180,240,True,best_effort_cutout,IMG_2704.jpeg,Toilet with small nearby bathroom details.
+bathroom_storage_shelf,bathroom,assets/bathroom/bathroom_storage_shelf.png,105,290,True,best_effort_cutout,IMG_2704.jpeg,Narrow vertical bathroom storage rack.
+bathroom_vanity_sink,bathroom,assets/bathroom/bathroom_vanity_sink.png,396,453,False,reference_fragment,IMG_2704.jpeg,Vanity and basin are clipped by the left screenshot edge; retained as reference crop.
+bathroom_bathtub_and_plant,bathroom,assets/bathroom/bathroom_bathtub_and_plant.png,456,273,False,reference_fragment,IMG_2704.jpeg,Bathtub and plant are partially overlapped by event HUD; opaque source fragment only.
+bathroom_large_bath_mat,bathroom,assets/bathroom/bathroom_large_bath_mat.png,552,226,False,reference_fragment,IMG_2704.jpeg,Mat overlaps with a heart notification; opaque crop for redraw/layout reference.
+bathroom_laundry_basket,bathroom,assets/bathroom/bathroom_laundry_basket.png,180,174,False,reference_fragment,IMG_2704.jpeg,Basket is near the shopping-cart HUD button and clipped at the screenshot bottom; opaque reference only.
+bathroom_sleeping_cat,bathroom,assets/bathroom/bathroom_sleeping_cat.png,107,107,True,best_effort_cutout,IMG_2704.jpeg,Small curled cat; separate from the larger fixtures.
+bathroom_wall_mirror,bathroom,assets/bathroom/bathroom_wall_mirror.png,75,343,True,composite_cutout,IMG_2704.jpeg,Tall wall mirror.
+studio_drawing_desk,studio,assets/studio/studio_drawing_desk.png,405,321,True,composite_cutout,IMG_2705.jpeg,Artist desk and chair grouped as a workstation.
+studio_worktable_paint_supplies,studio,assets/studio/studio_worktable_paint_supplies.png,557,313,True,composite_cutout,IMG_2705.jpeg,Large worktable with painting supplies; complete composite.
+studio_chaise_lounge,studio,assets/studio/studio_chaise_lounge.png,319,200,True,best_effort_cutout,IMG_2705.jpeg,Lounge chair.
+studio_bookshelf,studio,assets/studio/studio_bookshelf.png,264,348,False,reference_fragment,IMG_2705.jpeg,Bookcase is partly obscured by the screenshot HUD; keep as an opaque reference crop.
+studio_tall_potted_plant,studio,assets/studio/studio_tall_potted_plant.png,214,254,True,composite_cutout,IMG_2705.jpeg,Tall floor plant with pot.
+studio_wall_art_collection,studio,assets/studio/studio_wall_art_collection.png,311,194,True,composite_cutout,IMG_2705.jpeg,Wall pictures and clock grouped as a decor collection.
+studio_floor_lamp,studio,assets/studio/studio_floor_lamp.png,150,289,True,composite_cutout,IMG_2705.jpeg,"Floor lamp, partly overlapped by plant branches; composite."
+kitchen_sink_counter,kitchen,assets/kitchen/kitchen_sink_counter.png,509,199,False,reference_fragment,IMG_2706.jpeg,Sink and counter section; left side is clipped by screenshot boundary.
+kitchen_range_hood,kitchen,assets/kitchen/kitchen_range_hood.png,536,168,True,composite_cutout,IMG_2706.jpeg,Extractor hood.
+kitchen_stove_with_pots,kitchen,assets/kitchen/kitchen_stove_with_pots.png,635,246,True,composite_cutout,IMG_2706.jpeg,"Cooktop, oven edge and cookware kept together."
+kitchen_hanging_utensils_and_pans,kitchen,assets/kitchen/kitchen_hanging_utensils_and_pans.png,442,333,False,reference_fragment,IMG_2706.jpeg,Kitchen hanging rack and cookware crop includes the heart counter at the upper-right; opaque reference only.
+kitchen_lower_cabinets,kitchen,assets/kitchen/kitchen_lower_cabinets.png,1536,279,False,reference_fragment,IMG_2706.jpeg,Long lower cabinet and oven run; source fragment.
+kitchen_spice_jars,kitchen,assets/kitchen/kitchen_spice_jars.png,308,185,True,composite_cutout,IMG_2706.jpeg,Cluster of jars and small counter objects.
+farm_chicken_coop,farm,assets/farm/farm_chicken_coop.png,334,289,True,composite_cutout,IMG_2707.jpeg,Chicken coop with clock and hay.
+farm_cow,farm,assets/farm/farm_cow.png,174,192,True,best_effort_cutout,IMG_2707.jpeg,Standing cow.
+farm_chicken,farm,assets/farm/farm_chicken.png,85,121,True,best_effort_cutout,IMG_2707.jpeg,Tighter crop around the chicken to reduce overlap with the nearby nest; inspect edge pixels before final production.
+farm_raised_vegetable_beds,farm,assets/farm/farm_raised_vegetable_beds.png,395,230,True,composite_cutout,IMG_2707.jpeg,Two raised growing beds shown together.
+farm_crop_plot_grid,farm,assets/farm/farm_crop_plot_grid.png,588,386,False,reference_fragment,IMG_2707.jpeg,Several planting plots and soil rows; environmental reference panel.
+farm_diagonal_picket_fence,farm,assets/farm/farm_diagonal_picket_fence.png,367,548,False,reference_fragment,IMG_2707.jpeg,Long diagonal fence section; background and grass remain.
+farm_riverbank_and_water,farm,assets/farm/farm_riverbank_and_water.png,1536,183,False,reference_fragment,IMG_2707.jpeg,"Wide riverbank strip with water, rocks and lily pads; intended as a background segment."
+farm_stone_river_crossing,farm,assets/farm/farm_stone_river_crossing.png,1043,174,False,reference_fragment,IMG_2707.jpeg,"Water, stepping stones and bank as a scene tile strip."
+garden_raised_flower_beds,garden,assets/garden/garden_raised_flower_beds.png,683,228,True,composite_cutout,IMG_2701.jpeg,Two wooden raised flower beds with dense flower planting.
+garden_lantern_pedestal,garden,assets/garden/garden_lantern_pedestal.png,145,213,True,composite_cutout,IMG_2701.jpeg,Decorative garden lantern/fountain-like pedestal.
+garden_picnic_blanket_setup,garden,assets/garden/garden_picnic_blanket_setup.png,524,287,False,reference_fragment,IMG_2701.jpeg,"Picnic blanket, food basket and nearby tree branch; reference composite."
+garden_mushroom_cluster,garden,assets/garden/garden_mushroom_cluster.png,254,192,True,composite_cutout,IMG_2701.jpeg,"Mushrooms, small cat and nearby grass, kept together."
+garden_pool_scene_expanded,garden,assets/garden/garden_pool_scene_expanded.png,673,374,False,reference_fragment,IMG_2701.jpeg,"Pool, ladder and garden edge as a complete scene composite."
+pet_deck_food_and_water_bowls,pet_care,assets/pet_care/pet_deck_food_and_water_bowls.png,241,184,True,composite_cutout,IMG_2700.jpeg,Two pet bowls and small deck items.
+pet_stone_platform,pet_care,assets/pet_care/pet_stone_platform.png,925,248,True,best_effort_cutout,IMG_2700.jpeg,Long low stone platform; broad prop with some natural ground edge.
+pet_ball,pet_care,assets/pet_care/pet_ball.png,169,128,True,best_effort_cutout,IMG_2700.jpeg,Soccer ball on the grass.
+pet_bowls_and_mat_set,pet_care,assets/pet_care/pet_bowls_and_mat_set.png,1030,195,False,reference_fragment,IMG_2700.jpeg,Outdoor feeding mats and bowls; lower-edge composite reference.
+music_upright_piano,music_living,assets/music_living/music_upright_piano.png,295,273,True,composite_cutout,IMG_2699.jpeg,Upright piano and bench area; composite crop.
+living_green_sofa,music_living,assets/music_living/living_green_sofa.png,584,174,True,composite_cutout,IMG_2699.jpeg,"Green sofa, lower edge clipped by screenshot boundary."
+living_coffee_table_green_rug,music_living,assets/music_living/living_coffee_table_green_rug.png,441,175,True,composite_cutout,IMG_2699.jpeg,Coffee table and oval rug grouped.
+living_entry_bookcase,music_living,assets/music_living/living_entry_bookcase.png,109,338,True,best_effort_cutout,IMG_2699.jpeg,"Tall open bookcase, partly clipped at lower edge."
+living_blue_decorative_vase,music_living,assets/music_living/living_blue_decorative_vase.png,98,225,True,best_effort_cutout,IMG_2699.jpeg,Tall blue-and-white decorative vase.
+living_wall_love_frame,music_living,assets/music_living/living_wall_love_frame.png,226,155,True,composite_cutout,IMG_2699.jpeg,Wall frame and heart decoration.
+living_floor_lamp_and_stand,music_living,assets/music_living/living_floor_lamp_and_stand.png,236,286,True,composite_cutout,IMG_2699.jpeg,Standing floor lamp and nearby object; grouped composite.
+living_spiral_staircase_scene,music_living,assets/music_living/living_spiral_staircase_scene.png,333,444,False,reference_fragment,IMG_2699.jpeg,"Spiral staircase with overlapping event HUD; reference crop, not isolated."
+ui_heart_counter_368,ui_gallery,assets/ui_gallery/ui_heart_counter_368.png,168,84,True,composite_cutout,IMG_2703.jpeg,New heart/currency counter showing 368; UI style reference.
+ui_timer_event_stack,ui_gallery,assets/ui_gallery/ui_timer_event_stack.png,146,212,True,composite_cutout,IMG_2703.jpeg,Three event timer tags grouped together.
+ui_storage_chest_button,ui_gallery,assets/ui_gallery/ui_storage_chest_button.png,88,92,True,best_effort_cutout,IMG_2703.jpeg,Storage/chest button.
+ui_shopping_cart_button,ui_gallery,assets/ui_gallery/ui_shopping_cart_button.png,88,88,True,best_effort_cutout,IMG_2703.jpeg,Shopping cart button.
+ui_home_button_368,ui_gallery,assets/ui_gallery/ui_home_button_368.png,90,92,True,best_effort_cutout,IMG_2703.jpeg,Home button from the updated interface.
+ui_cat_food_button_368,ui_gallery,assets/ui_gallery/ui_cat_food_button_368.png,87,87,True,best_effort_cutout,IMG_2703.jpeg,Cat food button from the updated interface.
+ui_top_left_status_button,ui_gallery,assets/ui_gallery/ui_top_left_status_button.png,87,95,True,best_effort_cutout,IMG_2703.jpeg,Top-left status/control button.
+moments_gallery_header,ui_gallery,assets/ui_gallery/moments_gallery_header.png,1536,115,False,reference_fragment,IMG_2708.jpeg,Gallery header strip with title and back button; source UI fragment.
+moments_photo_card_01,ui_gallery,assets/ui_gallery/moments_photo_card_01.png,362,261,False,reference_fragment,IMG_2708.jpeg,Gallery thumbnail card including its timestamp.
+moments_photo_card_02,ui_gallery,assets/ui_gallery/moments_photo_card_02.png,366,261,False,reference_fragment,IMG_2708.jpeg,Gallery thumbnail card including its timestamp.
+moments_photo_card_03,ui_gallery,assets/ui_gallery/moments_photo_card_03.png,366,261,False,reference_fragment,IMG_2708.jpeg,Gallery thumbnail card including its timestamp.
+moments_photo_card_04,ui_gallery,assets/ui_gallery/moments_photo_card_04.png,363,256,False,reference_fragment,IMG_2708.jpeg,Gallery thumbnail card including its timestamp; bottom edge slightly clipped.
+moments_photo_card_05,ui_gallery,assets/ui_gallery/moments_photo_card_05.png,367,256,False,reference_fragment,IMG_2708.jpeg,Gallery thumbnail card including its timestamp; bottom edge slightly clipped.
+moments_photo_card_06,ui_gallery,assets/ui_gallery/moments_photo_card_06.png,367,256,False,reference_fragment,IMG_2708.jpeg,Gallery thumbnail card including its timestamp; bottom edge slightly clipped.
+tile_bathroom_blue_floor_sample,tiles_extra,assets/tiles_extra/tile_bathroom_blue_floor_sample.png,79,106,False,reference_fragment,IMG_2704.jpeg,Blue square bathroom floor tile sample; not verified seamless.
+tile_bedroom_wood_floor_sample,tiles_extra,assets/tiles_extra/tile_bedroom_wood_floor_sample.png,87,113,False,reference_fragment,IMG_2702.jpeg,"Wood flooring reference sample; diagonal plank pattern, not guaranteed seamless."
+tile_farm_soil_plot_sample,tiles_extra,assets/tiles_extra/tile_farm_soil_plot_sample.png,126,108,False,reference_fragment,IMG_2707.jpeg,Farm soil patch reference; not guaranteed seamless.
+tile_river_water_sample,tiles_extra,assets/tiles_extra/tile_river_water_sample.png,196,80,False,reference_fragment,IMG_2707.jpeg,River water and stones reference; not guaranteed seamless.

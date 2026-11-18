@@ -1,16 +1,18 @@
-import { Application, Container, Graphics, Sprite, Text, Texture, type Ticker } from 'pixi.js';
+import { Application, Container, Graphics, Rectangle, Sprite, Text, Texture, type Ticker } from 'pixi.js';
 import { animalArt, animalRigParts, type AnimalRigParts, type RigPart } from '../art/animals';
 import { babyRigParts, characterRigParts, type CharacterRigParts } from '../art/characters';
 import { itemArt } from '../art/items';
 import { PALETTES } from '../art/palettes';
 import { SVG_DEFS } from '../art/svg';
+import { CROPS_BY_ID } from '../data/farm';
 import { ITEMS_BY_ID } from '../data/items';
 import { ROOMS, ROOM_PALETTES } from '../data/rooms';
 import { VISITORS_BY_ID } from '../data/visitors';
-import type { GameState, HeartBubble, PetState, PlacedItem, RoomId } from '../game/types';
 import { isFlatItem, itemSize } from '../game/placement';
+import type { GameState, HeartBubble, PetState, PlacedItem, RoomId } from '../game/types';
+import { useGameStore } from '../store/gameStore';
 
-const INK = '#2E2A26';
+const INK = '#2B2521';
 
 export interface StageCallbacks {
   onBubble: (bubbleId: string) => void;
@@ -50,6 +52,16 @@ interface ItemNode {
   popTimer: number;
   baseW: number;
   baseH: number;
+  usesPng: boolean;
+  glowKey: string;
+  overlayKey: string;
+  overlayParts?: {
+    hour?: Graphics;
+    min?: Graphics;
+    sec?: Graphics;
+    ripple?: Graphics;
+    blades?: Graphics;
+  };
 }
 
 interface RigSprites {
@@ -76,6 +88,12 @@ interface AnimalRigNode {
   rig: Container;
   parts: AnimalRigParts;
   sprites: RigSprites;
+  pngSprite?: Sprite;
+  pngShadow?: Graphics;
+  pngUrl?: string;
+  pngW?: number;
+  pngH?: number;
+  readyBadge?: Graphics;
   cacheKey: string;
   targetSize: number;
   visX: number;
@@ -149,6 +167,97 @@ interface DustMote {
   alpha: number;
 }
 
+interface MoteNode {
+  gfx: Graphics;
+  data: DustMote;
+}
+
+interface SkyActor {
+  gfx: Graphics;
+  kind: 'star' | 'cloud' | 'windowCloud';
+  x0: number;
+  y: number;
+  speed: number;
+  phase: number;
+  winX?: number;
+  winW?: number;
+}
+
+/**
+ * Entries in public/asset-pack-v1.1/manifest.json with transparent_background: false.
+ * These are NEVER rendered as PNG sprites — only as visual/color style references.
+ */
+const OPAQUE_PACK_FILES = new Set<string>([
+  'assets/outdoor/garden_fence_backdrop_strip.png',
+  'assets/tiles/grass_ground_patch.png',
+  'assets/tiles/pool_water_grid_tile.png',
+  'assets/tiles/wood_floor_texture_sample.png',
+  'assets/nursery/nursery_mother_crib_scene.png',
+  'assets/nursery/nursery_canopy_tent_scene.png',
+  'assets/bedroom/bedroom_chaise_lounge.png',
+  'assets/bedroom/bedroom_plant_cluster.png',
+  'assets/bedroom/bedroom_window_cat_scene.png',
+  'assets/bathroom/bathroom_vanity_sink.png',
+  'assets/bathroom/bathroom_bathtub_and_plant.png',
+  'assets/bathroom/bathroom_large_bath_mat.png',
+  'assets/bathroom/bathroom_laundry_basket.png',
+  'assets/studio/studio_bookshelf.png',
+  'assets/kitchen/kitchen_sink_counter.png',
+  'assets/kitchen/kitchen_hanging_utensils_and_pans.png',
+  'assets/kitchen/kitchen_lower_cabinets.png',
+  'assets/farm/farm_crop_plot_grid.png',
+  'assets/farm/farm_diagonal_picket_fence.png',
+  'assets/farm/farm_riverbank_and_water.png',
+  'assets/farm/farm_stone_river_crossing.png',
+  'assets/garden/garden_picnic_blanket_setup.png',
+  'assets/garden/garden_pool_scene_expanded.png',
+  'assets/pet_care/pet_bowls_and_mat_set.png',
+  'assets/music_living/living_spiral_staircase_scene.png',
+  'assets/ui_gallery/moments_gallery_header.png',
+  'assets/ui_gallery/moments_photo_card_01.png',
+  'assets/ui_gallery/moments_photo_card_02.png',
+  'assets/ui_gallery/moments_photo_card_03.png',
+  'assets/ui_gallery/moments_photo_card_04.png',
+  'assets/ui_gallery/moments_photo_card_05.png',
+  'assets/ui_gallery/moments_photo_card_06.png',
+  'assets/tiles_extra/tile_bathroom_blue_floor_sample.png',
+  'assets/tiles_extra/tile_bedroom_wood_floor_sample.png',
+  'assets/tiles_extra/tile_farm_soil_plot_sample.png',
+  'assets/tiles_extra/tile_river_water_sample.png',
+]);
+
+/** Clean, artifact-free transparent_background: true cutouts mapped by item id as optional fallback. */
+const ITEM_SPRITE_FALLBACK: Record<string, string> = {
+  'nursery.rockingChair': '/asset-pack-v1.1/assets/nursery/nursery_rocking_chair.png',
+  'nursery.toyBasket': '/asset-pack-v1.1/assets/nursery/nursery_plush_toy_basket.png',
+  'nursery.rug': '/asset-pack-v1.1/assets/nursery/nursery_strawberry_rug.png',
+};
+
+/** Clean transparent PNG cutouts for idle/lounging animal poses. */
+function animalPngFor(species: string, coat: string | undefined, pose: 'idle' | 'walk' | 'sleep' | 'special'): string | null {
+  if (pose !== 'idle') return null;
+  if (species === 'redPanda') return '/asset-pack-v1.1/assets/animals/red_panda_sitting.png';
+  if (species === 'dog' && (coat === 'golden' || coat === 'rust')) {
+    return '/asset-pack-v1.1/assets/animals/shiba_dog_standing.png';
+  }
+  if (species === 'cat') {
+    if (coat === 'calico') return '/asset-pack-v1.1/assets/animals/calico_cat_lounging.png';
+    if (coat === 'ginger') return '/asset-pack-v1.1/assets/animals/ginger_cat_lounging.png';
+    if (coat === 'white' || coat === 'cream') return '/asset-pack-v1.1/assets/animals/white_cat_lounging.png';
+    if (coat === 'charcoal') return '/asset-pack-v1.1/assets/animals/black_white_cat_walking.png';
+  }
+  return null;
+}
+
+function normalizePackUrl(sprite: string): string | null {
+  const cleaned = sprite.replace(/^\/+/, '');
+  const rel = cleaned.startsWith('asset-pack-v1.1/') ? cleaned.slice('asset-pack-v1.1/'.length) : cleaned;
+  if (OPAQUE_PACK_FILES.has(rel)) return null;
+  if (sprite.startsWith('/asset-pack-v1.1/')) return sprite;
+  if (cleaned.startsWith('asset-pack-v1.1/')) return `/${cleaned}`;
+  return `/asset-pack-v1.1/${rel}`;
+}
+
 const textureCache = new Map<string, Texture>();
 const textureLoading = new Set<string>();
 
@@ -174,6 +283,27 @@ function requestTexture(key: string, body: string, w: number, h: number, onReady
   };
   image.onerror = () => textureLoading.delete(key);
   image.src = svgDataUrl(body, w, h);
+  return null;
+}
+
+function requestImageTexture(url: string, onReady: () => void): Texture | null {
+  const existing = textureCache.get(url);
+  if (existing) return existing;
+  if (textureLoading.has(url)) return null;
+  textureLoading.add(url);
+  const image = new Image();
+  image.crossOrigin = 'anonymous';
+  image.onload = () => {
+    try {
+      textureCache.set(url, Texture.from(image));
+    } catch {
+      /* ignore */
+    }
+    textureLoading.delete(url);
+    onReady();
+  };
+  image.onerror = () => textureLoading.delete(url);
+  image.src = url;
   return null;
 }
 
@@ -209,283 +339,777 @@ function updateRigPartTexture(
   }
 }
 
-function drawWindowFrame(g: Graphics, x: number, y: number, w: number, h: number, night: boolean, sky: string): void {
-  // Soft drop shadow behind window frame
-  g.roundRect(x - 14, y - 8, w + 28, h + 30, 8).fill({ color: '#2B2521', alpha: 0.12 });
-
-  // Outer wooden casing
-  g.roundRect(x - 14, y - 14, w + 28, h + 28, 6).fill('#FBF7EC');
-  g.roundRect(x - 14, y - 14, w + 28, h + 28, 6).stroke({ width: 3.5, color: INK });
-  g.rect(x - 6, y - 6, w + 12, h + 12).fill('#E8DEC8');
-
-  // Sky glass backdrop
-  g.rect(x, y, w, h).fill(night ? '#2D4060' : sky);
-  g.rect(x, y, w, h * 0.45).fill({ color: night ? '#1F2E48' : '#FFFFFF', alpha: night ? 0.28 : 0.18 });
-
-  if (night) {
-    // Glowing moon
-    g.circle(x + w * 0.72, y + h * 0.28, 22).fill({ color: '#FBF7EC', alpha: 0.18 });
-    g.circle(x + w * 0.72, y + h * 0.28, 14).fill('#FBF7EC');
-    g.circle(x + w * 0.72 + 6, y + h * 0.28 - 5, 11).fill('#2D4060');
-    // Night hills
-    g.ellipse(x + w * 0.35, y + h * 0.78, w * 0.33, h * 0.2).fill('#283A38');
-    g.ellipse(x + w * 0.68, y + h * 0.81, w * 0.3, h * 0.18).fill('#213130');
-    g.rect(x, y + h * 0.76, w, h * 0.24).fill('#243532');
-  } else {
-    // Warm sun
-    g.circle(x + w * 0.74, y + h * 0.24, 24).fill({ color: '#FCE9A8', alpha: 0.42 });
-    g.circle(x + w * 0.74, y + h * 0.24, 14).fill('#F3CE68');
-    // Rolling hills & distant trees
-    g.ellipse(x + w * 0.35, y + h * 0.74, w * 0.33, h * 0.2).fill('#A3BF84');
-    g.ellipse(x + w * 0.68, y + h * 0.76, w * 0.3, h * 0.19).fill('#8EAA70');
-    g.rect(x, y + h * 0.73, w, h * 0.27).fill('#8FA96F');
-    g.circle(x + w * 0.22, y + h * 0.65, 15).fill('#759457');
-    g.circle(x + w * 0.3, y + h * 0.68, 12).fill('#84A364');
-  }
-}
-
-function drawWindowOverlay(g: Graphics, x: number, y: number, w: number, h: number, night: boolean): void {
-  // Diagonal glass reflection streaks
-  g.poly([x + 12, y + h - 18, x + 46, y + 12, x + 62, y + 12, x + 28, y + h - 18]).fill({
-    color: '#FFFFFF',
-    alpha: night ? 0.08 : 0.22,
-  });
-  g.poly([x + 70, y + h - 18, x + 104, y + 12, x + 112, y + 12, x + 78, y + h - 18]).fill({
-    color: '#FFFFFF',
-    alpha: night ? 0.05 : 0.14,
-  });
-
-  // Inner frame & muntin bars
-  g.rect(x, y, w, h).stroke({ width: 3.5, color: INK });
-  g.rect(x + w / 2 - 3, y, 6, h).fill('#FBF7EC');
-  g.rect(x + w / 2 - 3, y, 6, h).stroke({ width: 2.5, color: INK });
-  g.rect(x, y + h / 2 - 3, w, 6).fill('#FBF7EC');
-  g.rect(x, y + h / 2 - 3, w, 6).stroke({ width: 2.5, color: INK });
-
-  // Cozy fabric curtains & wooden rod
-  const curtainCol = night ? '#9E8878' : '#E8D9C5';
-  const curtainFold = night ? '#826E60' : '#D4C1A9';
-  g.roundRect(x - 32, y - 24, w + 64, 8, 4).fill('#8C6B4C');
-  g.roundRect(x - 32, y - 24, w + 64, 8, 4).stroke({ width: 2.8, color: INK });
-  g.circle(x - 32, y - 20, 6).fill('#7A5A3C');
-  g.circle(x - 32, y - 20, 6).stroke({ width: 2.5, color: INK });
-  g.circle(x + w + 32, y - 20, 6).fill('#7A5A3C');
-  g.circle(x + w + 32, y - 20, 6).stroke({ width: 2.5, color: INK });
-
-  // Left drape
-  g.poly([
-    x - 24, y - 16,
-    x + 14, y - 16,
-    x + 6, y + h * 0.55,
-    x + 16, y + h + 14,
-    x - 26, y + h + 14,
-  ]).fill(curtainCol);
-  g.poly([
-    x - 24, y - 16,
-    x + 14, y - 16,
-    x + 6, y + h * 0.55,
-    x + 16, y + h + 14,
-    x - 26, y + h + 14,
-  ]).stroke({ width: 2.8, color: INK });
-  g.moveTo(x - 8, y - 12).lineTo(x - 10, y + h + 10).stroke({ width: 2, color: curtainFold });
-
-  // Right drape
-  g.poly([
-    x + w - 14, y - 16,
-    x + w + 24, y - 16,
-    x + w + 26, y + h + 14,
-    x + w - 16, y + h + 14,
-    x + w - 6, y + h * 0.55,
-  ]).fill(curtainCol);
-  g.poly([
-    x + w - 14, y - 16,
-    x + w + 24, y - 16,
-    x + w + 26, y + h + 14,
-    x + w - 16, y + h + 14,
-    x + w - 6, y + h * 0.55,
-  ]).stroke({ width: 2.8, color: INK });
-  g.moveTo(x + w + 8, y - 12).lineTo(x + w + 10, y + h + 10).stroke({ width: 2, color: curtainFold });
-
-  // Thick carved wooden windowsill
-  g.roundRect(x - 22, y + h + 6, w + 44, 14, 5).fill('#DFCBB0');
-  g.roundRect(x - 22, y + h + 6, w + 44, 14, 5).stroke({ width: 3.2, color: INK });
-  g.rect(x - 16, y + h + 20, w + 32, 6).fill({ color: '#2B2521', alpha: 0.14 });
-}
-
 const WINDOWS: Partial<Record<RoomId, [number, number, number, number]>> = {
-  living: [250, 112, 250, 206],
-  bedroom: [196, 112, 210, 178],
-  kitchen: [230, 112, 240, 184],
-  bathroom: [220, 144, 150, 120],
-  studio: [1440, 92, 300, 244],
-  nursery: [1420, 114, 230, 186],
+  living: [14, 18, 206, 396],
+  bedroom: [52, 22, 178, 360],
+  kitchen: [92, 0, 438, 258],
+  bathroom: [1130, 0, 680, 148],
+  studio: [10, 0, 252, 398],
+  nursery: [54, 34, 178, 222],
 };
 
-function paintRoom(bg: Graphics, fg: Graphics, roomId: RoomId, night: boolean): void {
-  const room = ROOMS[roomId];
-  const pal = ROOM_PALETTES[roomId];
-  const floorTop = room.floorTop;
-  bg.clear();
-  fg.clear();
+function drawGardenView(g: Graphics, x: number, y: number, w: number, h: number, night: boolean, sky: string, showFence: boolean): void {
+  g.rect(x, y, w, h).fill(night ? '#263854' : sky);
+  g.rect(x, y, w, h * 0.48).fill({ color: night ? '#1B283D' : '#FFFFFF', alpha: night ? 0.28 : 0.2 });
 
-  if (room.outdoor) {
-    // Rich sky with horizon glow
-    bg.rect(0, 0, 1920, 884).fill(night ? '#26354D' : pal.sky);
-    bg.rect(0, 0, 1920, floorTop * 0.55).fill({ color: night ? '#1B273B' : '#FFFFFF', alpha: night ? 0.35 : 0.22 });
-    bg.rect(0, floorTop - 110, 1920, 110).fill({ color: night ? '#3A4E6B' : '#FCEFD2', alpha: night ? 0.25 : 0.38 });
-
-    // Layered rolling hills
-    bg.ellipse(340, floorTop + 24, 560, 210).fill(night ? '#2E453B' : '#B7CF9F');
-    bg.ellipse(1180, floorTop + 42, 680, 240).fill(night ? '#273D34' : '#A4C08E');
-    bg.ellipse(1720, floorTop + 18, 490, 195).fill(night ? '#314B41' : '#B0CA98');
-
-    // Distant trees along horizon
-    for (const tx of [140, 480, 820, 1340, 1620, 1830]) {
-      const ty = floorTop - 28;
-      bg.circle(tx, ty - 20, 34).fill(night ? '#233830' : '#7E9E68');
-      bg.circle(tx + 22, ty - 10, 26).fill(night ? '#294037' : '#8DAB74');
-    }
-
-    if (night) {
-      bg.circle(1640, 120, 84).fill({ color: '#FBF7EC', alpha: 0.12 });
-      bg.circle(1640, 120, 58).fill('#FBF7EC');
-      bg.circle(1666, 102, 50).fill('#26354D');
-    } else {
-      bg.circle(1640, 120, 86).fill({ color: '#FCE9A8', alpha: 0.35 });
-      bg.circle(1640, 120, 56).fill('#F5D77F');
-    }
-
-    // Lush lawn / ground in foreground of skyAnimLayer
-    fg.rect(0, floorTop, 1920, 884 - floorTop).fill(night ? '#354F3F' : pal.floor);
-    fg.rect(0, floorTop, 1920, 22).fill(night ? '#42614D' : pal.floorAlt);
-    fg.moveTo(0, floorTop).lineTo(1920, floorTop).stroke({ width: 3, color: INK, alpha: 0.45 });
-
-    for (let i = 0; i < 28; i++) {
-      const gx = 70 + ((i * 197) % 1780);
-      const gy = floorTop + 48 + ((i * 83) % (840 - floorTop - 60));
-      const col = night ? '#486954' : '#6E8F5B';
-      fg.moveTo(gx, gy).lineTo(gx - 5, gy - 11).stroke({ width: 2.2, color: col, alpha: 0.65 });
-      fg.moveTo(gx + 4, gy).lineTo(gx + 7, gy - 12).stroke({ width: 2.2, color: col, alpha: 0.65 });
-    }
-
-    if (roomId === 'garden') {
-      for (let x = 40; x < 1900; x += 68) {
-        fg.roundRect(x, floorTop - 52, 16, 54, 4).fill(night ? '#8A7B68' : '#F3ECE0');
-        fg.roundRect(x, floorTop - 52, 16, 54, 4).stroke({ width: 2.2, color: INK });
-      }
-      fg.rect(24, floorTop - 36, 1872, 7).fill(night ? '#7A6C5B' : '#E5DBC8');
-      fg.rect(24, floorTop - 18, 1872, 7).fill(night ? '#7A6C5B' : '#E5DBC8');
-      for (let x = 60; x < 1920; x += 130) {
-        fg.moveTo(x, floorTop + 220).lineTo(x + 8, floorTop + 150).stroke({ width: 4, color: night ? '#4F6F52' : '#6E8F5B' });
-        fg.circle(x + 8, floorTop + 146, 8).fill(night ? '#9C7280' : '#E8A6B0');
-        fg.circle(x + 8, floorTop + 146, 3.5).fill('#E9C65B');
-      }
-    }
-    if (roomId === 'porch') {
-      fg.rect(0, floorTop, 1920, 884 - floorTop).fill(night ? '#684D35' : '#C49A6C');
-      for (let y = floorTop + 42; y < 884; y += 46) {
-        fg.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: night ? '#523B28' : '#A67D52', alpha: 0.75 });
-      }
-      fg.rect(0, floorTop - 82, 1920, 18).fill(night ? '#7A5A3C' : '#B89062');
-      fg.rect(0, floorTop - 82, 1920, 18).stroke({ width: 3, color: INK });
-      fg.rect(0, floorTop - 14, 1920, 14).fill(night ? '#684C32' : '#A47D52');
-      fg.rect(0, floorTop - 14, 1920, 14).stroke({ width: 3, color: INK });
-      for (let x = 70; x <= 1870; x += 120) {
-        fg.rect(x, floorTop - 64, 14, 50).fill(night ? '#8A6949' : '#CCA679');
-        fg.rect(x, floorTop - 64, 14, 50).stroke({ width: 2.5, color: INK });
-      }
-    }
-    if (roomId === 'farm') {
-      const bx = 120;
-      const by = floorTop - 256;
-      const bw = 330;
-      const bh = 256;
-      fg.rect(bx, by, bw, bh).fill(night ? '#7A3E36' : '#C84B3C');
-      fg.rect(bx, by, bw, bh).stroke({ width: 4, color: INK });
-      for (let x = bx + 42; x < bx + bw; x += 42) {
-        fg.moveTo(x, by).lineTo(x, by + bh).stroke({ width: 2, color: night ? '#5E2D27' : '#A8382B', alpha: 0.55 });
-      }
-      fg.poly([bx - 24, by, bx + 65, by - 76, bx + bw / 2, by - 110, bx + bw - 65, by - 76, bx + bw + 24, by]).fill(
-        night ? '#4D3829' : '#7A5A3C',
-      );
-      fg.poly([bx - 24, by, bx + 65, by - 76, bx + bw / 2, by - 110, bx + bw - 65, by - 76, bx + bw + 24, by]).stroke({
-        width: 4,
-        color: INK,
-      });
-      const dx = bx + 105;
-      const dy = floorTop - 154;
-      const dw = 120;
-      const dh = 154;
-      fg.rect(dx, dy, dw, dh).fill(night ? '#5A4130' : '#8C6B4C');
-      fg.rect(dx, dy, dw, dh).stroke({ width: 4, color: INK });
-      fg.moveTo(dx, dy).lineTo(dx + dw, dy + dh).stroke({ width: 4, color: '#FBF7EC' });
-      fg.moveTo(dx + dw, dy).lineTo(dx, dy + dh).stroke({ width: 4, color: '#FBF7EC' });
-      fg.rect(dx, dy, dw, dh).stroke({ width: 3.5, color: '#FBF7EC' });
-      fg.roundRect(bx + bw / 2 - 26, by + 26, 52, 46, 6).fill(night ? '#F5D77F' : '#3A2E25');
-      fg.roundRect(bx + bw / 2 - 26, by + 26, 52, 46, 6).stroke({ width: 3.5, color: '#FBF7EC' });
-    }
-    return;
+  if (night) {
+    g.circle(x + w * 0.72, y + h * 0.22, 18).fill({ color: '#FBF7EC', alpha: 0.16 });
+    g.circle(x + w * 0.72, y + h * 0.22, 11).fill('#FBF7EC');
+    g.circle(x + w * 0.72 + 5, y + h * 0.22 - 4, 9).fill('#263854');
+  } else {
+    g.circle(x + w * 0.72, y + h * 0.2, 19).fill({ color: '#FCE9A8', alpha: 0.45 });
+    g.circle(x + w * 0.72, y + h * 0.2, 11).fill('#F4D06F');
   }
 
-  // INDOOR ROOMS
+  // Soft bushes & treetops outside the window
+  const bushDark = night ? '#1C352A' : '#3C7A4D';
+  const bushMid = night ? '#274839' : '#5E9960';
+  const lawn = night ? '#2E4735' : '#8CAE5B';
+  g.rect(x, y + h * 0.62, w, h * 0.38).fill(lawn);
+  for (let bx = x + 16; bx < x + w + 10; bx += 38) {
+    g.circle(bx, y + h * 0.62, 24).fill(bushDark);
+    g.circle(bx + 12, y + h * 0.59, 18).fill(bushMid);
+  }
+  if (showFence) {
+    const fy = y + h * 0.7;
+    const fh = h * 0.22;
+    g.rect(x, fy + fh * 0.35, w, 5).fill(night ? '#787166' : '#E7E1D4');
+    for (let fx = x + 8; fx < x + w - 4; fx += 24) {
+      g.poly([fx, fy + fh, fx, fy + 6, fx + 7, fy, fx + 14, fy + 6, fx + 14, fy + fh]).fill(night ? '#958D80' : '#FBF7EC');
+      g.poly([fx, fy + fh, fx, fy + 6, fx + 7, fy, fx + 14, fy + 6, fx + 14, fy + fh]).stroke({ width: 1.6, color: INK });
+    }
+  }
+}
+
+function drawHerringboneFloor(
+  g: Graphics,
+  floorTop: number,
+  colA: string,
+  colB: string,
+  colC: string,
+  night: boolean,
+): void {
+  const cA = night ? dim(colA, 0.64) : colA;
+  const cB = night ? dim(colB, 0.64) : colB;
+  const cC = night ? dim(colC, 0.64) : colC;
+  g.rect(0, floorTop, 1920, 884 - floorTop).fill(cA);
+
+  // Diagonal chevron/herringbone parquet columns clamped cleanly below floorTop
+  const colW = 84;
+  const stepY = 38;
+  const tilt = 22;
+  let colIdx = 0;
+  for (let x = -colW; x < 1920 + colW; x += colW) {
+    colIdx++;
+    const dir = colIdx % 2 === 0 ? 1 : -1;
+    let rowIdx = 0;
+    for (let y = floorTop - tilt; y < 884 + stepY; y += stepY) {
+      rowIdx++;
+      const fill = (rowIdx + colIdx) % 3 === 0 ? cB : (rowIdx + colIdx) % 2 === 0 ? cC : cA;
+      const yLTop = Math.max(floorTop, dir > 0 ? y : y + tilt);
+      const yRTop = Math.max(floorTop, dir > 0 ? y + tilt : y);
+      const yRBot = Math.min(884, (dir > 0 ? y + tilt : y) + stepY);
+      const yLBot = Math.min(884, (dir > 0 ? y : y + tilt) + stepY);
+      if (yLBot <= yLTop && yRBot <= yRTop) continue;
+      g.poly([x, yLTop, x + colW, yRTop, x + colW, yRBot, x, yLBot]).fill(fill);
+      g.poly([x, yLTop, x + colW, yRTop, x + colW, yRBot, x, yLBot]).stroke({
+        width: 1.6,
+        color: INK,
+        alpha: night ? 0.32 : 0.38,
+      });
+    }
+  }
+  // Top shadow from wall baseboard & gentle bottom vignette
+  g.rect(0, floorTop, 1920, 14).fill({ color: '#2B2521', alpha: 0.14 });
+  g.rect(0, 830, 1920, 54).fill({ color: '#2B2521', alpha: 0.08 });
+}
+
+function drawHorizontalPlankFloor(
+  g: Graphics,
+  floorTop: number,
+  colMain: string,
+  colAlt: string,
+  plankH: number,
+  night: boolean,
+): void {
+  const fillMain = night ? dim(colMain, 0.66) : colMain;
+  const fillAlt = night ? dim(colAlt, 0.66) : colAlt;
+  g.rect(0, floorTop, 1920, 884 - floorTop).fill(fillMain);
+
+  let rowIdx = 0;
+  for (let y = floorTop; y < 884; y += plankH) {
+    rowIdx++;
+    if (rowIdx % 2 === 0) {
+      g.rect(0, y, 1920, plankH).fill({ color: fillAlt, alpha: 0.42 });
+    }
+    g.moveTo(0, y).lineTo(1920, y).stroke({ width: 2, color: INK, alpha: night ? 0.32 : 0.4 });
+    const offset = (rowIdx * 170) % 340;
+    for (let x = -80 + offset; x < 1960; x += 340) {
+      g.moveTo(x, y).lineTo(x, Math.min(884, y + plankH)).stroke({
+        width: 1.8,
+        color: INK,
+        alpha: night ? 0.24 : 0.3,
+      });
+    }
+  }
+  g.rect(0, floorTop, 1920, 16).fill({ color: '#2B2521', alpha: 0.12 });
+}
+
+function drawSpiralStaircase(bg: Graphics, fg: Graphics, night: boolean): void {
+  const stairWall = night ? dim('#EFE7D6', 0.72) : '#EFE7D6';
+  const treadCol = night ? dim('#C9A87E', 0.72) : '#C9A87E';
+  const treadDark = night ? dim('#A8875E', 0.72) : '#A8875E';
+  const railCol = night ? dim('#FBF7EC', 0.76) : '#FBF7EC';
+
+  // Curved alcove wall & shadow in top-right (x: 1510..1920)
+  bg.poly([1580, 0, 1920, 0, 1920, 456, 1590, 456, 1555, 290, 1560, 120]).fill(stairWall);
+  bg.poly([1580, 0, 1560, 120, 1555, 290, 1590, 456]).stroke({ width: 3, color: INK, alpha: 0.55 });
+
+  // Central newel post / curved column
+  bg.rect(1795, 0, 38, 444).fill(railCol);
+  bg.rect(1795, 0, 38, 444).stroke({ width: 2.8, color: INK });
+
+  // Sweeping wood treads fanning from top-right down to floor (y: 44..446)
+  const steps = 11;
+  for (let i = 0; i < steps; i++) {
+    const t = i / (steps - 1);
+    const y = 52 + t * 384;
+    const leftX = 1660 - Math.sin(t * Math.PI * 0.85) * 145;
+    const rightX = 1916;
+    const h = 24;
+    bg.roundRect(leftX, y, rightX - leftX, h, 4).fill(i % 2 === 0 ? treadCol : treadDark);
+    bg.roundRect(leftX, y, rightX - leftX, h, 4).stroke({ width: 2.5, color: INK });
+    // Vertical baluster rods
+    if (i % 2 === 0) {
+      fg.moveTo(leftX + 18, y).lineTo(leftX + 18, y - 62).stroke({ width: 3.2, color: INK, alpha: 0.75 });
+    }
+  }
+
+  // Sweeping white curved handrail & bottom post
+  fg.moveTo(1660, 0)
+    .bezierCurveTo(1535, 130, 1500, 270, 1585, 392)
+    .stroke({ width: 12, color: railCol });
+  fg.moveTo(1660, 0)
+    .bezierCurveTo(1535, 130, 1500, 270, 1585, 392)
+    .stroke({ width: 3, color: INK });
+  fg.roundRect(1572, 376, 22, 74, 4).fill(railCol);
+  fg.roundRect(1572, 376, 22, 74, 4).stroke({ width: 2.8, color: INK });
+  fg.circle(1583, 374, 13).fill(railCol);
+  fg.circle(1583, 374, 13).stroke({ width: 2.8, color: INK });
+}
+
+function drawLivingRoom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES.living;
   const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
   const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
   const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
 
   bg.rect(0, 0, 1920, floorTop).fill(wallFill);
-  const wainscotTop = floorTop - 116;
-  for (let x = 48; x < 1920; x += 96) {
-    bg.rect(x, 28, 36, wainscotTop - 28).fill({ color: wallAlt, alpha: 0.32 });
-  }
+  bg.rect(0, 0, 1920, 22).fill(wallAlt);
 
-  bg.rect(0, 0, 1920, 24).fill(wallAlt);
-  bg.rect(0, 0, 1920, 24).stroke({ width: 3, color: INK });
-  bg.rect(0, 24, 1920, 7).fill(trimFill);
-  bg.moveTo(0, 31).lineTo(1920, 31).stroke({ width: 2, color: INK, alpha: 0.55 });
+  // Subtle electrical outlet near patio door
+  bg.roundRect(262, floorTop - 56, 22, 30, 4).fill('#F5F0E3');
+  bg.roundRect(262, floorTop - 56, 22, 30, 4).stroke({ width: 1.8, color: INK, alpha: 0.55 });
 
-  bg.rect(0, wainscotTop, 1920, floorTop - wainscotTop).fill(wallAlt);
-  bg.rect(0, wainscotTop, 1920, 10).fill(trimFill);
-  bg.rect(0, wainscotTop, 1920, 10).stroke({ width: 2.5, color: INK });
+  // Herringbone dark-walnut & honey wood floor
+  drawHerringboneFloor(bg, floorTop, pal.floor, pal.floorAlt, '#9C8268', night);
 
-  for (let x = 36; x < 1880; x += 184) {
-    bg.roundRect(x, wainscotTop + 20, 152, floorTop - wainscotTop - 48, 5).fill({
-      color: wallFill,
-      alpha: 0.55,
-    });
-    bg.roundRect(x, wainscotTop + 20, 152, floorTop - wainscotTop - 48, 5).stroke({
-      width: 2,
-      color: INK,
-      alpha: 0.28,
-    });
-  }
-
+  // Crisp baseboard trim drawn over the top edge of the floor
   bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
   bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
-  bg.rect(0, floorTop - 20, 1920, 4).fill({ color: '#FFFDF8', alpha: 0.35 });
 
-  const floorFill = night ? dim(pal.floor, 0.66) : pal.floor;
-  const floorLine = night ? dim(pal.floorAlt, 0.58) : pal.floorAlt;
-  bg.rect(0, floorTop, 1920, 884 - floorTop).fill(floorFill);
-  bg.rect(0, floorTop, 1920, 18).fill({ color: '#2B2521', alpha: 0.12 });
-  bg.rect(0, 820, 1920, 64).fill({ color: '#2B2521', alpha: 0.07 });
+  // Left floor-to-ceiling sliding glass patio door/window (x: 14..220)
+  const [wx, wy, ww, wh] = WINDOWS.living!;
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true);
 
-  let rowIdx = 0;
-  for (let y = floorTop + 44; y < 884; y += 54) {
-    rowIdx++;
-    if (rowIdx % 2 === 0) {
-      bg.rect(0, y - 54, 1920, 54).fill({ color: '#FFFDF8', alpha: 0.04 });
-    }
-    bg.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: floorLine, alpha: 0.8 });
-    const offset = (rowIdx * 130) % 260;
-    for (let x = -120 + offset; x < 1980; x += 260) {
-      bg.moveTo(x, y - 54).lineTo(x + 28, y).stroke({ width: 2, color: floorLine, alpha: 0.55 });
+  // Sliding glass door frame & reflections in fg
+  fg.rect(0, 0, wx, floorTop + 14).fill(trimFill);
+  fg.rect(wx - 10, 0, ww + 26, 20).fill(trimFill);
+  fg.rect(wx - 10, 0, ww + 26, 20).stroke({ width: 2.8, color: INK });
+  fg.rect(wx + ww, 0, 16, floorTop + 14).fill(trimFill);
+  fg.rect(wx + ww, 0, 16, floorTop + 14).stroke({ width: 2.8, color: INK });
+  fg.rect(wx, wy, ww, wh).stroke({ width: 3.2, color: INK });
+  // Vertical sliding divider bar & horizontal transom
+  fg.rect(wx + ww * 0.52, wy, 10, wh).fill('#FBF7EC');
+  fg.rect(wx + ww * 0.52, wy, 10, wh).stroke({ width: 2.4, color: INK });
+  fg.rect(wx, wy + wh * 0.3, ww, 8).fill('#FBF7EC');
+  fg.rect(wx, wy + wh * 0.3, ww, 8).stroke({ width: 2.2, color: INK });
+  // Diagonal glass reflection streaks
+  fg.poly([wx + 18, wy + wh - 20, wx + 66, wy + 22, wx + 86, wy + 22, wx + 38, wy + wh - 20]).fill({
+    color: '#FFFFFF',
+    alpha: night ? 0.07 : 0.2,
+  });
+  // Wood threshold step at patio base
+  fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).fill(night ? '#8A7055' : '#C9AA82');
+  fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).stroke({ width: 2.8, color: INK });
+
+  // Right spiral staircase
+  drawSpiralStaircase(bg, fg, night);
+}
+
+function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES.bedroom;
+  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
+  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
+  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+
+  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
+  bg.rect(0, 0, 1920, 22).fill(wallAlt);
+
+  // Classic recessed wall paneling moldings (IMG_2702)
+  for (let px = 310; px < 1840; px += 310) {
+    bg.roundRect(px, 44, 270, floorTop - 96, 4).fill({ color: wallAlt, alpha: 0.42 });
+    bg.roundRect(px, 44, 270, floorTop - 96, 4).stroke({ width: 2, color: INK, alpha: 0.22 });
+    bg.roundRect(px + 14, 58, 242, floorTop - 124, 3).stroke({ width: 1.5, color: '#FFFDF8', alpha: 0.65 });
+  }
+
+  // Herringbone medium-warm wood parquet floor
+  drawHerringboneFloor(bg, floorTop, pal.floor, pal.floorAlt, '#9E8266', night);
+
+  // Crisp baseboard trim drawn over the top edge of the floor
+  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
+  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
+
+  // Left tall French window with louvered wooden shutters & sheer curtains (x: 52..230)
+  const [wx, wy, ww, wh] = WINDOWS.bedroom!;
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true);
+
+  // Window frame & muntins
+  fg.rect(wx, wy, ww, wh).stroke({ width: 3.2, color: INK });
+  fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill('#FBF7EC');
+  fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.4, color: INK });
+  for (const ry of [0.33, 0.66]) {
+    fg.rect(wx, wy + wh * ry - 3, ww, 6).fill('#FBF7EC');
+    fg.rect(wx, wy + wh * ry - 3, ww, 6).stroke({ width: 2, color: INK });
+  }
+
+  // Wooden louvered shutters on both sides
+  const shutterCol = night ? '#6A523B' : '#9B7857';
+  for (const sx of [wx - 44, wx + ww + 2]) {
+    fg.roundRect(sx, wy - 4, 42, wh + 8, 4).fill(shutterCol);
+    fg.roundRect(sx, wy - 4, 42, wh + 8, 4).stroke({ width: 2.6, color: INK });
+    for (let ly = wy + 16; ly < wy + wh - 10; ly += 16) {
+      fg.moveTo(sx + 6, ly).lineTo(sx + 36, ly).stroke({ width: 2, color: INK, alpha: 0.55 });
     }
   }
 
-  const win = WINDOWS[roomId];
-  if (win) {
-    drawWindowFrame(bg, win[0], win[1], win[2], win[3], night, pal.sky);
-    drawWindowOverlay(fg, win[0], win[1], win[2], win[3], night);
+  // Sheer floor-length white curtains & rod
+  fg.roundRect(wx - 58, wy - 14, ww + 116, 8, 4).fill('#8A6748');
+  fg.roundRect(wx - 58, wy - 14, ww + 116, 8, 4).stroke({ width: 2.4, color: INK });
+  const sheerFill = night ? '#CBD4DF' : '#FFFDF8';
+  fg.poly([wx - 50, wy - 6, wx + 18, wy - 6, wx + 8, floorTop + 10, wx - 48, floorTop + 10]).fill({
+    color: sheerFill,
+    alpha: 0.72,
+  });
+  fg.poly([wx - 50, wy - 6, wx + 18, wy - 6, wx + 8, floorTop + 10, wx - 48, floorTop + 10]).stroke({
+    width: 2.2,
+    color: INK,
+    alpha: 0.65,
+  });
+  fg.poly([wx + ww - 18, wy - 6, wx + ww + 50, wy - 6, wx + ww + 48, floorTop + 10, wx + ww - 8, floorTop + 10]).fill({
+    color: sheerFill,
+    alpha: 0.72,
+  });
+  fg.poly([wx + ww - 18, wy - 6, wx + ww + 50, wy - 6, wx + ww + 48, floorTop + 10, wx + ww - 8, floorTop + 10]).stroke({
+    width: 2.2,
+    color: INK,
+    alpha: 0.65,
+  });
+}
+
+function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES.nursery;
+  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
+  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
+  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+
+  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
+  bg.rect(0, 0, 1920, 22).fill(wallAlt);
+  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
+  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
+
+  // Nursery crescent moon & star wall decals (IMG_2703)
+  const decalGold = night ? '#D4B45E' : '#E9C65B';
+  bg.circle(960, 128, 26).fill(decalGold);
+  bg.circle(972, 120, 22).fill(wallFill);
+  for (const [sx, sy, sr] of [
+    [840, 96, 10],
+    [890, 150, 7],
+    [1045, 92, 9],
+    [1105, 142, 11],
+    [1160, 86, 7],
+  ]) {
+    bg.poly([sx, sy - sr, sx + sr * 0.3, sy - sr * 0.3, sx + sr, sy, sx + sr * 0.3, sy + sr * 0.3, sx, sy + sr, sx - sr * 0.3, sy + sr * 0.3, sx - sr, sy, sx - sr * 0.3, sy - sr * 0.3]).fill(decalGold);
+  }
+
+  // Two cozy framed pastel nursery gallery prints on back wall
+  for (const [fx, accent] of [
+    [1310, '#E8A6B0'],
+    [1465, '#9EC4A7'],
+  ] as [number, string][]) {
+    bg.roundRect(fx, 86, 112, 136, 6).fill('#D5B895');
+    bg.roundRect(fx, 86, 112, 136, 6).stroke({ width: 2.8, color: INK });
+    bg.rect(fx + 12, 98, 88, 112).fill('#FFFDF8');
+    bg.circle(fx + 56, 152, 24).fill(accent);
+    bg.circle(fx + 56, 152, 24).stroke({ width: 2, color: INK, alpha: 0.45 });
+  }
+
+  // Wide horizontal honey-oak floorboards
+  drawHorizontalPlankFloor(bg, floorTop, pal.floor, pal.floorAlt, 58, night);
+
+  // Left brown-framed casement window looking onto treetops (x: 54..232)
+  const [wx, wy, ww, wh] = WINDOWS.nursery!;
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
+
+  const woodFrame = night ? '#6F5036' : '#9C734E';
+  fg.roundRect(wx - 12, wy - 12, ww + 24, wh + 24, 5).stroke({ width: 12, color: woodFrame });
+  fg.roundRect(wx - 18, wy - 18, ww + 36, wh + 36, 6).stroke({ width: 3, color: INK });
+  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
+  fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill(woodFrame);
+  fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.2, color: INK });
+  fg.rect(wx, wy + wh * 0.52, ww, 8).fill(woodFrame);
+  fg.rect(wx, wy + wh * 0.52, ww, 8).stroke({ width: 2.2, color: INK });
+  fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).fill('#B88E65');
+  fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).stroke({ width: 2.8, color: INK });
+}
+
+function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES.bathroom;
+  const tileWall = night ? dim(pal.wall, 0.74) : pal.wall;
+  const grout = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
+
+  // Back wall square ceramic tiles
+  bg.rect(0, 0, 1920, floorTop).fill(tileWall);
+  const cornerX = 220;
+  for (let x = cornerX; x < 1920; x += 48) {
+    bg.moveTo(x, 0).lineTo(x, floorTop).stroke({ width: 1.8, color: grout });
+  }
+  for (let y = 44; y < floorTop; y += 44) {
+    bg.moveTo(cornerX, y).lineTo(1920, y).stroke({ width: 1.8, color: grout });
+  }
+
+  // Angled left-wall perspective corner (x: 0..220)
+  bg.poly([0, 0, cornerX, 0, cornerX, floorTop, 0, floorTop + 56]).fill(night ? dim('#ECE5D3', 0.7) : '#ECE5D3');
+  for (let y = 44; y < floorTop; y += 44) {
+    bg.moveTo(0, y + 36).lineTo(cornerX, y).stroke({ width: 1.8, color: grout });
+  }
+  for (const vx of [55, 110, 165]) {
+    bg.moveTo(vx, 0).lineTo(vx, floorTop + ((cornerX - vx) / cornerX) * 56).stroke({ width: 1.8, color: grout });
+  }
+  bg.moveTo(cornerX, 0).lineTo(cornerX, floorTop).stroke({ width: 2.8, color: INK, alpha: 0.4 });
+
+  // Sky-blue perspective square floor tiles (matching tile_bathroom_blue_floor_sample.png & IMG_2704)
+  const blueA = night ? dim(pal.floor, 0.68) : pal.floor;
+  const blueB = night ? dim('#8BBAD3', 0.68) : '#8BBAD3';
+  const blueGrout = night ? dim(pal.floorAlt, 0.66) : pal.floorAlt;
+  bg.rect(0, floorTop, 1920, 884 - floorTop).fill(blueA);
+  bg.poly([0, floorTop + 56, cornerX, floorTop, 1920, floorTop, 1920, 884, 0, 884]).fill(blueA);
+
+  const tileRows = 8;
+  const rowH = (884 - floorTop) / tileRows;
+  for (let r = 0; r < tileRows; r++) {
+    const ty = floorTop + r * rowH;
+    if (r % 2 === 0) {
+      bg.rect(0, ty, 1920, rowH).fill({ color: blueB, alpha: 0.32 });
+    }
+    bg.moveTo(0, ty).lineTo(1920, ty).stroke({ width: 2, color: blueGrout });
+  }
+  for (let x = -80; x < 2040; x += 72) {
+    const slant = (x - 960) * 0.14;
+    bg.moveTo(x, floorTop).lineTo(x + slant, 884).stroke({ width: 2, color: blueGrout });
+  }
+  bg.rect(0, floorTop - 10, 1920, 10).fill(night ? dim(pal.trim, 0.72) : pal.trim);
+  bg.moveTo(0, floorTop).lineTo(1920, floorTop).stroke({ width: 2.6, color: INK, alpha: 0.55 });
+
+  // Upper-right wide dark-framed garden window (x: 1130..1810, y: 0..148)
+  const [wx, wy, ww, wh] = WINDOWS.bathroom!;
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
+  const frameCol = night ? '#383430' : '#4E4944';
+  fg.rect(wx - 8, wy, ww + 16, wh + 10).stroke({ width: 10, color: frameCol });
+  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
+  for (const mx of [wx + ww * 0.33, wx + ww * 0.67]) {
+    fg.rect(mx - 4, wy, 8, wh).fill(frameCol);
+    fg.rect(mx - 4, wy, 8, wh).stroke({ width: 2, color: INK });
+  }
+  fg.roundRect(wx - 14, wy + wh, ww + 28, 12, 3).fill('#D8D0BE');
+  fg.roundRect(wx - 14, wy + wh, ww + 28, 12, 3).stroke({ width: 2.6, color: INK });
+}
+
+function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES.studio;
+  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
+  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+
+  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
+  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
+  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
+
+  // Draped warm string-light garland on upper-left wall (IMG_2705)
+  bg.moveTo(310, 16).bezierCurveTo(440, 110, 610, 110, 740, 16).stroke({ width: 3, color: INK, alpha: 0.7 });
+  for (let i = 0; i < 7; i++) {
+    const t = (i + 0.5) / 7;
+    const bx = 310 + t * 430;
+    const by = 16 + Math.sin(t * Math.PI) * 70;
+    bg.circle(bx, by + 7, 13).fill({ color: '#FCE79C', alpha: night ? 0.36 : 0.2 });
+    bg.circle(bx, by + 7, 5.5).fill('#FFF6C4');
+    bg.circle(bx, by + 7, 5.5).stroke({ width: 1.8, color: INK });
+  }
+
+  // Wide horizontal pale-oak studio planks
+  drawHorizontalPlankFloor(bg, floorTop, pal.floor, pal.floorAlt, 56, night);
+
+  // Left floor-to-ceiling glass studio window wall (x: 10..262)
+  const [wx, wy, ww, wh] = WINDOWS.studio!;
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
+  // Warm autumn tree highlight outside studio window
+  if (!night) {
+    bg.circle(wx + 70, wy + wh * 0.44, 34).fill('#D8844A');
+    bg.circle(wx + 125, wy + wh * 0.5, 28).fill('#E3A84F');
+  }
+  const mullion = night ? '#3F3126' : '#5E4938';
+  fg.rect(0, 0, wx, floorTop + 10).fill(mullion);
+  fg.rect(wx + ww, 0, 14, floorTop + 10).fill(mullion);
+  fg.rect(wx + ww, 0, 14, floorTop + 10).stroke({ width: 2.6, color: INK });
+  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
+  fg.rect(wx + ww * 0.5, wy, 9, wh).fill(mullion);
+  fg.rect(wx, wy + wh * 0.45, ww, 8).fill(mullion);
+  fg.poly([wx + 24, wy + wh - 18, wx + 82, wy + 24, wx + 102, wy + 24, wx + 44, wy + wh - 18]).fill({
+    color: '#FFFFFF',
+    alpha: night ? 0.06 : 0.18,
+  });
+  fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).fill('#9A7B5B');
+  fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).stroke({ width: 2.6, color: INK });
+}
+
+function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES.kitchen;
+  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
+  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
+  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+
+  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
+  bg.rect(0, 0, 1920, 20).fill(wallAlt);
+
+  // Subtle cream subway tile backsplash along lower wall (y: 318..floorTop)
+  bg.rect(0, 318, 1920, floorTop - 318).fill(wallAlt);
+  for (let y = 342; y < floorTop; y += 26) {
+    bg.moveTo(0, y).lineTo(1920, y).stroke({ width: 1.5, color: '#D8D0BE', alpha: 0.65 });
+  }
+  bg.moveTo(0, 318).lineTo(1920, 318).stroke({ width: 2.2, color: INK, alpha: 0.35 });
+
+  // Ceramic tiled cream kitchen floor (y: floorTop..884)
+  const tileFill = night ? dim(pal.floor, 0.68) : pal.floor;
+  const groutCol = night ? dim('#CFC6B4', 0.65) : '#CFC6B4';
+  bg.rect(0, floorTop, 1920, 884 - floorTop).fill(tileFill);
+  for (let y = floorTop + 56; y < 884; y += 56) {
+    bg.moveTo(0, y).lineTo(1920, y).stroke({ width: 1.8, color: groutCol });
+  }
+  for (let x = 60; x < 1920; x += 96) {
+    bg.moveTo(x, floorTop).lineTo(x + (x - 960) * 0.08, 884).stroke({ width: 1.8, color: groutCol });
+  }
+
+  // Clean baseboard molding separating wall backsplash and tiled floor
+  bg.rect(0, floorTop - 20, 1920, 20).fill(trimFill);
+  bg.rect(0, floorTop - 20, 1920, 20).stroke({ width: 3, color: INK });
+  bg.rect(0, floorTop, 1920, 14).fill({ color: '#2B2521', alpha: 0.1 });
+
+  // Upper-left wide kitchen casement window (x: 92..530)
+  const [wx, wy, ww, wh] = WINDOWS.kitchen!;
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
+  const winWood = night ? '#917456' : '#C8A782';
+  fg.rect(wx - 10, wy, ww + 20, wh + 10).stroke({ width: 12, color: winWood });
+  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
+  fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill(winWood);
+  fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.2, color: INK });
+  fg.roundRect(wx - 18, wy + wh, ww + 36, 14, 4).fill(winWood);
+  fg.roundRect(wx - 18, wy + wh, ww + 36, 14, 4).stroke({ width: 2.8, color: INK });
+}
+
+function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: number, night: boolean): void {
+  const pal = ROOM_PALETTES[roomId];
+
+  // Shared outdoor sky backdrop behind skyAnimLayer
+  bg.rect(0, 0, 1920, 884).fill(night ? '#26354D' : pal.sky);
+  bg.rect(0, 0, 1920, floorTop * 0.52).fill({ color: night ? '#1A263A' : '#FFFFFF', alpha: night ? 0.35 : 0.22 });
+  if (night) {
+    bg.circle(1680, 96, 62).fill({ color: '#FBF7EC', alpha: 0.14 });
+    bg.circle(1680, 96, 42).fill('#FBF7EC');
+    bg.circle(1700, 82, 36).fill('#26354D');
+  } else {
+    bg.circle(1680, 96, 64).fill({ color: '#FCE9A8', alpha: 0.36 });
+    bg.circle(1680, 96, 42).fill('#F5D77F');
+  }
+
+  if (roomId === 'porch') {
+    // Porch: top grey siding -> elevated grey-taupe wooden plank deck -> backyard lawn (IMG_2700)
+    const siding = night ? dim(pal.wall, 0.7) : pal.wall;
+    const deck = night ? dim(pal.wallShade, 0.68) : pal.wallShade;
+    const deckLine = night ? '#5A534E' : '#7D746D';
+    const lawn = night ? '#3A4F30' : pal.floor;
+
+    fg.rect(0, 0, 1920, 108).fill(siding);
+    for (let sy = 26; sy < 108; sy += 26) {
+      fg.moveTo(0, sy).lineTo(1920, sy).stroke({ width: 2, color: INK, alpha: 0.35 });
+    }
+    fg.rect(0, 98, 1920, 12).fill(night ? '#9D978F' : '#EAE4D7');
+    fg.rect(0, 98, 1920, 12).stroke({ width: 2.5, color: INK });
+
+    // Elevated wooden deck (y: 110..382)
+    fg.rect(0, 110, 1920, 272).fill(deck);
+    for (let y = 148; y < 382; y += 38) {
+      fg.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: deckLine });
+    }
+    for (let x = 140; x < 1920; x += 260) {
+      fg.moveTo(x, 110).lineTo(x + (x - 960) * 0.06, 382).stroke({ width: 2, color: deckLine, alpha: 0.7 });
+    }
+    // Deck apron fascia & shadow
+    fg.rect(0, 366, 1920, 22).fill(night ? '#6C645D' : '#968D85');
+    fg.rect(0, 366, 1920, 22).stroke({ width: 3, color: INK });
+
+    // Lower backyard lawn (y: 388..884)
+    fg.rect(0, 388, 1920, 496).fill(lawn);
+    fg.rect(0, 388, 1920, 16).fill({ color: '#2B2521', alpha: 0.14 });
+
+    // Two stout deck support posts resting on square stone footings
+    for (const px of [410, 1480]) {
+      fg.roundRect(px - 22, 388, 44, 34, 4).fill(night ? '#7C7A75' : '#C8C4BC');
+      fg.roundRect(px - 22, 388, 44, 34, 4).stroke({ width: 2.6, color: INK });
+      fg.rect(px - 14, 110, 28, 282).fill(night ? '#685E56' : '#9E9287');
+      fg.rect(px - 14, 110, 28, 282).stroke({ width: 2.6, color: INK });
+    }
+
+    // Scattered grass tufts, pebbles & cattail reeds on far right
+    for (let i = 0; i < 26; i++) {
+      const gx = 80 + ((i * 187) % 1760);
+      const gy = 435 + ((i * 89) % 410);
+      const col = night ? '#48623C' : '#658441';
+      fg.moveTo(gx, gy).lineTo(gx - 5, gy - 11).stroke({ width: 2.2, color: col });
+      fg.moveTo(gx + 5, gy).lineTo(gx + 8, gy - 12).stroke({ width: 2.2, color: col });
+    }
+    for (const cx of [1775, 1815, 1852]) {
+      fg.moveTo(cx, 660).lineTo(cx - 4, 520).stroke({ width: 4, color: night ? '#3E5B37' : '#587846' });
+      fg.roundRect(cx - 9, 530, 11, 30, 5).fill('#7A5236');
+      fg.roundRect(cx - 9, 530, 11, 30, 5).stroke({ width: 2, color: INK });
+    }
+    return;
+  }
+
+  if (roomId === 'garden') {
+    // Garden: top bushes + white picket fence with central gate -> sunlit olive lawn -> bottom foliage (IMG_2698 & IMG_2701)
+    const bushDark = night ? '#15472D' : pal.wall;
+    const bushLight = night ? '#1E5D3D' : pal.wallShade;
+    const lawn = night ? '#3E542A' : pal.floor;
+    const lawnPatch = night ? '#364A25' : pal.floorAlt;
+
+    // Scalloped bushes along top horizon (y: 68..210)
+    for (let bx = 20; bx < 1940; bx += 86) {
+      fg.circle(bx, 138, 66).fill(bushDark);
+      fg.circle(bx + 36, 146, 56).fill(bushLight);
+    }
+
+    // Main sunlit olive-green grass lawn (y: 184..884)
+    fg.rect(0, 184, 1920, 700).fill(lawn);
+    for (const [px, py, rx, ry] of [
+      [340, 420, 260, 110],
+      [1480, 460, 290, 120],
+      [960, 620, 340, 130],
+    ]) {
+      fg.ellipse(px, py, rx, ry).fill({ color: lawnPatch, alpha: 0.48 });
+    }
+
+    // Central sandy gate path (x: 860..1060, y: 170..300)
+    fg.poly([890, 168, 1030, 168, 1085, 310, 835, 310]).fill(night ? '#7A6C52' : '#D5C39C');
+    fg.poly([890, 168, 1030, 168, 1085, 310, 835, 310]).stroke({ width: 2.4, color: INK, alpha: 0.45 });
+
+    // White pointed picket fence left & right of central gate
+    const drawFenceSpan = (xStart: number, xEnd: number) => {
+      fg.rect(xStart, 126, xEnd - xStart, 10).fill(night ? '#8A8378' : '#ECE6D8');
+      fg.rect(xStart, 162, xEnd - xStart, 10).fill(night ? '#8A8378' : '#ECE6D8');
+      for (let fx = xStart; fx < xEnd; fx += 44) {
+        fg.poly([fx, 190, fx, 112, fx + 12, 94, fx + 24, 112, fx + 24, 190]).fill(night ? '#9D9589' : '#FBF7EC');
+        fg.poly([fx, 190, fx, 112, fx + 12, 94, fx + 24, 112, fx + 24, 190]).stroke({ width: 2.2, color: INK });
+      }
+    };
+    drawFenceSpan(18, 868);
+    drawFenceSpan(1056, 1902);
+
+    // Grass tufts, wildflowers & soft ochre earth pebbles
+    for (let i = 0; i < 34; i++) {
+      const gx = 60 + ((i * 211) % 1800);
+      const gy = 250 + ((i * 97) % 580);
+      const col = night ? '#4E6B35' : '#74903E';
+      fg.moveTo(gx, gy).lineTo(gx - 5, gy - 12).stroke({ width: 2.2, color: col });
+      fg.moveTo(gx + 5, gy).lineTo(gx + 8, gy - 13).stroke({ width: 2.2, color: col });
+      if (i % 5 === 0) {
+        fg.circle(gx + 14, gy - 4, 5).fill('#FBF7EC');
+        fg.circle(gx + 14, gy - 4, 2.2).fill('#E9C65B');
+      }
+    }
+
+    // Foreground bottom-edge lush foliage strip
+    for (let bx = 30; bx < 1940; bx += 110) {
+      fg.circle(bx, 886, 44).fill(bushDark);
+      fg.circle(bx + 54, 890, 36).fill(bushLight);
+    }
+    return;
+  }
+
+  // Farm: top picket fence + red-roofed coop + hay-trough shed + diagonal fence + foreground winding river (IMG_2707)
+  const bushDark = night ? '#15472D' : pal.wallShade;
+  const bushLight = night ? '#1E5D3D' : pal.wall;
+  const meadow = night ? '#3A4F2B' : pal.floor;
+  const meadowAlt = night ? '#334625' : pal.floorAlt;
+
+  for (let bx = 20; bx < 1940; bx += 84) {
+    fg.circle(bx, 118, 62).fill(bushDark);
+    fg.circle(bx + 38, 126, 52).fill(bushLight);
+  }
+  fg.rect(0, 166, 1920, 718).fill(meadow);
+  fg.ellipse(1440, 420, 340, 175).fill({ color: meadowAlt, alpha: 0.45 });
+
+  // Top white picket fence
+  fg.rect(18, 112, 1884, 9).fill(night ? '#8A8378' : '#ECE6D8');
+  fg.rect(18, 144, 1884, 9).fill(night ? '#8A8378' : '#ECE6D8');
+  for (let fx = 24; fx < 1900; fx += 46) {
+    fg.poly([fx, 172, fx, 102, fx + 11, 86, fx + 22, 102, fx + 22, 172]).fill(night ? '#9D9589' : '#FBF7EC');
+    fg.poly([fx, 172, fx, 102, fx + 11, 86, fx + 22, 102, fx + 22, 172]).stroke({ width: 2.2, color: INK });
+  }
+
+  // Left cozy red-roofed chicken coop / barn shelter (x: 68..330, y: 120..336)
+  fg.roundRect(88, 184, 220, 148, 6).fill(night ? '#7A5E46' : '#C69D72');
+  fg.roundRect(88, 184, 220, 148, 6).stroke({ width: 3, color: INK });
+  fg.poly([66, 192, 198, 106, 330, 192]).fill(night ? '#7A352E' : '#C4483B');
+  fg.poly([66, 192, 198, 106, 330, 192]).stroke({ width: 3.2, color: INK });
+  fg.roundRect(160, 232, 76, 100, 10).fill('#423329');
+  fg.roundRect(160, 232, 76, 100, 10).stroke({ width: 2.6, color: INK });
+
+  // Center wooden hay-trough pavilion shed (x: 490..870, y: 108..324)
+  fg.rect(520, 190, 320, 130).fill(night ? '#594230' : '#966E4B');
+  fg.rect(520, 190, 320, 130).stroke({ width: 2.8, color: INK });
+  fg.ellipse(680, 290, 128, 34).fill(night ? '#9E853F' : '#E7C868');
+  fg.ellipse(680, 290, 128, 34).stroke({ width: 2.4, color: INK });
+  fg.poly([486, 194, 535, 118, 825, 118, 874, 194]).fill(night ? '#4D3828' : '#7D5B3E');
+  fg.poly([486, 194, 535, 118, 825, 118, 874, 194]).stroke({ width: 3, color: INK });
+  for (const px of [524, 824]) {
+    fg.rect(px, 192, 16, 132).fill(night ? '#73573E' : '#BA9168');
+    fg.rect(px, 192, 16, 132).stroke({ width: 2.4, color: INK });
+  }
+
+  // Diagonal white picket fence separating left pasture from right crop field
+  const fencePts = Array.from({ length: 8 }, (_, idx) => ({
+    x: 825 + idx * 32,
+    y: 235 + idx * 44,
+  }));
+  fg.moveTo(825, 210).lineTo(1055, 520).stroke({ width: 7, color: night ? '#8A8378' : '#E8E2D4' });
+  fg.moveTo(825, 240).lineTo(1055, 550).stroke({ width: 7, color: night ? '#8A8378' : '#E8E2D4' });
+  for (const fp of fencePts) {
+    fg.poly([fp.x, fp.y + 42, fp.x, fp.y - 26, fp.x + 10, fp.y - 40, fp.x + 20, fp.y - 26, fp.x + 20, fp.y + 42]).fill(
+      night ? '#9D9589' : '#FBF7EC',
+    );
+    fg.poly([fp.x, fp.y + 42, fp.x, fp.y - 26, fp.x + 10, fp.y - 40, fp.x + 20, fp.y - 26, fp.x + 20, fp.y + 42]).stroke({
+      width: 2.2,
+      color: INK,
+    });
+  }
+
+  // Grass tufts
+  for (let i = 0; i < 22; i++) {
+    const gx = 70 + ((i * 223) % 1780);
+    const gy = 260 + ((i * 73) % 360);
+    const col = night ? '#486234' : '#6B883A';
+    fg.moveTo(gx, gy).lineTo(gx - 4, gy - 11).stroke({ width: 2.2, color: col });
+    fg.moveTo(gx + 5, gy).lineTo(gx + 7, gy - 12).stroke({ width: 2.2, color: col });
+  }
+
+  // Foreground winding blue-teal river (y: 675..884)
+  const bankCol = night ? '#7A6C4B' : '#C9BA8A';
+  const riverCol = night ? '#274456' : '#48758C';
+  const riverMid = night ? '#32566B' : '#5D8FA8';
+  fg.poly([
+    0, 725,
+    460, 682,
+    980, 696,
+    1480, 672,
+    1920, 704,
+    1920, 884,
+    0, 884,
+  ]).fill(bankCol);
+  fg.poly([
+    0, 744,
+    460, 702,
+    980, 716,
+    1480, 692,
+    1920, 724,
+    1920, 884,
+    0, 884,
+  ]).fill(riverCol);
+  fg.poly([
+    0, 774,
+    460, 738,
+    980, 750,
+    1480, 728,
+    1920, 754,
+    1920, 868,
+    0, 868,
+  ]).fill({ color: riverMid, alpha: 0.45 });
+  fg.moveTo(0, 744)
+    .lineTo(460, 702)
+    .lineTo(980, 716)
+    .lineTo(1480, 692)
+    .lineTo(1920, 724)
+    .stroke({ width: 3, color: INK, alpha: 0.6 });
+
+  // Stone stepping-stone crossing & lily pads in the river
+  for (const [sx, sy, rx, ry] of [
+    [980, 735, 34, 15],
+    [1025, 768, 38, 17],
+    [995, 805, 42, 18],
+    [1040, 845, 46, 20],
+  ]) {
+    fg.ellipse(sx, sy, rx, ry).fill(night ? '#6C6D6B' : '#B7B4AC');
+    fg.ellipse(sx, sy, rx, ry).stroke({ width: 2.5, color: INK });
+  }
+  for (const [lx, ly] of [
+    [430, 785],
+    [485, 810],
+    [1520, 772],
+    [1640, 815],
+  ]) {
+    fg.ellipse(lx, ly, 24, 12).fill(night ? '#2E5B3E' : '#58945C');
+    fg.ellipse(lx, ly, 24, 12).stroke({ width: 2, color: INK });
+  }
+}
+
+function paintRoom(bg: Graphics, fg: Graphics, roomId: RoomId, night: boolean): void {
+  const room = ROOMS[roomId];
+  const floorTop = room.floorTop;
+  bg.clear();
+  fg.clear();
+
+  if (room.outdoor) {
+    drawOutdoorRoom(bg, fg, roomId, floorTop, night);
+    return;
+  }
+
+  switch (roomId) {
+    case 'living':
+      drawLivingRoom(bg, fg, floorTop, night);
+      break;
+    case 'bedroom':
+      drawBedroom(bg, fg, floorTop, night);
+      break;
+    case 'nursery':
+      drawNursery(bg, fg, floorTop, night);
+      break;
+    case 'bathroom':
+      drawBathroom(bg, fg, floorTop, night);
+      break;
+    case 'studio':
+      drawStudio(bg, fg, floorTop, night);
+      break;
+    case 'kitchen':
+      drawKitchen(bg, fg, floorTop, night);
+      break;
   }
 }
 
@@ -506,14 +1130,20 @@ export class StageRenderer {
   private destroyed = false;
 
   private root = new Container();
-  private background = new Graphics();
-  private skyAnimLayer = new Graphics();
-  private foregroundEnv = new Graphics();
+  private bgDraw = new Graphics();
+  private fgDraw = new Graphics();
+  private background = new Sprite();
+  private skyAnimLayer = new Container();
+  private foregroundEnv = new Sprite();
   private sunbeamLayer = new Graphics();
+  private bgTex: Texture | null = null;
+  private fgTex: Texture | null = null;
+  private renderRes = 1;
+  private farmLayer = new Container();
   private itemLayer = new Container();
   private actorLayer = new Container();
   private bubbleLayer = new Container();
-  private ambientLayer = new Graphics();
+  private ambientLayer = new Container();
   private fxLayer = new Graphics();
   private labelLayer = new Container();
   private selection = new Graphics();
@@ -522,16 +1152,21 @@ export class StageRenderer {
   private petNodes = new Map<string, AnimalRigNode>();
   private visitorNodes = new Map<string, AnimalRigNode>();
   private critterNodes = new Map<string, AnimalRigNode>();
+  private farmNodes = new Map<string, AnimalRigNode>();
   private humanNodes = new Map<string, HumanRigNode>();
   private bubbleNodes = new Map<string, BubbleNode>();
 
   private particles: Particle[] = [];
   private labels: FloatingLabel[] = [];
-  private motes: DustMote[] = [];
+  private moteNodes: MoteNode[] = [];
+  private farmRipples: Graphics[] = [];
+  private skyActors: SkyActor[] = [];
 
   private view: StageView | null = null;
   private paintedRoom: RoomId | null = null;
   private paintedNight: boolean | null = null;
+  private selectionKey = '';
+  private fxHasContent = false;
   private drag: DragState | null = null;
   private lastTapAt = 0;
   private transitionAlpha = 1;
@@ -541,28 +1176,21 @@ export class StageRenderer {
   constructor(host: HTMLElement, callbacks: StageCallbacks) {
     this.host = host;
     this.callbacks = callbacks;
-    for (let i = 0; i < 24; i++) {
-      this.motes.push({
-        x: (i * 137) % 1920,
-        y: 120 + ((i * 89) % 700),
-        vx: 7 + (i % 5) * 2.5,
-        vy: 3 + (i % 3) * 1.6,
-        radius: 1.6 + (i % 3) * 0.9,
-        phase: i * 0.9,
-        alpha: 0.25 + (i % 4) * 0.1,
-      });
-    }
     void this.init();
   }
 
   private async init(): Promise<void> {
+    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+    const hostW = Math.max(this.host.clientWidth || 1280, 960);
+    this.renderRes = Math.min(2, Math.max(1, (hostW * dpr) / 1920));
+
     const app = new Application();
     await app.init({
       width: 1920,
       height: 884,
       backgroundAlpha: 0,
       antialias: true,
-      resolution: Math.min(2, typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1),
+      resolution: this.renderRes,
       autoDensity: true,
     });
     if (this.destroyed) {
@@ -574,11 +1202,38 @@ export class StageRenderer {
     app.canvas.style.display = 'block';
     this.host.appendChild(app.canvas);
     app.stage.addChild(this.root);
+
+    // Pre-build 24 persistent dust mote graphics and 6 farm stream ripples once (zero per-frame clear/rebuild).
+    for (let i = 0; i < 24; i++) {
+      const data: DustMote = {
+        x: (i * 137) % 1920,
+        y: 120 + ((i * 89) % 700),
+        vx: 7 + (i % 5) * 2.5,
+        vy: 3 + (i % 3) * 1.6,
+        radius: 1.6 + (i % 3) * 0.9,
+        phase: i * 0.9,
+        alpha: 0.25 + (i % 4) * 0.1,
+      };
+      const gfx = new Graphics();
+      gfx.circle(0, 0, data.radius).fill('#FFFBE4');
+      gfx.position.set(data.x, data.y);
+      this.ambientLayer.addChild(gfx);
+      this.moteNodes.push({ gfx, data });
+    }
+    for (let i = 0; i < 6; i++) {
+      const ripple = new Graphics();
+      ripple.moveTo(-42, 0).lineTo(42, 0).stroke({ width: 3, color: '#FFFFFF' });
+      ripple.visible = false;
+      this.ambientLayer.addChild(ripple);
+      this.farmRipples.push(ripple);
+    }
+
     this.root.addChild(
       this.background,
       this.skyAnimLayer,
       this.foregroundEnv,
       this.sunbeamLayer,
+      this.farmLayer,
       this.itemLayer,
       this.actorLayer,
       this.bubbleLayer,
@@ -593,6 +1248,7 @@ export class StageRenderer {
     app.stage.on('pointermove', this.onStageMove);
     app.stage.on('pointerup', this.onStageUp);
     app.stage.on('pointerupoutside', this.onStageUp);
+    app.ticker.maxFPS = 30;
     app.ticker.add(this.onTick);
     this.ready = true;
     this.rebuildAll();
@@ -604,6 +1260,8 @@ export class StageRenderer {
     if (prevRoom && prevRoom !== view.roomId) {
       this.transitionAlpha = 0.22;
       this.particles = [];
+      this.fxLayer.clear();
+      this.fxHasContent = false;
       for (const l of this.labels) l.text.destroy();
       this.labels = [];
     }
@@ -612,6 +1270,12 @@ export class StageRenderer {
 
   destroy(): void {
     this.destroyed = true;
+    this.bgTex?.destroy(true);
+    this.fgTex?.destroy(true);
+    this.bgTex = null;
+    this.fgTex = null;
+    this.bgDraw.destroy();
+    this.fgDraw.destroy();
     if (this.app) {
       this.app.ticker.remove(this.onTick);
       this.app.stage.off('pointerdown', this.onStageDown);
@@ -627,14 +1291,127 @@ export class StageRenderer {
     if (!this.view) return;
     const { roomId, night } = this.view;
     if (this.paintedRoom !== roomId || this.paintedNight !== night) {
-      paintRoom(this.background, this.foregroundEnv, roomId, night);
+      paintRoom(this.bgDraw, this.fgDraw, roomId, night);
+      if (this.app) {
+        const frame = new Rectangle(0, 0, 1920, 884);
+        this.bgTex?.destroy(true);
+        this.fgTex?.destroy(true);
+        this.bgTex = this.app.renderer.generateTexture({
+          target: this.bgDraw,
+          frame,
+          resolution: this.renderRes,
+          antialias: true,
+        });
+        this.fgTex = this.app.renderer.generateTexture({
+          target: this.fgDraw,
+          frame,
+          resolution: this.renderRes,
+          antialias: true,
+        });
+        this.background.texture = this.bgTex;
+        this.foregroundEnv.texture = this.fgTex;
+        this.bgDraw.clear();
+        this.fgDraw.clear();
+      }
+      this.rebuildSkyAndSunbeams(roomId, night);
       this.paintedRoom = roomId;
       this.paintedNight = night;
     }
+    this.syncFarm();
     this.syncItems();
     this.syncActors();
     this.syncBubbles();
     this.syncSelection();
+  }
+
+  private rebuildSkyAndSunbeams(roomId: RoomId, night: boolean): void {
+    this.skyAnimLayer.removeChildren().forEach((c) => c.destroy());
+    this.skyActors = [];
+    this.sunbeamLayer.clear();
+    this.sunbeamLayer.alpha = 1;
+
+    const room = ROOMS[roomId];
+    if (room.outdoor) {
+      if (night) {
+        for (let i = 0; i < 24; i++) {
+          const sx = (i * 173 + 90) % 1880;
+          const sy = 36 + ((i * 97) % 260);
+          const gfx = new Graphics();
+          gfx.circle(0, 0, i % 3 === 0 ? 3 : 2).fill('#FBF7EC');
+          gfx.position.set(sx, sy);
+          this.skyAnimLayer.addChild(gfx);
+          this.skyActors.push({ gfx, kind: 'star', x0: sx, y: sy, speed: 1.7, phase: i * 1.3 });
+        }
+      } else {
+        const clouds: [number, number, number, number][] = [
+          [420, 110, 1, 10],
+          [920, 86, 0.82, 7.5],
+          [1280, 146, 1.08, 12],
+          [1760, 96, 0.9, 8.5],
+        ];
+        for (const [cx0, cy, s, spd] of clouds) {
+          const gfx = new Graphics();
+          gfx.ellipse(0, 6, 118 * s, 28 * s).fill({ color: '#D8E6EC', alpha: 0.6 });
+          gfx.ellipse(0, 0, 116 * s, 28 * s).fill('#FBF7EC');
+          gfx.ellipse(-36 * s, -12 * s, 56 * s, 24 * s).fill('#FFFFFF');
+          gfx.ellipse(34 * s, -10 * s, 64 * s, 26 * s).fill('#FBF7EC');
+          gfx.position.set(cx0, cy);
+          this.skyAnimLayer.addChild(gfx);
+          this.skyActors.push({ gfx, kind: 'cloud', x0: cx0, y: cy, speed: spd, phase: 0 });
+        }
+      }
+      return;
+    }
+
+    const win = WINDOWS[roomId];
+    if (!win) return;
+    const [wx, wy, ww, wh] = win;
+
+    if (night) {
+      for (let i = 0; i < 8; i++) {
+        const sx = wx + 18 + ((i * 43) % Math.max(20, ww - 36));
+        const sy = wy + 16 + ((i * 29) % Math.max(24, wh * 0.56));
+        const gfx = new Graphics();
+        gfx.circle(0, 0, i % 2 === 0 ? 2.3 : 1.5).fill('#FBF7EC');
+        gfx.position.set(sx, sy);
+        this.skyAnimLayer.addChild(gfx);
+        this.skyActors.push({ gfx, kind: 'star', x0: sx, y: sy, speed: 2.1, phase: i * 1.7 });
+      }
+    } else {
+      const cy = wy + wh * 0.25;
+      const gfx = new Graphics();
+      gfx.ellipse(0, 0, 22, 9).fill('#FBF7EC');
+      gfx.ellipse(9, -3, 15, 9).fill('#FFFFFF');
+      gfx.position.set(wx + Math.min(ww - 26, Math.max(26, ww * 0.4)), cy);
+      this.skyAnimLayer.addChild(gfx);
+      this.skyActors.push({ gfx, kind: 'windowCloud', x0: 0, y: cy, speed: 6, phase: 0, winX: wx, winW: ww });
+    }
+
+    const beamColor = night ? '#B8D0F0' : '#FFF6D6';
+    this.sunbeamLayer
+      .poly([
+        wx + 6, wy + wh + 20,
+        wx + ww - 6, wy + wh + 20,
+        wx + ww + 90, wy + wh + 160,
+        wx - 14, wy + wh + 160,
+      ])
+      .fill({ color: beamColor, alpha: night ? 0.035 : 0.08 });
+    this.sunbeamLayer
+      .poly([
+        wx + 6, wy + wh + 20,
+        wx + ww - 6, wy + wh + 20,
+        wx + ww + 135, wy + wh + 235,
+        wx - 24, wy + wh + 235,
+      ])
+      .fill({ color: beamColor, alpha: night ? 0.025 : 0.052 });
+    this.sunbeamLayer
+      .poly([
+        wx + 6, wy + wh + 20,
+        wx + ww - 6, wy + wh + 20,
+        wx + ww + 175, wy + wh + 305,
+        wx - 32, wy + wh + 305,
+      ])
+      .fill({ color: beamColor, alpha: night ? 0.015 : 0.03 });
   }
 
   private onRefresh = (): void => {
@@ -703,6 +1480,97 @@ export class StageRenderer {
     this.labels.push({ text, age: 0, life: 1.05, vy: -72, baseX: x });
   }
 
+  private syncFarm(): void {
+    this.farmLayer.removeChildren().forEach((c) => c.destroy({ children: true }));
+    const view = this.view;
+    if (!view || view.roomId !== 'farm') return;
+
+    const nowMs = Date.now();
+    const plots = view.state.farm.plots;
+    const gridCoords = [
+      { x: 1235, y: 360 },
+      { x: 1435, y: 360 },
+      { x: 1635, y: 360 },
+      { x: 1235, y: 505 },
+      { x: 1435, y: 505 },
+      { x: 1635, y: 505 },
+    ];
+
+    plots.forEach((plot, i) => {
+      const pos = gridCoords[i] ?? { x: 1235 + (i % 3) * 200, y: 360 + Math.floor(i / 3) * 145 };
+      const card = new Container();
+      card.position.set(pos.x, pos.y);
+      card.eventMode = 'static';
+      card.cursor = 'pointer';
+
+      const g = new Graphics();
+      const ready = !!plot.cropId && !!plot.readyAt && plot.readyAt <= nowMs;
+      const crop = plot.cropId ? CROPS_BY_ID[plot.cropId] : undefined;
+
+      // Ground patch (inspired by tile_farm_soil_plot_sample.png & IMG_2707)
+      g.roundRect(-78, -46, 156, 92, 14).fill({ color: '#2B2521', alpha: 0.14 });
+      if (!plot.unlocked) {
+        g.roundRect(-78, -50, 156, 92, 14).fill(view.night ? '#465A38' : '#7D9949');
+        g.roundRect(-78, -50, 156, 92, 14).stroke({ width: 2.8, color: INK, alpha: 0.55 });
+        // Golden padlock badge
+        g.roundRect(-14, -10, 28, 22, 5).fill('#E9C65B');
+        g.roundRect(-14, -10, 28, 22, 5).stroke({ width: 2.4, color: INK });
+        g.arc(0, -10, 9, Math.PI, 0).stroke({ width: 3, color: INK });
+      } else {
+        g.roundRect(-78, -50, 156, 92, 14).fill(view.night ? '#6C643C' : '#B2AC68');
+        g.roundRect(-78, -50, 156, 92, 14).stroke({ width: 3, color: INK });
+        g.roundRect(-66, -38, 132, 68, 10).fill(view.night ? '#59422C' : '#8A6743');
+        g.roundRect(-66, -38, 132, 68, 10).stroke({ width: 2, color: '#5E4226' });
+        for (const fy of [-20, -4, 12]) {
+          g.moveTo(-54, fy).lineTo(54, fy).stroke({ width: 2.2, color: '#5E4226', alpha: 0.72 });
+        }
+
+        if (crop) {
+          const totalMs = Math.max(1, crop.minutes * 60_000);
+          const remMs = Math.max(0, (plot.readyAt ?? nowMs) - nowMs);
+          const progress = ready ? 1 : Math.max(0.25, Math.min(0.95, 1 - remMs / totalMs));
+          const leafCol = crop.colors[1] ?? '#6E8A55';
+          const fruitCol = crop.colors[0] ?? '#C4483B';
+
+          for (const px of [-36, 0, 36]) {
+            const s = 0.55 + progress * 0.55;
+            g.circle(px - 7 * s, -8 * s, 11 * s).fill(leafCol);
+            g.circle(px - 7 * s, -8 * s, 11 * s).stroke({ width: 2, color: INK });
+            g.circle(px + 7 * s, -8 * s, 11 * s).fill(leafCol);
+            g.circle(px + 7 * s, -8 * s, 11 * s).stroke({ width: 2, color: INK });
+            g.circle(px, -16 * s, 12 * s).fill(leafCol);
+            g.circle(px, -16 * s, 12 * s).stroke({ width: 2, color: INK });
+            if (ready) {
+              g.circle(px - 4, -10, 5.5).fill(fruitCol);
+              g.circle(px - 4, -10, 5.5).stroke({ width: 1.6, color: INK });
+              g.circle(px + 5, -18, 5).fill(fruitCol);
+              g.circle(px + 5, -18, 5).stroke({ width: 1.6, color: INK });
+            }
+          }
+
+          if (ready) {
+            g.circle(56, -42, 16).fill('#FCE79C');
+            g.circle(56, -42, 16).stroke({ width: 2.4, color: INK });
+            g.poly([56, -52, 59, -45, 66, -42, 59, -39, 56, -32, 53, -39, 46, -42, 53, -45]).fill('#C4483B');
+          }
+        }
+      }
+
+      card.addChild(g);
+      card.on('pointerdown', (event) => {
+        event.stopPropagation();
+        if (ready && crop) {
+          this.spawnBurst(pos.x, pos.y - 24, 'sparkle', 7, ['#E9C65B', crop.colors[0], '#FFFDF8'], 110);
+          this.spawnLabel(pos.x, pos.y - 52, `+ ${crop.name}`, '#6E8A55');
+          useGameStore.getState().harvestPlot(plot.id);
+        } else {
+          useGameStore.getState().openOverlay('farm');
+        }
+      });
+      this.farmLayer.addChild(card);
+    });
+  }
+
   private syncItems(): void {
     const view = this.view;
     if (!view) return;
@@ -719,8 +1587,15 @@ export class StageRenderer {
       if (!def) continue;
       let node = this.itemNodes.get(placed.uid);
       const art = itemArt(def);
-      const texture = requestTexture(`item:${def.id}`, art.body, art.w, art.h, this.onRefresh);
-      const targetH = (def.width * art.h) / art.w;
+      const rawSprite = def.sprite ?? ITEM_SPRITE_FALLBACK[def.id];
+      const spriteUrl = rawSprite ? normalizePackUrl(rawSprite) : null;
+      const pngTex = spriteUrl ? requestImageTexture(spriteUrl, this.onRefresh) : null;
+      const svgTex = pngTex ? null : requestTexture(`item:${def.id}`, art.body, art.w, art.h, this.onRefresh);
+      const texture = pngTex ?? svgTex;
+      const usesPng = !!pngTex;
+      const targetH = pngTex
+        ? (def.width * pngTex.height) / Math.max(1, pngTex.width)
+        : (def.width * art.h) / art.w;
 
       if (!node) {
         const container = new Container();
@@ -742,6 +1617,9 @@ export class StageRenderer {
           popTimer: 0.42,
           baseW: def.width,
           baseH: targetH,
+          usesPng,
+          glowKey: '',
+          overlayKey: '',
         };
         const currentNode = node;
         container.on('pointerdown', (event) => this.onItemDown(event, currentNode));
@@ -764,6 +1642,7 @@ export class StageRenderer {
       node.placed = placed;
       node.baseW = def.width;
       node.baseH = targetH;
+      node.usesPng = usesPng;
       node.sprite.texture = texture ?? Texture.WHITE;
       node.sprite.tint = texture ? 0xffffff : 0xf3efe0;
       node.sprite.visible = !!texture;
@@ -775,8 +1654,127 @@ export class StageRenderer {
       node.container.y = placed.y;
       node.container.alpha = 1;
       node.container.zIndex = placed.hostUid ? 9000 + placed.y : isFlatItem(placed.itemId) ? placed.y - 10_000 : placed.y;
+      this.syncItemVisualDecoration(node, view.night);
     }
     this.itemLayer.sortableChildren = true;
+  }
+
+  private syncItemVisualDecoration(node: ItemNode, night: boolean): void {
+    const isLamp = node.artKind === 'floorLamp' || node.artKind === 'tableLamp' || node.artKind === 'lantern';
+    const nextGlowKey = `${node.usesPng}:${node.artKind}:${Math.round(node.baseW)}:${Math.round(node.baseH)}:${night}`;
+    if (node.glowKey !== nextGlowKey) {
+      node.glowKey = nextGlowKey;
+      node.glow.clear();
+      node.glow.alpha = 1;
+      if (node.usesPng) {
+        node.glow.ellipse(0, -4, node.baseW * 0.36, 9).fill({ color: '#2B2521', alpha: 0.14 });
+      }
+      if (isLamp) {
+        const gy = node.artKind === 'floorLamp' ? -node.baseH * 0.72 : -node.baseH * 0.62;
+        const rOuter = node.baseW * (night ? 1.55 : 0.95);
+        node.glow.circle(0, gy, rOuter).fill({ color: '#FCE79C', alpha: night ? 0.16 : 0.07 });
+        node.glow.circle(0, gy, rOuter * 0.56).fill({ color: '#FFF6CC', alpha: night ? 0.22 : 0.09 });
+      }
+    }
+
+    const nextOverlayKey = `${node.itemId}:${node.artKind}:${Math.round(node.baseW)}:${Math.round(node.baseH)}`;
+    if (node.overlayKey !== nextOverlayKey) {
+      node.overlayKey = nextOverlayKey;
+      node.overlay.clear();
+      node.overlay.removeChildren().forEach((c) => c.destroy());
+      node.overlayParts = undefined;
+
+      if (node.artKind === 'wallClock') {
+        const cx = 0;
+        const cy = -node.baseH * 0.5;
+        const r = node.baseW * (19 / 68);
+        const palName = ITEMS_BY_ID[node.itemId]?.palette ?? 'cream';
+        const dialColor = PALETTES[palName]?.second ?? '#E4D9C2';
+        node.overlay.circle(cx, cy, r).fill(dialColor);
+
+        const hour = new Graphics();
+        hour.moveTo(0, 0).lineTo(r * 0.58, 0).stroke({ width: 3, color: INK });
+        hour.position.set(cx, cy);
+
+        const min = new Graphics();
+        min.moveTo(0, 0).lineTo(r * 0.84, 0).stroke({ width: 2.3, color: INK });
+        min.position.set(cx, cy);
+
+        const sec = new Graphics();
+        sec.moveTo(0, 0).lineTo(r * 0.94, 0).stroke({ width: 1.4, color: '#C4483B' });
+        sec.position.set(cx, cy);
+
+        const pin = new Graphics();
+        pin.circle(cx, cy, 3).fill('#C4483B');
+
+        node.overlay.addChild(hour, min, sec, pin);
+        node.overlayParts = { hour, min, sec };
+      } else if (node.artKind === 'pool' || node.artKind === 'fountain') {
+        const cy = node.artKind === 'pool' ? -node.baseH * 0.5 : -node.baseH * 0.35;
+        const ripple = new Graphics();
+        ripple.ellipse(0, 0, node.baseW * 0.36, node.baseH * 0.15).stroke({ width: 2, color: '#FFFFFF' });
+        ripple.position.set(0, cy);
+        node.overlay.addChild(ripple);
+        node.overlayParts = { ripple };
+      } else if (node.artKind === 'windmill') {
+        const hubY = -node.baseH * 0.68;
+        const armLen = node.baseW * 0.36;
+        const blades = new Graphics();
+        for (let k = 0; k < 4; k++) {
+          const a = (k * Math.PI) / 2;
+          blades.moveTo(0, 0).lineTo(Math.cos(a) * armLen, Math.sin(a) * armLen).stroke({ width: 4, color: '#7A5A3C', alpha: 0.7 });
+        }
+        blades.position.set(0, hubY);
+        node.overlay.addChild(blades);
+        node.overlayParts = { blades };
+      }
+    }
+  }
+
+  private mountAnimalVisual(
+    node: { rig: Container; sprites: RigSprites; pngSprite?: Sprite; pngShadow?: Graphics; pngUrl?: string; pngW?: number; pngH?: number },
+    key: string,
+    parts: AnimalRigParts,
+    pngUrl: string | undefined,
+  ): void {
+    node.rig.removeChildren().forEach((c) => c.destroy());
+    node.pngSprite = undefined;
+    node.pngShadow = undefined;
+    node.pngUrl = undefined;
+    node.pngW = undefined;
+    node.pngH = undefined;
+    node.sprites = {};
+
+    const pngTex = pngUrl ? requestImageTexture(pngUrl, this.onRefresh) : null;
+    if (pngUrl && pngTex) {
+      const shadow = new Graphics();
+      shadow.ellipse(0, -4, pngTex.width * 0.36, Math.max(7, pngTex.height * 0.08)).fill({ color: '#2B2521', alpha: 0.16 });
+      const sprite = new Sprite(pngTex);
+      sprite.anchor.set(0.5, 1);
+      node.rig.addChild(shadow, sprite);
+      node.pngShadow = shadow;
+      node.pngSprite = sprite;
+      node.pngUrl = pngUrl;
+      node.pngW = pngTex.width;
+      node.pngH = pngTex.height;
+      return;
+    }
+
+    node.sprites = {
+      shadow: mountRigPart(node.rig, `${key}:shadow`, parts.shadow, this.onRefresh),
+      backTail: mountRigPart(node.rig, `${key}:tail`, parts.backTail, this.onRefresh),
+      farLegs: mountRigPart(node.rig, `${key}:farLegs`, parts.farLegs, this.onRefresh),
+      body: mountRigPart(node.rig, `${key}:body`, parts.body, this.onRefresh),
+      nearLegBack: mountRigPart(node.rig, `${key}:nearLegBack`, parts.nearLegBack, this.onRefresh),
+      nearLegFront: mountRigPart(node.rig, `${key}:nearLegFront`, parts.nearLegFront, this.onRefresh),
+      wingL: mountRigPart(node.rig, `${key}:wingL`, parts.wingL, this.onRefresh),
+      wingR: mountRigPart(node.rig, `${key}:wingR`, parts.wingR, this.onRefresh),
+      wing: mountRigPart(node.rig, `${key}:wing`, parts.wing, this.onRefresh),
+      head: mountRigPart(node.rig, `${key}:head`, parts.head, this.onRefresh),
+      eyesOpen: mountRigPart(node.rig, `${key}:eyesOpen`, parts.eyesOpen, this.onRefresh),
+      eyesClosed: mountRigPart(node.rig, `${key}:eyesClosed`, parts.eyesClosed, this.onRefresh),
+    };
+    if (node.sprites.eyesClosed) node.sprites.eyesClosed.visible = false;
   }
 
   private buildAnimalRig(
@@ -789,6 +1787,7 @@ export class StageRenderer {
     y: number,
     seed: number,
     onTap?: () => void,
+    pngUrl?: string,
   ): AnimalRigNode {
     const container = new Container();
     const rig = new Container();
@@ -796,39 +1795,11 @@ export class StageRenderer {
     container.x = x;
     container.y = y;
 
-    const sprites: RigSprites = {
-      shadow: mountRigPart(rig, `${key}:shadow`, parts.shadow, this.onRefresh),
-      backTail: mountRigPart(rig, `${key}:tail`, parts.backTail, this.onRefresh),
-      farLegs: mountRigPart(rig, `${key}:farLegs`, parts.farLegs, this.onRefresh),
-      body: mountRigPart(rig, `${key}:body`, parts.body, this.onRefresh),
-      nearLegBack: mountRigPart(rig, `${key}:nearLegBack`, parts.nearLegBack, this.onRefresh),
-      nearLegFront: mountRigPart(rig, `${key}:nearLegFront`, parts.nearLegFront, this.onRefresh),
-      wingL: mountRigPart(rig, `${key}:wingL`, parts.wingL, this.onRefresh),
-      wingR: mountRigPart(rig, `${key}:wingR`, parts.wingR, this.onRefresh),
-      wing: mountRigPart(rig, `${key}:wing`, parts.wing, this.onRefresh),
-      head: mountRigPart(rig, `${key}:head`, parts.head, this.onRefresh),
-      eyesOpen: mountRigPart(rig, `${key}:eyesOpen`, parts.eyesOpen, this.onRefresh),
-      eyesClosed: mountRigPart(rig, `${key}:eyesClosed`, parts.eyesClosed, this.onRefresh),
-    };
-    if (sprites.eyesClosed) sprites.eyesClosed.visible = false;
-
-    if (onTap) {
-      container.eventMode = 'static';
-      container.cursor = 'pointer';
-      container.on('pointerdown', (event) => {
-        event.stopPropagation();
-        onTap();
-      });
-    }
-
-    const baseScale = targetSize / parts.w;
-    rig.scale.set(baseScale);
-
-    return {
+    const node: AnimalRigNode = {
       container,
       rig,
       parts,
-      sprites,
+      sprites: {},
       cacheKey: key,
       targetSize,
       visX: x,
@@ -843,6 +1814,22 @@ export class StageRenderer {
       pose,
       seed,
     };
+
+    this.mountAnimalVisual(node, key, parts, pngUrl);
+
+    if (onTap) {
+      container.eventMode = 'static';
+      container.cursor = 'pointer';
+      container.on('pointerdown', (event) => {
+        event.stopPropagation();
+        onTap();
+      });
+    }
+
+    const baseScale = node.pngW ? targetSize / node.pngW : targetSize / parts.w;
+    rig.scale.set(baseScale);
+
+    return node;
   }
 
   private refreshAnimalRig(
@@ -850,31 +1837,22 @@ export class StageRenderer {
     key: string,
     parts: AnimalRigParts,
     pose: 'idle' | 'walk' | 'sleep' | 'special',
+    pngUrl?: string,
   ): void {
-    if (node.cacheKey !== key) {
-      node.rig.removeChildren().forEach((c) => c.destroy());
+    const readyPng = pngUrl ? requestImageTexture(pngUrl, this.onRefresh) : null;
+    const effectivePngUrl = readyPng ? pngUrl : undefined;
+
+    if (node.cacheKey !== key || node.pngUrl !== effectivePngUrl) {
       node.parts = parts;
       node.cacheKey = key;
       node.pose = pose;
-      node.sprites = {
-        shadow: mountRigPart(node.rig, `${key}:shadow`, parts.shadow, this.onRefresh),
-        backTail: mountRigPart(node.rig, `${key}:tail`, parts.backTail, this.onRefresh),
-        farLegs: mountRigPart(node.rig, `${key}:farLegs`, parts.farLegs, this.onRefresh),
-        body: mountRigPart(node.rig, `${key}:body`, parts.body, this.onRefresh),
-        nearLegBack: mountRigPart(node.rig, `${key}:nearLegBack`, parts.nearLegBack, this.onRefresh),
-        nearLegFront: mountRigPart(node.rig, `${key}:nearLegFront`, parts.nearLegFront, this.onRefresh),
-        wingL: mountRigPart(node.rig, `${key}:wingL`, parts.wingL, this.onRefresh),
-        wingR: mountRigPart(node.rig, `${key}:wingR`, parts.wingR, this.onRefresh),
-        wing: mountRigPart(node.rig, `${key}:wing`, parts.wing, this.onRefresh),
-        head: mountRigPart(node.rig, `${key}:head`, parts.head, this.onRefresh),
-        eyesOpen: mountRigPart(node.rig, `${key}:eyesOpen`, parts.eyesOpen, this.onRefresh),
-        eyesClosed: mountRigPart(node.rig, `${key}:eyesClosed`, parts.eyesClosed, this.onRefresh),
-      };
-      if (node.sprites.eyesClosed) node.sprites.eyesClosed.visible = false;
+      this.mountAnimalVisual(node, key, parts, pngUrl);
       return;
     }
 
     node.pose = pose;
+    if (node.pngSprite) return;
+
     updateRigPartTexture(node.sprites.shadow, `${key}:shadow`, parts.shadow, this.onRefresh);
     updateRigPartTexture(node.sprites.backTail, `${key}:tail`, parts.backTail, this.onRefresh);
     updateRigPartTexture(node.sprites.farLegs, `${key}:farLegs`, parts.farLegs, this.onRefresh);
@@ -1064,6 +2042,7 @@ export class StageRenderer {
       const pose: 'idle' | 'walk' | 'sleep' = pet.state === 'sleep' ? 'sleep' : pet.state === 'walk' ? 'walk' : 'idle';
       // Always render standing rig for walk/idle (since legs animate live!), and sleeping curled rig for sleep
       const svgPose: 'idle' | 'sleep' = pose === 'sleep' ? 'sleep' : 'idle';
+      const pngUrl = animalPngFor(pet.species, pet.coat, pose) ?? undefined;
       const key = `petRig:${pet.species}:${pet.coat}:${svgPose}`;
       const parts = animalRigParts({ species: pet.species, coat: pet.coat, pose: svgPose });
       const targetSize = pet.species === 'bird' ? 86 : 138;
@@ -1076,12 +2055,12 @@ export class StageRenderer {
             this.spawnBurst(hit.visX, hit.visY - 75, 'heart', 5, ['#E8A6B0', '#E9C65B'], 95);
           }
           this.callbacks.onPet(pet.id);
-        });
+        }, pngUrl);
         node.container.zIndex = pet.y + 10;
         this.actorLayer.addChild(node.container);
         this.petNodes.set(pet.id, node);
       } else {
-        this.refreshAnimalRig(existing, key, parts, pose);
+        this.refreshAnimalRig(existing, key, parts, pose, pngUrl);
       }
     }
 
@@ -1097,6 +2076,7 @@ export class StageRenderer {
     for (const visitor of visitors) {
       const def = VISITORS_BY_ID[visitor.visitorId];
       if (!def) continue;
+      const pngUrl = animalPngFor(def.species, def.coat, 'idle') ?? undefined;
       const key = `visitorRig:${def.species}:${def.coat}`;
       const parts = animalRigParts({ species: def.species, coat: def.coat, pose: 'idle' });
       const existing = this.visitorNodes.get(visitor.id);
@@ -1108,12 +2088,12 @@ export class StageRenderer {
             this.spawnBurst(hit.visX, hit.visY - 80, 'sparkle', 6, ['#E9C65B', '#E8A6B0'], 90);
           }
           this.callbacks.onVisitor(visitor.id);
-        });
+        }, pngUrl);
         node.container.zIndex = visitor.y + 12;
         this.actorLayer.addChild(node.container);
         this.visitorNodes.set(visitor.id, node);
       } else {
-        this.refreshAnimalRig(existing, key, parts, 'idle');
+        this.refreshAnimalRig(existing, key, parts, 'idle', pngUrl);
         existing.visX = visitor.x;
         existing.visY = visitor.y + 8;
         existing.container.zIndex = visitor.y + 12;
@@ -1143,6 +2123,78 @@ export class StageRenderer {
         this.refreshAnimalRig(existing, key, parts, 'idle');
       }
     }
+
+    // 5. Farm producers (Daisy the cow & Pip the hen)
+    if (view.roomId !== 'farm') {
+      for (const node of this.farmNodes.values()) {
+        node.container.destroy({ children: true });
+      }
+      this.farmNodes.clear();
+    } else {
+      const nowMs = Date.now();
+      const producerSpecs: {
+        id: 'cow' | 'hen';
+        x: number;
+        y: number;
+        size: number;
+        coat: string;
+        yieldLabel: string;
+        usePng: boolean;
+      }[] = [
+        { id: 'cow', x: 410, y: 525, size: 175, coat: 'white', yieldLabel: '+1 Milk', usePng: true },
+        { id: 'hen', x: 215, y: 405, size: 88, coat: 'cream', yieldLabel: '+1 Egg', usePng: false },
+      ];
+      for (const spec of producerSpecs) {
+        const ready = (state.farm.producers[spec.id]?.readyAt ?? Infinity) <= nowMs;
+        const pngUrl = spec.usePng ? (animalPngFor(spec.id, spec.coat, 'idle') ?? undefined) : undefined;
+        const key = `farmRig:${spec.id}`;
+        const parts = animalRigParts({ species: spec.id, coat: spec.coat, pose: 'idle' });
+        let node = this.farmNodes.get(spec.id);
+        if (!node) {
+          node = this.buildAnimalRig(
+            key,
+            parts,
+            spec.size,
+            spec.id,
+            'idle',
+            spec.x,
+            spec.y,
+            spec.id === 'cow' ? 2 : 5,
+            () => {
+              const hit = this.farmNodes.get(spec.id);
+              if (hit) hit.jumpPop = 0.45;
+              const store = useGameStore.getState();
+              const isReady = (store.state.farm.producers[spec.id]?.readyAt ?? Infinity) <= Date.now();
+              if (isReady) {
+                this.spawnBurst(spec.x, spec.y - spec.size * 0.55, 'sparkle', 7, ['#E9C65B', '#FFFDF8', '#E8A6B0'], 105);
+                this.spawnLabel(spec.x, spec.y - spec.size * 0.85, spec.yieldLabel, '#6E8A55');
+                store.collectProducer(spec.id);
+              } else {
+                store.openOverlay('farm');
+              }
+            },
+            pngUrl,
+          );
+          node.facing = 1;
+          const badge = new Graphics();
+          badge.circle(0, 0, 16).fill('#FCE79C');
+          badge.circle(0, 0, 16).stroke({ width: 2.5, color: INK });
+          badge.poly([0, -9, 3, -3, 9, 0, 3, 3, 0, 9, -3, 3, -9, 0, -3, -3]).fill('#C4483B');
+          badge.position.set(0, -spec.size * 0.92);
+          node.container.addChild(badge);
+          node.readyBadge = badge;
+          node.container.zIndex = spec.y;
+          this.actorLayer.addChild(node.container);
+          this.farmNodes.set(spec.id, node);
+        } else {
+          this.refreshAnimalRig(node, key, parts, 'idle', pngUrl);
+        }
+        if (node.readyBadge) {
+          node.readyBadge.visible = ready;
+        }
+      }
+    }
+
     this.actorLayer.sortableChildren = true;
   }
 
@@ -1249,16 +2301,30 @@ export class StageRenderer {
   }
 
   private syncSelection(): void {
-    this.selection.clear();
     const view = this.view;
-    if (!view?.selectedUid || !view.editMode) return;
+    if (!view?.selectedUid || !view.editMode) {
+      if (this.selectionKey !== '') {
+        this.selection.clear();
+        this.selectionKey = '';
+      }
+      return;
+    }
     const placed = view.state.placed.find((p) => p.uid === view.selectedUid);
-    if (!placed) return;
+    if (!placed) {
+      if (this.selectionKey !== '') {
+        this.selection.clear();
+        this.selectionKey = '';
+      }
+      return;
+    }
     const { w, h } = itemSize(placed.itemId);
-    const pulse = 0.78 + 0.22 * Math.sin(performance.now() / 180);
+    const key = `${placed.uid}:${Math.round(placed.x)}:${Math.round(placed.y)}:${w}:${h}`;
+    if (this.selectionKey === key) return;
+    this.selectionKey = key;
+    this.selection.clear();
     this.selection
       .roundRect(placed.x - w / 2 - 10, placed.y - h - 10, w + 20, h + 20, 12)
-      .stroke({ width: 5, color: '#E8A6B0', alpha: pulse });
+      .stroke({ width: 5, color: '#E8A6B0' });
     this.selection
       .roundRect(placed.x - w / 2 - 10, placed.y - h - 10, w + 20, h + 20, 12)
       .fill({ color: '#FBF7EC', alpha: 0.12 });
@@ -1404,6 +2470,25 @@ export class StageRenderer {
       sy = 1 - Math.sin(u * Math.PI * 2) * 0.12 * (1 - u);
     }
 
+    if (node.readyBadge && node.readyBadge.visible) {
+      node.readyBadge.y = -node.targetSize * 0.92 + Math.sin(now * 4 + node.seed) * 4;
+      const badgeScale = 1 + Math.sin(now * 5 + node.seed) * 0.08;
+      node.readyBadge.scale.set(badgeScale);
+    }
+
+    if (node.pngSprite) {
+      const t = now + node.seed;
+      const baseScale = node.targetSize / Math.max(1, node.pngW ?? 140);
+      const breath = 1 + Math.sin(t * 2.5) * 0.025;
+      node.pngSprite.rotation = Math.sin(t * 1.5) * 0.018;
+      node.rig.position.set(0, jumpY);
+      node.rig.scale.set(
+        node.facing * baseScale * sx * (2 - breath) * 0.5 + node.facing * baseScale * sx * 0.5,
+        baseScale * sy * breath,
+      );
+      return;
+    }
+
     const baseScale = node.targetSize / node.parts.w;
 
     // 5. Species-specific limb/wing/tail/breath articulation
@@ -1531,86 +2616,28 @@ export class StageRenderer {
   private drawSkyAndSunbeams(now: number): void {
     const view = this.view;
     if (!view) return;
-    const { roomId, night } = view;
-    const room = ROOMS[roomId];
-    this.skyAnimLayer.clear();
-    this.sunbeamLayer.clear();
+    const room = ROOMS[view.roomId];
 
-    if (room.outdoor) {
-      if (night) {
-        // Twinkling night sky stars
-        for (let i = 0; i < 24; i++) {
-          const sx = (i * 173 + 90) % 1880;
-          const sy = 36 + ((i * 97) % 260);
-          const twinkle = 0.45 + 0.55 * Math.abs(Math.sin(now * 1.7 + i * 1.3));
-          this.skyAnimLayer.circle(sx, sy, i % 3 === 0 ? 3 : 2).fill({ color: '#FBF7EC', alpha: twinkle });
-        }
-      } else {
-        // Slowly drifting fluffy outdoor clouds
-        const clouds: [number, number, number, number][] = [
-          [420, 110, 1, 10],
-          [920, 86, 0.82, 7.5],
-          [1280, 146, 1.08, 12],
-          [1760, 96, 0.9, 8.5],
-        ];
-        for (const [cx0, cy, s, spd] of clouds) {
-          const cx = ((cx0 + now * spd) % 2180) - 130;
-          this.skyAnimLayer.ellipse(cx, cy + 6, 118 * s, 28 * s).fill({ color: '#D8E6EC', alpha: 0.6 });
-          this.skyAnimLayer.ellipse(cx, cy, 116 * s, 28 * s).fill('#FBF7EC');
-          this.skyAnimLayer.ellipse(cx - 36 * s, cy - 12 * s, 56 * s, 24 * s).fill('#FFFFFF');
-          this.skyAnimLayer.ellipse(cx + 34 * s, cy - 10 * s, 64 * s, 26 * s).fill('#FBF7EC');
-        }
+    for (const actor of this.skyActors) {
+      if (actor.kind === 'star') {
+        const base = room.outdoor ? 0.45 : 0.4;
+        actor.gfx.alpha = base + (1 - base) * Math.abs(Math.sin(now * actor.speed + actor.phase));
+      } else if (actor.kind === 'cloud') {
+        actor.gfx.x = ((actor.x0 + now * actor.speed) % 2180) - 130;
+      } else if (actor.kind === 'windowCloud' && actor.winX !== undefined && actor.winW !== undefined) {
+        const cycle = ((now * actor.speed) % (actor.winW + 70)) - 35;
+        actor.gfx.x = actor.winX + Math.max(26, Math.min(actor.winW - 26, cycle));
       }
-      return;
     }
 
-    const win = WINDOWS[roomId];
-    if (!win) return;
-    const [wx, wy, ww, wh] = win;
-
-    if (night) {
-      for (let i = 0; i < 8; i++) {
-        const sx = wx + 18 + ((i * 43) % Math.max(20, ww - 36));
-        const sy = wy + 16 + ((i * 29) % Math.max(24, wh * 0.56));
-        const twinkle = 0.4 + 0.6 * Math.abs(Math.sin(now * 2.1 + i * 1.7));
-        this.skyAnimLayer.circle(sx, sy, i % 2 === 0 ? 2.3 : 1.5).fill({ color: '#FBF7EC', alpha: twinkle });
-      }
-    } else {
-      // Drifting cloud inside indoor window bounds
-      const cycle = ((now * 6) % (ww + 70)) - 35;
-      const cx = wx + Math.max(26, Math.min(ww - 26, cycle));
-      const cy = wy + wh * 0.25;
-      this.skyAnimLayer.ellipse(cx, cy, 22, 9).fill('#FBF7EC');
-      this.skyAnimLayer.ellipse(cx + 9, cy - 3, 15, 9).fill('#FFFFFF');
+    if (!room.outdoor && this.sunbeamLayer.visible) {
+      this.sunbeamLayer.alpha = 0.88 + 0.12 * Math.sin(now * 0.9);
     }
-
-    // Feathered breathing sunbeams / moonbeams
-    const shimmer = 0.88 + 0.12 * Math.sin(now * 0.9);
-    const beamColor = night ? '#B8D0F0' : '#FFF6D6';
-    this.sunbeamLayer.poly([
-      wx + 6, wy + wh + 20,
-      wx + ww - 6, wy + wh + 20,
-      wx + ww + 90, wy + wh + 160,
-      wx - 14, wy + wh + 160,
-    ]).fill({ color: beamColor, alpha: (night ? 0.035 : 0.08) * shimmer });
-    this.sunbeamLayer.poly([
-      wx + 6, wy + wh + 20,
-      wx + ww - 6, wy + wh + 20,
-      wx + ww + 135, wy + wh + 235,
-      wx - 24, wy + wh + 235,
-    ]).fill({ color: beamColor, alpha: (night ? 0.025 : 0.052) * shimmer });
-    this.sunbeamLayer.poly([
-      wx + 6, wy + wh + 20,
-      wx + ww - 6, wy + wh + 20,
-      wx + ww + 175, wy + wh + 305,
-      wx - 32, wy + wh + 305,
-    ]).fill({ color: beamColor, alpha: (night ? 0.015 : 0.03) * shimmer });
   }
 
   private animateItems(dt: number, now: number): void {
     const view = this.view;
     if (!view) return;
-    const night = view.night;
 
     this.steamSpawnAcc += dt;
     const shouldSpawnSteam = this.steamSpawnAcc >= 0.42;
@@ -1643,57 +2670,18 @@ export class StageRenderer {
       node.container.scale.set(sx, sy);
       node.container.rotation = swayRot;
 
-      // Per-prop ambient glow & live animation overlays
-      node.glow.clear();
-      node.overlay.clear();
-
       if (node.artKind === 'floorLamp' || node.artKind === 'tableLamp' || node.artKind === 'lantern') {
-        const pulse = 0.88 + 0.12 * Math.sin(now * 2.6 + node.placed.x);
-        const gy = node.artKind === 'floorLamp' ? -node.baseH * 0.72 : -node.baseH * 0.62;
-        const rOuter = node.baseW * (night ? 1.55 : 0.95);
-        node.glow.circle(0, gy, rOuter).fill({ color: '#FCE79C', alpha: (night ? 0.16 : 0.07) * pulse });
-        node.glow.circle(0, gy, rOuter * 0.56).fill({ color: '#FFF6CC', alpha: (night ? 0.22 : 0.09) * pulse });
-      } else if (node.artKind === 'wallClock') {
-        const cx = 0;
-        const cy = -node.baseH * 0.5;
-        const r = node.baseW * (19 / 68);
-        const palName = ITEMS_BY_ID[node.itemId]?.palette ?? 'cream';
-        const dialColor = PALETTES[palName]?.second ?? '#E4D9C2';
-        node.overlay.circle(cx, cy, r).fill(dialColor);
-        const hourAng = now * 0.03 - Math.PI / 2;
-        const minAng = now * 0.35 - Math.PI / 2;
-        const secAng = now * 2.5 - Math.PI / 2;
-        node.overlay
-          .moveTo(cx, cy)
-          .lineTo(cx + Math.cos(hourAng) * (r * 0.58), cy + Math.sin(hourAng) * (r * 0.58))
-          .stroke({ width: 3, color: INK });
-        node.overlay
-          .moveTo(cx, cy)
-          .lineTo(cx + Math.cos(minAng) * (r * 0.84), cy + Math.sin(minAng) * (r * 0.84))
-          .stroke({ width: 2.3, color: INK });
-        node.overlay
-          .moveTo(cx, cy)
-          .lineTo(cx + Math.cos(secAng) * (r * 0.94), cy + Math.sin(secAng) * (r * 0.94))
-          .stroke({ width: 1.4, color: '#C4483B' });
-        node.overlay.circle(cx, cy, 3).fill('#C4483B');
-      } else if (node.artKind === 'pool' || node.artKind === 'fountain') {
+        node.glow.alpha = 0.88 + 0.12 * Math.sin(now * 2.6 + node.placed.x);
+      } else if (node.artKind === 'wallClock' && node.overlayParts) {
+        if (node.overlayParts.hour) node.overlayParts.hour.rotation = now * 0.03 - Math.PI / 2;
+        if (node.overlayParts.min) node.overlayParts.min.rotation = now * 0.35 - Math.PI / 2;
+        if (node.overlayParts.sec) node.overlayParts.sec.rotation = now * 2.5 - Math.PI / 2;
+      } else if ((node.artKind === 'pool' || node.artKind === 'fountain') && node.overlayParts?.ripple) {
         const ripPhase = (now * 0.7 + node.placed.x * 0.01) % 1;
-        const cy = node.artKind === 'pool' ? -node.baseH * 0.5 : -node.baseH * 0.35;
-        node.overlay
-          .ellipse(0, cy, node.baseW * (0.14 + ripPhase * 0.22), node.baseH * (0.05 + ripPhase * 0.1))
-          .stroke({ width: 2, color: '#FFFFFF', alpha: (1 - ripPhase) * 0.5 });
-      } else if (node.artKind === 'windmill') {
-        // Rotating breeze blades overlay centered near windmill hub
-        const hubY = -node.baseH * 0.68;
-        const ang = now * 0.9 + node.placed.x * 0.01;
-        const armLen = node.baseW * 0.36;
-        for (let k = 0; k < 4; k++) {
-          const a = ang + (k * Math.PI) / 2;
-          node.overlay
-            .moveTo(0, hubY)
-            .lineTo(Math.cos(a) * armLen, hubY + Math.sin(a) * armLen)
-            .stroke({ width: 4, color: '#7A5A3C', alpha: 0.7 });
-        }
+        node.overlayParts.ripple.scale.set(0.38 + ripPhase * 0.62, 0.34 + ripPhase * 0.66);
+        node.overlayParts.ripple.alpha = (1 - ripPhase) * 0.5;
+      } else if (node.artKind === 'windmill' && node.overlayParts?.blades) {
+        node.overlayParts.blades.rotation = now * 0.9 + node.placed.x * 0.01;
       }
 
       if (shouldSpawnSteam && (node.artKind === 'pot' || node.artKind === 'pan')) {
@@ -1719,22 +2707,28 @@ export class StageRenderer {
     const view = this.view;
     if (!view) return;
     const room = ROOMS[view.roomId];
-    this.ambientLayer.clear();
-    this.fxLayer.clear();
 
-    // 1. Dust motes inside sunlit indoor rooms
-    if (!room.outdoor && !view.night) {
+    // 1. Dust motes inside sunlit indoor rooms & farm stream ripples (pre-built Graphics, no clear())
+    const showMotes = !room.outdoor && !view.night;
+    const showRipples = room.outdoor && view.roomId === 'farm';
+    this.ambientLayer.visible = showMotes || showRipples;
+
+    if (showMotes) {
       const win = WINDOWS[view.roomId];
-      for (const m of this.motes) {
+      for (const { gfx, data: m } of this.moteNodes) {
+        gfx.visible = true;
         m.x += m.vx * dt;
         m.y += (m.vy + Math.sin(now * 1.4 + m.phase) * 4) * dt;
         if (m.x > 1920) m.x = 0;
         if (m.y > 820) m.y = 80;
         const inBeam = win ? m.x > win[0] - 80 && m.x < win[0] + win[2] + 240 && m.y > win[1] : true;
-        const alpha = (inBeam ? m.alpha * 1.5 : m.alpha * 0.45) * (0.6 + 0.4 * Math.sin(now * 2 + m.phase));
-        this.ambientLayer.circle(m.x, m.y, m.radius).fill({ color: '#FFFBE4', alpha });
+        gfx.position.set(m.x, m.y);
+        gfx.alpha = (inBeam ? m.alpha * 1.5 : m.alpha * 0.45) * (0.6 + 0.4 * Math.sin(now * 2 + m.phase));
       }
+      for (const ripple of this.farmRipples) ripple.visible = false;
     } else if (room.outdoor) {
+      for (const { gfx } of this.moteNodes) gfx.visible = false;
+
       // Outdoor petals (day) or fireflies (night)
       this.fireflySpawnAcc += dt;
       if (this.fireflySpawnAcc > 0.35 && this.particles.length < 70) {
@@ -1754,9 +2748,31 @@ export class StageRenderer {
           vrot: 1.5,
         });
       }
+
+      const rippleTint = view.night ? 0x8cb2c8 : 0xfffdf8;
+      for (let i = 0; i < this.farmRipples.length; i++) {
+        const ripple = this.farmRipples[i];
+        ripple.visible = showRipples;
+        if (!showRipples) continue;
+        const rx = 140 + ((i * 310 + now * 26) % 1680);
+        const ry = 748 + (i % 3) * 34 + Math.sin(now * 2 + i) * 3;
+        const rw = 34 + Math.sin(now * 2.3 + i * 1.4) * 10;
+        ripple.position.set(rx, ry);
+        ripple.scale.x = rw / 42;
+        ripple.tint = rippleTint;
+        ripple.alpha = 0.35 + 0.15 * Math.sin(now * 2 + i);
+      }
+    } else {
+      for (const { gfx } of this.moteNodes) gfx.visible = false;
+      for (const ripple of this.farmRipples) ripple.visible = false;
     }
 
-    // 2. Active FX particles
+    // 2. Active FX particles (skip fxLayer.clear() entirely when idle)
+    if (this.particles.length > 0 || this.fxHasContent) {
+      this.fxLayer.clear();
+      this.fxHasContent = this.particles.length > 0;
+    }
+
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.age += dt;
@@ -1832,13 +2848,25 @@ export class StageRenderer {
 
   private onTick = (ticker: Ticker): void => {
     if (!this.view || !this.ready) return;
+
+    // Throttle background rendering when a modal overlay covers the canvas
+    const hasOverlay = useGameStore.getState().overlay !== null || document.body.classList.contains('has-overlay');
+    if (this.app) {
+      const desiredFps = hasOverlay ? 4 : 30;
+      if (this.app.ticker.maxFPS !== desiredFps) this.app.ticker.maxFPS = desiredFps;
+    }
+
     const dt = Math.min(0.05, ticker.deltaMS / 1000);
     const now = performance.now() / 1000;
 
     // Smooth room cross-fade transition
     if (this.transitionAlpha < 1) {
-      this.transitionAlpha = Math.min(1, this.transitionAlpha + dt * 4.5);
+      this.transitionAlpha = Math.min(1, this.transitionAlpha + dt * 7);
       this.root.alpha = this.transitionAlpha;
+    }
+
+    if (hasOverlay && this.transitionAlpha >= 1) {
+      return;
     }
 
     this.drawSkyAndSunbeams(now);
@@ -1879,14 +2907,19 @@ export class StageRenderer {
       if (node) this.animateAnimalRig(node, dt, now);
     }
 
+    // Farm producers
+    for (const node of this.farmNodes.values()) {
+      this.animateAnimalRig(node, dt, now);
+    }
+
     // Humans & Baby
     for (const node of this.humanNodes.values()) {
       this.animateHumanRig(node, dt, now);
     }
 
-    // Pulse edit selection outline if active
+    // Pulse edit selection outline if active (without rebuilding geometry)
     if (this.view.editMode && this.view.selectedUid) {
-      this.syncSelection();
+      this.selection.alpha = 0.78 + 0.22 * Math.sin(now * 5.5);
     }
   };
 }

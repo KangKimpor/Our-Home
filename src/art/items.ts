@@ -1,9 +1,32 @@
 import type { ItemDef } from '../game/types';
+import { getItemSprite, type ItemSpriteMapping } from './assetPack';
 import { FURNITURE_SHAPES, SMALL_SHAPES } from './shapes';
 import { palette } from './palettes';
 import { svgDoc, withShadow, type ArtResult } from './svg';
 
 export const ALL_SHAPES = { ...FURNITURE_SHAPES, ...SMALL_SHAPES };
+
+/**
+ * Returns the verified transparent-background PNG sprite URL for an item, or null if
+ * the item relies on SVG artwork (e.g., palette variants or items without a transparent cutout).
+ */
+export function itemSpriteUrl(item: ItemDef): string | null {
+  return item.sprite ?? getItemSprite(item.id)?.url ?? null;
+}
+
+export function itemSpriteInfo(item: ItemDef): ItemSpriteMapping | null {
+  const mapped = getItemSprite(item.id);
+  if (mapped) return mapped;
+  if (item.sprite && item.spriteW && item.spriteH) {
+    return {
+      assetName: item.id,
+      url: item.sprite,
+      w: item.spriteW,
+      h: item.spriteH,
+    };
+  }
+  return null;
+}
 
 export function itemArt(item: ItemDef): ArtResult {
   const shape = ALL_SHAPES[item.art];
