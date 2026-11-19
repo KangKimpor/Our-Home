@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  addClockOffset,
+  dayPhase,
+  formatDate,
+  isDebugClock,
+  now,
+  resetClock,
+  seasonOf,
+} from '../../config/time';
+import {
   cloudConfigured,
   deleteCloudData,
   getCloudStatus,
@@ -39,6 +48,7 @@ export function SettingsPanel() {
   const [tab, setTab] = useState<'general' | 'save' | 'cloud' | 'about'>('general');
   const [importText, setImportText] = useState('');
   const [confirmReset, setConfirmReset] = useState(false);
+  const [, setClockTick] = useState(0);
   const [cloud, setCloud] = useState<CloudStatus>(() => getCloudStatus());
   const [syncing, setSyncing] = useState(false);
   const configured = cloudConfigured();
@@ -160,6 +170,63 @@ export function SettingsPanel() {
                 />
                 {t('settings.showBaby')}
               </label>
+            </div>
+          </section>
+
+          <section className="settings-group">
+            <h3>
+              <Icon name="clock" size={18} /> {t('settings.clockTitle')}
+            </h3>
+            <p className="muted">
+              {formatDate(now())} · {t(`season.${seasonOf(now())}`)} ·{' '}
+              {dayPhase(now()) === 'night' ? t('hud.night') : t('hud.day')}
+            </p>
+            <div className="settings-actions">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  addClockOffset(3_600_000);
+                  useGameStore.getState().tick();
+                  setClockTick((n) => n + 1);
+                }}
+              >
+                +1h
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  addClockOffset(6 * 3_600_000);
+                  useGameStore.getState().tick();
+                  setClockTick((n) => n + 1);
+                }}
+              >
+                +6h
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  addClockOffset(86_400_000);
+                  useGameStore.getState().tick();
+                  setClockTick((n) => n + 1);
+                }}
+              >
+                +1d
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={!isDebugClock()}
+                onClick={() => {
+                  resetClock();
+                  useGameStore.getState().tick();
+                  setClockTick((n) => n + 1);
+                }}
+              >
+                {t('settings.clockReset')}
+              </Button>
             </div>
           </section>
         </div>

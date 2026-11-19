@@ -4,7 +4,7 @@
 - **Default chosen:** All Rights Reserved for original code, artwork, text, and audio in this repository; third-party open-source dependencies and OFL fonts retain their respective licenses as listed in [`docs/CREDITS.md`](./CREDITS.md).
 
 ## 2. Rendering & Art Pipeline
-- **Procedural SVG-to-Texture Pipeline:** Rather than committing hundreds of static PNGs, all furniture (~120 items with variants), 4 resident pet species (4 poses each), 24 visitors, 2 adult customizable characters + optional baby, and 20 Moment polaroid scenes are authored as deterministic SVG generators in `src/art/`. PixiJS v8 loads and caches these SVGs into GPU textures on demand, while React menus render the exact same SVGs crisp at any resolution.
+- **Hybrid Procedural SVG & Curated Cutout Pipeline:** Furniture (~120 items with variants), 4 resident pet species (4 poses each), 24 visitors, 2 adult customizable characters + optional baby, and 20 Moment polaroid scenes are backed by deterministic SVG generators in `src/art/`. PixiJS v8 renders these SVG textures on demand, selectively pairing clean `transparent_background: true` cutouts from the user-provided Cozy Home & Garden 2D Asset Pack v1.1 (`src/art/assetPack.ts`) where cutout quality passes inspection while React panels reuse crisp SVGs.
 - **Audio Generation:** `scripts/generate-audio.mjs` synthesizes warm acoustic-style loops (`day.wav`, `night.wav`) and 16 gentle sound effects directly into `public/audio/` so the repository is self-contained and CC0/copyright-clean.
 
 ## 3. Persistence & Cloud Save (Guest-First)

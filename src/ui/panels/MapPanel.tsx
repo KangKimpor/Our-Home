@@ -2,62 +2,58 @@ import { useTranslation } from 'react-i18next';
 import { ROOMS, ROOM_ORDER, ROOM_PALETTES } from '../../data/rooms';
 import type { RoomId } from '../../game/types';
 import { useGameStore } from '../../store/gameStore';
-import { Button, Modal, cx } from '../bits';
+import { AnimalArt, Button, ItemArt, Modal, cx } from '../bits';
 import { Icon } from '../icons';
 
-interface MiniProp {
-  src: string;
-  left: string;
-  bottom: string;
-  height: string;
-  zIndex?: number;
-}
+type MiniProp =
+  | { kind: 'item'; itemId: string; left: string; bottom: string; height: string; zIndex?: number }
+  | { kind: 'animal'; species: string; coat: string; left: string; bottom: string; height: string; zIndex?: number };
 
 const ROOM_DIORAMA_PROPS: Record<RoomId, MiniProp[]> = {
   living: [
-    { src: '/asset-pack-v1.1/assets/music_living/music_upright_piano.png', left: '62%', bottom: '18%', height: '62%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/music_living/living_green_sofa.png', left: '10%', bottom: '8%', height: '48%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/animals/calico_cat_lounging.png', left: '48%', bottom: '8%', height: '30%', zIndex: 3 },
+    { kind: 'item', itemId: 'living.piano', left: '62%', bottom: '18%', height: '62%', zIndex: 1 },
+    { kind: 'item', itemId: 'living.sofa.sage', left: '10%', bottom: '8%', height: '48%', zIndex: 2 },
+    { kind: 'animal', species: 'cat', coat: 'calico', left: '48%', bottom: '8%', height: '34%', zIndex: 3 },
   ],
   bedroom: [
-    { src: '/asset-pack-v1.1/assets/bedroom/bedroom_indoor_tree.png', left: '6%', bottom: '12%', height: '66%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/bedroom/bedroom_vanity_workspace.png', left: '25%', bottom: '14%', height: '56%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/bedroom/bedroom_bed_sleeping_cat.png', left: '50%', bottom: '8%', height: '66%', zIndex: 2 },
+    { kind: 'item', itemId: 'bedroom.plant', left: '6%', bottom: '12%', height: '66%', zIndex: 1 },
+    { kind: 'item', itemId: 'bedroom.desk', left: '24%', bottom: '14%', height: '54%', zIndex: 1 },
+    { kind: 'item', itemId: 'bedroom.bed.rose', left: '50%', bottom: '8%', height: '64%', zIndex: 2 },
   ],
   kitchen: [
-    { src: '/asset-pack-v1.1/assets/kitchen/kitchen_range_hood.png', left: '18%', bottom: '56%', height: '34%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/kitchen/kitchen_stove_with_pots.png', left: '12%', bottom: '10%', height: '56%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/kitchen/kitchen_spice_jars.png', left: '64%', bottom: '14%', height: '42%', zIndex: 2 },
+    { kind: 'item', itemId: 'kitchen.hood', left: '16%', bottom: '56%', height: '32%', zIndex: 1 },
+    { kind: 'item', itemId: 'kitchen.stove', left: '12%', bottom: '10%', height: '54%', zIndex: 2 },
+    { kind: 'item', itemId: 'kitchen.fridge', left: '64%', bottom: '10%', height: '72%', zIndex: 2 },
   ],
   bathroom: [
-    { src: '/asset-pack-v1.1/assets/bathroom/bathroom_shower_unit.png', left: '8%', bottom: '12%', height: '74%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/bathroom/bathroom_toilet.png', left: '42%', bottom: '10%', height: '56%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/bathroom/bathroom_sleeping_cat.png', left: '68%', bottom: '10%', height: '36%', zIndex: 3 },
+    { kind: 'item', itemId: 'bathroom.shower', left: '8%', bottom: '12%', height: '74%', zIndex: 1 },
+    { kind: 'item', itemId: 'bathroom.tub', left: '38%', bottom: '10%', height: '50%', zIndex: 2 },
+    { kind: 'item', itemId: 'bathroom.sleepingCat', left: '70%', bottom: '10%', height: '36%', zIndex: 3 },
   ],
   studio: [
-    { src: '/asset-pack-v1.1/assets/studio/studio_drawing_desk.png', left: '8%', bottom: '14%', height: '64%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/studio/studio_worktable_paint_supplies.png', left: '42%', bottom: '8%', height: '54%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/studio/studio_tall_potted_plant.png', left: '76%', bottom: '12%', height: '68%', zIndex: 1 },
+    { kind: 'item', itemId: 'studio.easel', left: '10%', bottom: '12%', height: '66%', zIndex: 1 },
+    { kind: 'item', itemId: 'studio.table', left: '40%', bottom: '8%', height: '52%', zIndex: 2 },
+    { kind: 'item', itemId: 'studio.plant', left: '76%', bottom: '12%', height: '66%', zIndex: 1 },
   ],
   nursery: [
-    { src: '/asset-pack-v1.1/assets/nursery/nursery_strawberry_rug.png', left: '24%', bottom: '6%', height: '32%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/nursery/nursery_rocking_chair.png', left: '8%', bottom: '12%', height: '66%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/nursery/nursery_dollhouse_bookshelf.png', left: '64%', bottom: '14%', height: '68%', zIndex: 2 },
+    { kind: 'item', itemId: 'nursery.rug', left: '26%', bottom: '6%', height: '30%', zIndex: 1 },
+    { kind: 'item', itemId: 'nursery.crib', left: '8%', bottom: '12%', height: '62%', zIndex: 2 },
+    { kind: 'item', itemId: 'nursery.tent', left: '60%', bottom: '10%', height: '68%', zIndex: 2 },
   ],
   porch: [
-    { src: '/asset-pack-v1.1/assets/pet_care/pet_deck_food_and_water_bowls.png', left: '8%', bottom: '12%', height: '46%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/animals/shiba_dog_standing.png', left: '42%', bottom: '10%', height: '54%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/pet_care/pet_ball.png', left: '72%', bottom: '10%', height: '34%', zIndex: 3 },
+    { kind: 'item', itemId: 'porch.bowl.sun', left: '10%', bottom: '12%', height: '34%', zIndex: 2 },
+    { kind: 'animal', species: 'dog', coat: 'golden', left: '38%', bottom: '10%', height: '54%', zIndex: 2 },
+    { kind: 'item', itemId: 'porch.bench', left: '58%', bottom: '10%', height: '52%', zIndex: 1 },
   ],
   garden: [
-    { src: '/asset-pack-v1.1/assets/outdoor/swing_set_with_cat.png', left: '4%', bottom: '14%', height: '72%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/garden/garden_raised_flower_beds.png', left: '48%', bottom: '36%', height: '38%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/outdoor/pool_scene_with_swimming_pets.png', left: '42%', bottom: '4%', height: '52%', zIndex: 2 },
+    { kind: 'item', itemId: 'garden.swing', left: '6%', bottom: '14%', height: '70%', zIndex: 1 },
+    { kind: 'item', itemId: 'garden.flowerRed', left: '48%', bottom: '36%', height: '38%', zIndex: 1 },
+    { kind: 'item', itemId: 'garden.pool', left: '42%', bottom: '6%', height: '48%', zIndex: 2 },
   ],
   farm: [
-    { src: '/asset-pack-v1.1/assets/farm/farm_chicken_coop.png', left: '6%', bottom: '16%', height: '68%', zIndex: 1 },
-    { src: '/asset-pack-v1.1/assets/farm/farm_cow.png', left: '54%', bottom: '12%', height: '58%', zIndex: 2 },
-    { src: '/asset-pack-v1.1/assets/farm/farm_chicken.png', left: '38%', bottom: '10%', height: '36%', zIndex: 3 },
+    { kind: 'item', itemId: 'farm.coop', left: '6%', bottom: '16%', height: '64%', zIndex: 1 },
+    { kind: 'animal', species: 'cow', coat: 'white', left: '52%', bottom: '10%', height: '58%', zIndex: 2 },
+    { kind: 'animal', species: 'hen', coat: 'cream', left: '38%', bottom: '10%', height: '36%', zIndex: 3 },
   ],
 };
 
@@ -83,12 +79,9 @@ export function RoomMiniDiorama({ roomId }: { roomId: RoomId }) {
           background: `linear-gradient(180deg, ${palette.floor} 0%, ${palette.floorAlt} 100%)`,
         }}
       />
-      {props.map((prop) => (
-        <img
-          key={prop.src}
-          src={prop.src}
-          alt=""
-          draggable={false}
+      {props.map((prop, idx) => (
+        <div
+          key={`${roomId}:${idx}`}
           aria-hidden="true"
           className="map-diorama-prop"
           style={{
@@ -97,7 +90,13 @@ export function RoomMiniDiorama({ roomId }: { roomId: RoomId }) {
             height: prop.height,
             zIndex: prop.zIndex ?? 1,
           }}
-        />
+        >
+          {prop.kind === 'item' ? (
+            <ItemArt itemId={prop.itemId} size={180} />
+          ) : (
+            <AnimalArt species={prop.species} coat={prop.coat} size={140} />
+          )}
+        </div>
       ))}
     </>
   );

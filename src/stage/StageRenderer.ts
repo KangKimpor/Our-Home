@@ -9,7 +9,8 @@ import { ITEMS_BY_ID } from '../data/items';
 import { ROOMS, ROOM_PALETTES } from '../data/rooms';
 import { VISITORS_BY_ID } from '../data/visitors';
 import { isFlatItem, itemSize } from '../game/placement';
-import type { GameState, HeartBubble, PetState, PlacedItem, RoomId } from '../game/types';
+import type { GameState, HeartBubble, PetState, PlacedItem, RoomId, StationId } from '../game/types';
+import { now, seasonOf, type Season } from '../config/time';
 import { useGameStore } from '../store/gameStore';
 
 const INK = '#2B2521';
@@ -228,7 +229,6 @@ const OPAQUE_PACK_FILES = new Set<string>([
 
 /** Clean, artifact-free transparent_background: true cutouts mapped by item id as optional fallback. */
 const ITEM_SPRITE_FALLBACK: Record<string, string> = {
-  'nursery.rockingChair': '/asset-pack-v1.1/assets/nursery/nursery_rocking_chair.png',
   'nursery.toyBasket': '/asset-pack-v1.1/assets/nursery/nursery_plush_toy_basket.png',
   'nursery.rug': '/asset-pack-v1.1/assets/nursery/nursery_strawberry_rug.png',
 };
@@ -236,15 +236,17 @@ const ITEM_SPRITE_FALLBACK: Record<string, string> = {
 /** Clean transparent PNG cutouts for idle/lounging animal poses. */
 function animalPngFor(species: string, coat: string | undefined, pose: 'idle' | 'walk' | 'sleep' | 'special'): string | null {
   if (pose !== 'idle') return null;
-  if (species === 'redPanda') return '/asset-pack-v1.1/assets/animals/red_panda_sitting.png';
-  if (species === 'dog' && (coat === 'golden' || coat === 'rust')) {
-    return '/asset-pack-v1.1/assets/animals/shiba_dog_standing.png';
+  if (species === 'dog') {
+    if (coat === 'golden' || coat === 'rust') {
+      return '/asset-pack-v1.1/assets/animals/shiba_dog_standing.png';
+    }
+    if (coat === 'grey') {
+      return '/asset-pack-v1.1/assets/animals/black_white_cat_walking.png';
+    }
   }
   if (species === 'cat') {
     if (coat === 'calico') return '/asset-pack-v1.1/assets/animals/calico_cat_lounging.png';
-    if (coat === 'ginger') return '/asset-pack-v1.1/assets/animals/ginger_cat_lounging.png';
     if (coat === 'white' || coat === 'cream') return '/asset-pack-v1.1/assets/animals/white_cat_lounging.png';
-    if (coat === 'charcoal') return '/asset-pack-v1.1/assets/animals/black_white_cat_walking.png';
   }
   return null;
 }
@@ -348,8 +350,20 @@ const WINDOWS: Partial<Record<RoomId, [number, number, number, number]>> = {
   nursery: [54, 34, 178, 222],
 };
 
-function drawGardenView(g: Graphics, x: number, y: number, w: number, h: number, night: boolean, sky: string, showFence: boolean): void {
-  g.rect(x, y, w, h).fill(night ? '#263854' : sky);
+function drawGardenView(
+  g: Graphics,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  night: boolean,
+  sky: string,
+  showFence: boolean,
+  season: Season,
+): void {
+  const daySky =
+    season === 'autumn' ? '#DCE5EE' : season === 'winter' ? '#D6E2EC' : season === 'spring' ? '#D7EBF7' : sky;
+  g.rect(x, y, w, h).fill(night ? '#263854' : daySky);
   g.rect(x, y, w, h * 0.48).fill({ color: night ? '#1B283D' : '#FFFFFF', alpha: night ? 0.28 : 0.2 });
 
   if (night) {
@@ -361,14 +375,38 @@ function drawGardenView(g: Graphics, x: number, y: number, w: number, h: number,
     g.circle(x + w * 0.72, y + h * 0.2, 11).fill('#F4D06F');
   }
 
-  // Soft bushes & treetops outside the window
-  const bushDark = night ? '#1C352A' : '#3C7A4D';
-  const bushMid = night ? '#274839' : '#5E9960';
-  const lawn = night ? '#2E4735' : '#8CAE5B';
+  // Seasonal bushes & treetops outside the window
+  const bushDark = night
+    ? '#1C352A'
+    : season === 'autumn'
+      ? '#9A572C'
+      : season === 'winter'
+        ? '#456153'
+        : '#3C7A4D';
+  const bushMid = night
+    ? '#274839'
+    : season === 'autumn'
+      ? '#CE7D3E'
+      : season === 'winter'
+        ? '#6D8C7D'
+        : '#5E9960';
+  const lawn = night
+    ? '#2E4735'
+    : season === 'autumn'
+      ? '#9C8D4E'
+      : season === 'winter'
+        ? '#CBD7CF'
+        : '#8CAE5B';
   g.rect(x, y + h * 0.62, w, h * 0.38).fill(lawn);
   for (let bx = x + 16; bx < x + w + 10; bx += 38) {
     g.circle(bx, y + h * 0.62, 24).fill(bushDark);
     g.circle(bx + 12, y + h * 0.59, 18).fill(bushMid);
+    if (!night && season === 'spring') {
+      g.circle(bx - 5, y + h * 0.57, 3.5).fill('#F6C3CC');
+      g.circle(bx + 15, y + h * 0.55, 3).fill('#F6C3CC');
+    } else if (!night && season === 'winter') {
+      g.ellipse(bx + 4, y + h * 0.44, 15, 5).fill('#FBF7EC');
+    }
   }
   if (showFence) {
     const fy = y + h * 0.7;
@@ -389,9 +427,9 @@ function drawHerringboneFloor(
   colC: string,
   night: boolean,
 ): void {
-  const cA = night ? dim(colA, 0.64) : colA;
-  const cB = night ? dim(colB, 0.64) : colB;
-  const cC = night ? dim(colC, 0.64) : colC;
+  const cA = warmIndoor(colA, night, 0.11);
+  const cB = warmIndoor(colB, night, 0.11);
+  const cC = warmIndoor(colC, night, 0.11);
   g.rect(0, floorTop, 1920, 884 - floorTop).fill(cA);
 
   // Diagonal chevron/herringbone parquet columns clamped cleanly below floorTop
@@ -432,8 +470,8 @@ function drawHorizontalPlankFloor(
   plankH: number,
   night: boolean,
 ): void {
-  const fillMain = night ? dim(colMain, 0.66) : colMain;
-  const fillAlt = night ? dim(colAlt, 0.66) : colAlt;
+  const fillMain = warmIndoor(colMain, night, 0.1);
+  const fillAlt = warmIndoor(colAlt, night, 0.1);
   g.rect(0, floorTop, 1920, 884 - floorTop).fill(fillMain);
 
   let rowIdx = 0;
@@ -456,10 +494,10 @@ function drawHorizontalPlankFloor(
 }
 
 function drawSpiralStaircase(bg: Graphics, fg: Graphics, night: boolean): void {
-  const stairWall = night ? dim('#EFE7D6', 0.72) : '#EFE7D6';
-  const treadCol = night ? dim('#C9A87E', 0.72) : '#C9A87E';
-  const treadDark = night ? dim('#A8875E', 0.72) : '#A8875E';
-  const railCol = night ? dim('#FBF7EC', 0.76) : '#FBF7EC';
+  const stairWall = warmIndoor('#EFE7D6', night, 0.08);
+  const treadCol = warmIndoor('#C9A87E', night, 0.1);
+  const treadDark = warmIndoor('#A8875E', night, 0.1);
+  const railCol = warmIndoor('#FBF7EC', night, 0.05);
 
   // Curved alcove wall & shadow in top-right (x: 1510..1920)
   bg.poly([1580, 0, 1920, 0, 1920, 456, 1590, 456, 1555, 290, 1560, 120]).fill(stairWall);
@@ -498,11 +536,11 @@ function drawSpiralStaircase(bg: Graphics, fg: Graphics, night: boolean): void {
   fg.circle(1583, 374, 13).stroke({ width: 2.8, color: INK });
 }
 
-function drawLivingRoom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+function drawLivingRoom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.living;
-  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
-  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
-  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+  const wallFill = warmIndoor(pal.wall, night, 0.06);
+  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
+  const trimFill = warmIndoor(pal.trim, night, 0.06);
 
   bg.rect(0, 0, 1920, floorTop).fill(wallFill);
   bg.rect(0, 0, 1920, 22).fill(wallAlt);
@@ -520,7 +558,7 @@ function drawLivingRoom(bg: Graphics, fg: Graphics, floorTop: number, night: boo
 
   // Left floor-to-ceiling sliding glass patio door/window (x: 14..220)
   const [wx, wy, ww, wh] = WINDOWS.living!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true);
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true, season);
 
   // Sliding glass door frame & reflections in fg
   fg.rect(0, 0, wx, floorTop + 14).fill(trimFill);
@@ -540,18 +578,18 @@ function drawLivingRoom(bg: Graphics, fg: Graphics, floorTop: number, night: boo
     alpha: night ? 0.07 : 0.2,
   });
   // Wood threshold step at patio base
-  fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).fill(night ? '#8A7055' : '#C9AA82');
+  fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).fill(warmIndoor('#C9AA82', night, 0.1));
   fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).stroke({ width: 2.8, color: INK });
 
   // Right spiral staircase
   drawSpiralStaircase(bg, fg, night);
 }
 
-function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.bedroom;
-  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
-  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
-  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+  const wallFill = warmIndoor(pal.wall, night, 0.06);
+  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
+  const trimFill = warmIndoor(pal.trim, night, 0.06);
 
   bg.rect(0, 0, 1920, floorTop).fill(wallFill);
   bg.rect(0, 0, 1920, 22).fill(wallAlt);
@@ -572,7 +610,7 @@ function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
 
   // Left tall French window with louvered wooden shutters & sheer curtains (x: 52..230)
   const [wx, wy, ww, wh] = WINDOWS.bedroom!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true);
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true, season);
 
   // Window frame & muntins
   fg.rect(wx, wy, ww, wh).stroke({ width: 3.2, color: INK });
@@ -584,7 +622,7 @@ function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   }
 
   // Wooden louvered shutters on both sides
-  const shutterCol = night ? '#6A523B' : '#9B7857';
+  const shutterCol = warmIndoor('#9B7857', night, 0.12);
   for (const sx of [wx - 44, wx + ww + 2]) {
     fg.roundRect(sx, wy - 4, 42, wh + 8, 4).fill(shutterCol);
     fg.roundRect(sx, wy - 4, 42, wh + 8, 4).stroke({ width: 2.6, color: INK });
@@ -596,7 +634,7 @@ function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   // Sheer floor-length white curtains & rod
   fg.roundRect(wx - 58, wy - 14, ww + 116, 8, 4).fill('#8A6748');
   fg.roundRect(wx - 58, wy - 14, ww + 116, 8, 4).stroke({ width: 2.4, color: INK });
-  const sheerFill = night ? '#CBD4DF' : '#FFFDF8';
+  const sheerFill = warmIndoor('#FFFDF8', night, 0.05);
   fg.poly([wx - 50, wy - 6, wx + 18, wy - 6, wx + 8, floorTop + 10, wx - 48, floorTop + 10]).fill({
     color: sheerFill,
     alpha: 0.72,
@@ -617,11 +655,11 @@ function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   });
 }
 
-function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.nursery;
-  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
-  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
-  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+  const wallFill = warmIndoor(pal.wall, night, 0.06);
+  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
+  const trimFill = warmIndoor(pal.trim, night, 0.06);
 
   bg.rect(0, 0, 1920, floorTop).fill(wallFill);
   bg.rect(0, 0, 1920, 22).fill(wallAlt);
@@ -629,7 +667,7 @@ function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
 
   // Nursery crescent moon & star wall decals (IMG_2703)
-  const decalGold = night ? '#D4B45E' : '#E9C65B';
+  const decalGold = '#E9C65B';
   bg.circle(960, 128, 26).fill(decalGold);
   bg.circle(972, 120, 22).fill(wallFill);
   for (const [sx, sy, sr] of [
@@ -659,9 +697,9 @@ function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
 
   // Left brown-framed casement window looking onto treetops (x: 54..232)
   const [wx, wy, ww, wh] = WINDOWS.nursery!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
 
-  const woodFrame = night ? '#6F5036' : '#9C734E';
+  const woodFrame = warmIndoor('#9C734E', night, 0.1);
   fg.roundRect(wx - 12, wy - 12, ww + 24, wh + 24, 5).stroke({ width: 12, color: woodFrame });
   fg.roundRect(wx - 18, wy - 18, ww + 36, wh + 36, 6).stroke({ width: 3, color: INK });
   fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
@@ -669,14 +707,14 @@ function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.2, color: INK });
   fg.rect(wx, wy + wh * 0.52, ww, 8).fill(woodFrame);
   fg.rect(wx, wy + wh * 0.52, ww, 8).stroke({ width: 2.2, color: INK });
-  fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).fill('#B88E65');
+  fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).fill(warmIndoor('#B88E65', night, 0.08));
   fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).stroke({ width: 2.8, color: INK });
 }
 
-function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.bathroom;
-  const tileWall = night ? dim(pal.wall, 0.74) : pal.wall;
-  const grout = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
+  const tileWall = warmIndoor(pal.wall, night, 0.06);
+  const grout = warmIndoor(pal.wallShade, night, 0.08);
 
   // Back wall square ceramic tiles
   bg.rect(0, 0, 1920, floorTop).fill(tileWall);
@@ -689,7 +727,7 @@ function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boole
   }
 
   // Angled left-wall perspective corner (x: 0..220)
-  bg.poly([0, 0, cornerX, 0, cornerX, floorTop, 0, floorTop + 56]).fill(night ? dim('#ECE5D3', 0.7) : '#ECE5D3');
+  bg.poly([0, 0, cornerX, 0, cornerX, floorTop, 0, floorTop + 56]).fill(warmIndoor('#ECE5D3', night, 0.08));
   for (let y = 44; y < floorTop; y += 44) {
     bg.moveTo(0, y + 36).lineTo(cornerX, y).stroke({ width: 1.8, color: grout });
   }
@@ -699,9 +737,9 @@ function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boole
   bg.moveTo(cornerX, 0).lineTo(cornerX, floorTop).stroke({ width: 2.8, color: INK, alpha: 0.4 });
 
   // Sky-blue perspective square floor tiles (matching tile_bathroom_blue_floor_sample.png & IMG_2704)
-  const blueA = night ? dim(pal.floor, 0.68) : pal.floor;
-  const blueB = night ? dim('#8BBAD3', 0.68) : '#8BBAD3';
-  const blueGrout = night ? dim(pal.floorAlt, 0.66) : pal.floorAlt;
+  const blueA = warmIndoor(pal.floor, night, 0.12);
+  const blueB = warmIndoor('#8BBAD3', night, 0.12);
+  const blueGrout = warmIndoor(pal.floorAlt, night, 0.14);
   bg.rect(0, floorTop, 1920, 884 - floorTop).fill(blueA);
   bg.poly([0, floorTop + 56, cornerX, floorTop, 1920, floorTop, 1920, 884, 0, 884]).fill(blueA);
 
@@ -718,13 +756,13 @@ function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boole
     const slant = (x - 960) * 0.14;
     bg.moveTo(x, floorTop).lineTo(x + slant, 884).stroke({ width: 2, color: blueGrout });
   }
-  bg.rect(0, floorTop - 10, 1920, 10).fill(night ? dim(pal.trim, 0.72) : pal.trim);
+  bg.rect(0, floorTop - 10, 1920, 10).fill(warmIndoor(pal.trim, night, 0.08));
   bg.moveTo(0, floorTop).lineTo(1920, floorTop).stroke({ width: 2.6, color: INK, alpha: 0.55 });
 
   // Upper-right wide dark-framed garden window (x: 1130..1810, y: 0..148)
   const [wx, wy, ww, wh] = WINDOWS.bathroom!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
-  const frameCol = night ? '#383430' : '#4E4944';
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
+  const frameCol = warmIndoor('#4E4944', night, 0.14);
   fg.rect(wx - 8, wy, ww + 16, wh + 10).stroke({ width: 10, color: frameCol });
   fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
   for (const mx of [wx + ww * 0.33, wx + ww * 0.67]) {
@@ -735,10 +773,10 @@ function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boole
   fg.roundRect(wx - 14, wy + wh, ww + 28, 12, 3).stroke({ width: 2.6, color: INK });
 }
 
-function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.studio;
-  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
-  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+  const wallFill = warmIndoor(pal.wall, night, 0.06);
+  const trimFill = warmIndoor(pal.trim, night, 0.06);
 
   bg.rect(0, 0, 1920, floorTop).fill(wallFill);
   bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
@@ -750,7 +788,7 @@ function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean
     const t = (i + 0.5) / 7;
     const bx = 310 + t * 430;
     const by = 16 + Math.sin(t * Math.PI) * 70;
-    bg.circle(bx, by + 7, 13).fill({ color: '#FCE79C', alpha: night ? 0.36 : 0.2 });
+    bg.circle(bx, by + 7, 13).fill({ color: '#FCE79C', alpha: night ? 0.38 : 0.22 });
     bg.circle(bx, by + 7, 5.5).fill('#FFF6C4');
     bg.circle(bx, by + 7, 5.5).stroke({ width: 1.8, color: INK });
   }
@@ -760,13 +798,12 @@ function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean
 
   // Left floor-to-ceiling glass studio window wall (x: 10..262)
   const [wx, wy, ww, wh] = WINDOWS.studio!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
-  // Warm autumn tree highlight outside studio window
-  if (!night) {
-    bg.circle(wx + 70, wy + wh * 0.44, 34).fill('#D8844A');
-    bg.circle(wx + 125, wy + wh * 0.5, 28).fill('#E3A84F');
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
+  if (!night && season !== 'winter') {
+    bg.circle(wx + 70, wy + wh * 0.44, 34).fill(season === 'autumn' ? '#D8844A' : '#E59A5C');
+    bg.circle(wx + 125, wy + wh * 0.5, 28).fill(season === 'autumn' ? '#E3A84F' : '#85AD6B');
   }
-  const mullion = night ? '#3F3126' : '#5E4938';
+  const mullion = warmIndoor('#5E4938', night, 0.14);
   fg.rect(0, 0, wx, floorTop + 10).fill(mullion);
   fg.rect(wx + ww, 0, 14, floorTop + 10).fill(mullion);
   fg.rect(wx + ww, 0, 14, floorTop + 10).stroke({ width: 2.6, color: INK });
@@ -777,15 +814,15 @@ function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean
     color: '#FFFFFF',
     alpha: night ? 0.06 : 0.18,
   });
-  fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).fill('#9A7B5B');
+  fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).fill(warmIndoor('#9A7B5B', night, 0.1));
   fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).stroke({ width: 2.6, color: INK });
 }
 
-function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolean): void {
+function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.kitchen;
-  const wallFill = night ? dim(pal.wall, 0.74) : pal.wall;
-  const wallAlt = night ? dim(pal.wallShade, 0.72) : pal.wallShade;
-  const trimFill = night ? dim(pal.trim, 0.74) : pal.trim;
+  const wallFill = warmIndoor(pal.wall, night, 0.06);
+  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
+  const trimFill = warmIndoor(pal.trim, night, 0.06);
 
   bg.rect(0, 0, 1920, floorTop).fill(wallFill);
   bg.rect(0, 0, 1920, 20).fill(wallAlt);
@@ -798,8 +835,8 @@ function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   bg.moveTo(0, 318).lineTo(1920, 318).stroke({ width: 2.2, color: INK, alpha: 0.35 });
 
   // Ceramic tiled cream kitchen floor (y: floorTop..884)
-  const tileFill = night ? dim(pal.floor, 0.68) : pal.floor;
-  const groutCol = night ? dim('#CFC6B4', 0.65) : '#CFC6B4';
+  const tileFill = warmIndoor(pal.floor, night, 0.09);
+  const groutCol = warmIndoor('#CFC6B4', night, 0.11);
   bg.rect(0, floorTop, 1920, 884 - floorTop).fill(tileFill);
   for (let y = floorTop + 56; y < 884; y += 56) {
     bg.moveTo(0, y).lineTo(1920, y).stroke({ width: 1.8, color: groutCol });
@@ -815,8 +852,8 @@ function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
 
   // Upper-left wide kitchen casement window (x: 92..530)
   const [wx, wy, ww, wh] = WINDOWS.kitchen!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false);
-  const winWood = night ? '#917456' : '#C8A782';
+  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
+  const winWood = warmIndoor('#C8A782', night, 0.1);
   fg.rect(wx - 10, wy, ww + 20, wh + 10).stroke({ width: 12, color: winWood });
   fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
   fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill(winWood);
@@ -825,11 +862,13 @@ function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolea
   fg.roundRect(wx - 18, wy + wh, ww + 36, 14, 4).stroke({ width: 2.8, color: INK });
 }
 
-function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: number, night: boolean): void {
+function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES[roomId];
+  const daySky =
+    season === 'autumn' ? mixHex(pal.sky, '#EFE2CC', 0.25) : season === 'winter' ? '#D6E2EC' : pal.sky;
 
   // Shared outdoor sky backdrop behind skyAnimLayer
-  bg.rect(0, 0, 1920, 884).fill(night ? '#26354D' : pal.sky);
+  bg.rect(0, 0, 1920, 884).fill(night ? '#26354D' : daySky);
   bg.rect(0, 0, 1920, floorTop * 0.52).fill({ color: night ? '#1A263A' : '#FFFFFF', alpha: night ? 0.35 : 0.22 });
   if (night) {
     bg.circle(1680, 96, 62).fill({ color: '#FBF7EC', alpha: 0.14 });
@@ -841,11 +880,17 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   }
 
   if (roomId === 'porch') {
-    // Porch: top grey siding -> elevated grey-taupe wooden plank deck -> backyard lawn (IMG_2700)
+    // Porch: top grey siding -> elevated grey-taupe wooden plank deck -> dark-slate terrace + stepping stones -> backyard lawn (IMG_2700)
     const siding = night ? dim(pal.wall, 0.7) : pal.wall;
     const deck = night ? dim(pal.wallShade, 0.68) : pal.wallShade;
     const deckLine = night ? '#5A534E' : '#7D746D';
-    const lawn = night ? '#3A4F30' : pal.floor;
+    const lawn = night
+      ? '#3A4F30'
+      : season === 'autumn'
+        ? '#909549'
+        : season === 'winter'
+          ? '#BCCAB6'
+          : pal.floor;
 
     fg.rect(0, 0, 1920, 108).fill(siding);
     for (let sy = 26; sy < 108; sy += 26) {
@@ -870,6 +915,29 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
     fg.rect(0, 388, 1920, 496).fill(lawn);
     fg.rect(0, 388, 1920, 16).fill({ color: '#2B2521', alpha: 0.14 });
 
+    // Wide dark-slate terrace stone platform in front of deck between footings (IMG_2700)
+    const slate = night ? '#52575B' : '#7C8388';
+    const slateEdge = night ? '#414549' : '#656B70';
+    fg.roundRect(388, 390, 1114, 96, 8).fill(slate);
+    fg.roundRect(388, 470, 1114, 16, 4).fill(slateEdge);
+    fg.roundRect(388, 390, 1114, 96, 8).stroke({ width: 2.8, color: INK });
+    for (const sx of [590, 810, 1080, 1300]) {
+      fg.moveTo(sx, 392).lineTo(sx, 484).stroke({ width: 2, color: INK, alpha: 0.35 });
+    }
+    fg.moveTo(392, 434).lineTo(1498, 434).stroke({ width: 1.8, color: INK, alpha: 0.3 });
+
+    // 4 grey lawn stepping slabs leading from terrace into yard
+    for (const [sx, sy, sw, sh] of [
+      [885, 514, 128, 36],
+      [940, 574, 132, 38],
+      [880, 638, 138, 40],
+      [945, 706, 146, 42],
+    ]) {
+      fg.roundRect(sx, sy + 5, sw, sh, 12).fill({ color: '#2B2521', alpha: 0.14 });
+      fg.roundRect(sx, sy, sw, sh, 12).fill(night ? '#6C7072' : '#A9AEAF');
+      fg.roundRect(sx, sy, sw, sh, 12).stroke({ width: 2.5, color: INK });
+    }
+
     // Two stout deck support posts resting on square stone footings
     for (const px of [410, 1480]) {
       fg.roundRect(px - 22, 388, 44, 34, 4).fill(night ? '#7C7A75' : '#C8C4BC');
@@ -878,11 +946,11 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
       fg.rect(px - 14, 110, 28, 282).stroke({ width: 2.6, color: INK });
     }
 
-    // Scattered grass tufts, pebbles & cattail reeds on far right
+    // Scattered grass tufts & cattail reeds on far right
     for (let i = 0; i < 26; i++) {
       const gx = 80 + ((i * 187) % 1760);
       const gy = 435 + ((i * 89) % 410);
-      const col = night ? '#48623C' : '#658441';
+      const col = night ? '#48623C' : season === 'autumn' ? '#9C7842' : '#658441';
       fg.moveTo(gx, gy).lineTo(gx - 5, gy - 11).stroke({ width: 2.2, color: col });
       fg.moveTo(gx + 5, gy).lineTo(gx + 8, gy - 12).stroke({ width: 2.2, color: col });
     }
@@ -896,15 +964,39 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
 
   if (roomId === 'garden') {
     // Garden: top bushes + white picket fence with central gate -> sunlit olive lawn -> bottom foliage (IMG_2698 & IMG_2701)
-    const bushDark = night ? '#15472D' : pal.wall;
-    const bushLight = night ? '#1E5D3D' : pal.wallShade;
-    const lawn = night ? '#3E542A' : pal.floor;
-    const lawnPatch = night ? '#364A25' : pal.floorAlt;
+    const bushDark = night
+      ? '#15472D'
+      : season === 'autumn'
+        ? '#96542B'
+        : season === 'winter'
+          ? '#426052'
+          : pal.wall;
+    const bushLight = night
+      ? '#1E5D3D'
+      : season === 'autumn'
+        ? '#C77A3C'
+        : season === 'winter'
+          ? '#678577'
+          : pal.wallShade;
+    const lawn = night
+      ? '#3E542A'
+      : season === 'autumn'
+        ? '#A0914C'
+        : season === 'winter'
+          ? '#C8D3C7'
+          : pal.floor;
+    const lawnPatch = night ? '#364A25' : season === 'autumn' ? '#8E7D3D' : pal.floorAlt;
 
     // Scalloped bushes along top horizon (y: 68..210)
     for (let bx = 20; bx < 1940; bx += 86) {
       fg.circle(bx, 138, 66).fill(bushDark);
       fg.circle(bx + 36, 146, 56).fill(bushLight);
+      if (!night && season === 'spring') {
+        fg.circle(bx - 12, 122, 6).fill('#F4B8C4');
+        fg.circle(bx + 42, 132, 5).fill('#F4B8C4');
+      } else if (!night && season === 'winter') {
+        fg.ellipse(bx + 8, 92, 34, 11).fill('#FBF7EC');
+      }
     }
 
     // Main sunlit olive-green grass lawn (y: 184..884)
@@ -937,11 +1029,11 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
     for (let i = 0; i < 34; i++) {
       const gx = 60 + ((i * 211) % 1800);
       const gy = 250 + ((i * 97) % 580);
-      const col = night ? '#4E6B35' : '#74903E';
+      const col = night ? '#4E6B35' : season === 'autumn' ? '#9C7842' : '#74903E';
       fg.moveTo(gx, gy).lineTo(gx - 5, gy - 12).stroke({ width: 2.2, color: col });
       fg.moveTo(gx + 5, gy).lineTo(gx + 8, gy - 13).stroke({ width: 2.2, color: col });
-      if (i % 5 === 0) {
-        fg.circle(gx + 14, gy - 4, 5).fill('#FBF7EC');
+      if (i % 5 === 0 && season !== 'winter') {
+        fg.circle(gx + 14, gy - 4, 5).fill(season === 'spring' ? '#F6C3CC' : '#FBF7EC');
         fg.circle(gx + 14, gy - 4, 2.2).fill('#E9C65B');
       }
     }
@@ -955,14 +1047,35 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   }
 
   // Farm: top picket fence + red-roofed coop + hay-trough shed + diagonal fence + foreground winding river (IMG_2707)
-  const bushDark = night ? '#15472D' : pal.wallShade;
-  const bushLight = night ? '#1E5D3D' : pal.wall;
-  const meadow = night ? '#3A4F2B' : pal.floor;
-  const meadowAlt = night ? '#334625' : pal.floorAlt;
+  const bushDark = night
+    ? '#15472D'
+    : season === 'autumn'
+      ? '#945229'
+      : season === 'winter'
+        ? '#426052'
+        : pal.wallShade;
+  const bushLight = night
+    ? '#1E5D3D'
+    : season === 'autumn'
+      ? '#C67B3D'
+      : season === 'winter'
+        ? '#678577'
+        : pal.wall;
+  const meadow = night
+    ? '#3A4F2B'
+    : season === 'autumn'
+      ? '#9B8B49'
+      : season === 'winter'
+        ? '#C6D1C4'
+        : pal.floor;
+  const meadowAlt = night ? '#334625' : season === 'autumn' ? '#8A7A3A' : pal.floorAlt;
 
   for (let bx = 20; bx < 1940; bx += 84) {
     fg.circle(bx, 118, 62).fill(bushDark);
     fg.circle(bx + 38, 126, 52).fill(bushLight);
+    if (!night && season === 'winter') {
+      fg.ellipse(bx + 6, 74, 30, 10).fill('#FBF7EC');
+    }
   }
   fg.rect(0, 166, 1920, 718).fill(meadow);
   fg.ellipse(1440, 420, 340, 175).fill({ color: meadowAlt, alpha: 0.45 });
@@ -980,8 +1093,23 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   fg.roundRect(88, 184, 220, 148, 6).stroke({ width: 3, color: INK });
   fg.poly([66, 192, 198, 106, 330, 192]).fill(night ? '#7A352E' : '#C4483B');
   fg.poly([66, 192, 198, 106, 330, 192]).stroke({ width: 3.2, color: INK });
+  // Round farm clock on coop gable (198, 158)
+  fg.circle(198, 158, 20).fill('#FBF7EC');
+  fg.circle(198, 158, 20).stroke({ width: 2.6, color: INK });
+  fg.moveTo(198, 158).lineTo(198, 145).stroke({ width: 2.4, color: INK });
+  fg.moveTo(198, 158).lineTo(208, 161).stroke({ width: 2.4, color: '#C4483B' });
+  fg.circle(198, 158, 2.5).fill(INK);
+  // Coop arch doorway & golden hay mound inside
   fg.roundRect(160, 232, 76, 100, 10).fill('#423329');
   fg.roundRect(160, 232, 76, 100, 10).stroke({ width: 2.6, color: INK });
+  fg.ellipse(198, 314, 30, 18).fill('#E7C868');
+  fg.ellipse(198, 314, 30, 18).stroke({ width: 2.2, color: INK });
+  // Woven grain basket next to coop (336, 326)
+  fg.ellipse(336, 336, 28, 10).fill('#A87E4E');
+  fg.roundRect(310, 304, 52, 32, 8).fill('#C69D6B');
+  fg.roundRect(310, 304, 52, 32, 8).stroke({ width: 2.5, color: INK });
+  fg.ellipse(336, 304, 24, 9).fill('#E9C65B');
+  fg.ellipse(336, 304, 24, 9).stroke({ width: 2.2, color: INK });
 
   // Center wooden hay-trough pavilion shed (x: 490..870, y: 108..324)
   fg.rect(520, 190, 320, 130).fill(night ? '#594230' : '#966E4B');
@@ -1016,7 +1144,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   for (let i = 0; i < 22; i++) {
     const gx = 70 + ((i * 223) % 1780);
     const gy = 260 + ((i * 73) % 360);
-    const col = night ? '#486234' : '#6B883A';
+    const col = night ? '#486234' : season === 'autumn' ? '#9C7842' : '#6B883A';
     fg.moveTo(gx, gy).lineTo(gx - 4, gy - 11).stroke({ width: 2.2, color: col });
     fg.moveTo(gx + 5, gy).lineTo(gx + 7, gy - 12).stroke({ width: 2.2, color: col });
   }
@@ -1059,7 +1187,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
     .lineTo(1920, 724)
     .stroke({ width: 3, color: INK, alpha: 0.6 });
 
-  // Stone stepping-stone crossing & lily pads in the river
+  // Stone stepping-stone crossing, river boulders with waterlines & lily pads
   for (const [sx, sy, rx, ry] of [
     [980, 735, 34, 15],
     [1025, 768, 38, 17],
@@ -1068,6 +1196,16 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   ]) {
     fg.ellipse(sx, sy, rx, ry).fill(night ? '#6C6D6B' : '#B7B4AC');
     fg.ellipse(sx, sy, rx, ry).stroke({ width: 2.5, color: INK });
+  }
+  for (const [bx, by, brx, bry] of [
+    [190, 758, 36, 24],
+    [520, 774, 30, 20],
+    [1165, 748, 34, 22],
+    [1740, 754, 42, 26],
+  ]) {
+    fg.ellipse(bx, by + 6, brx + 8, bry * 0.45).stroke({ width: 2, color: '#D8EEF5', alpha: 0.55 });
+    fg.ellipse(bx, by, brx, bry).fill(night ? '#5E6063' : '#9A9B96');
+    fg.ellipse(bx, by, brx, bry).stroke({ width: 2.5, color: INK });
   }
   for (const [lx, ly] of [
     [430, 785],
@@ -1080,37 +1218,52 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   }
 }
 
-function paintRoom(bg: Graphics, fg: Graphics, roomId: RoomId, night: boolean): void {
+function paintRoom(bg: Graphics, fg: Graphics, roomId: RoomId, night: boolean, season: Season): void {
   const room = ROOMS[roomId];
   const floorTop = room.floorTop;
   bg.clear();
   fg.clear();
 
   if (room.outdoor) {
-    drawOutdoorRoom(bg, fg, roomId, floorTop, night);
+    drawOutdoorRoom(bg, fg, roomId, floorTop, night, season);
     return;
   }
 
   switch (roomId) {
     case 'living':
-      drawLivingRoom(bg, fg, floorTop, night);
+      drawLivingRoom(bg, fg, floorTop, night, season);
       break;
     case 'bedroom':
-      drawBedroom(bg, fg, floorTop, night);
+      drawBedroom(bg, fg, floorTop, night, season);
       break;
     case 'nursery':
-      drawNursery(bg, fg, floorTop, night);
+      drawNursery(bg, fg, floorTop, night, season);
       break;
     case 'bathroom':
-      drawBathroom(bg, fg, floorTop, night);
+      drawBathroom(bg, fg, floorTop, night, season);
       break;
     case 'studio':
-      drawStudio(bg, fg, floorTop, night);
+      drawStudio(bg, fg, floorTop, night, season);
       break;
     case 'kitchen':
-      drawKitchen(bg, fg, floorTop, night);
+      drawKitchen(bg, fg, floorTop, night, season);
       break;
   }
+}
+
+function mixHex(hexA: string, hexB: string, t: number): string {
+  const a = hexA.replace('#', '');
+  const b = hexB.replace('#', '');
+  if (a.length !== 6 || b.length !== 6) return hexA;
+  const r = Math.round(parseInt(a.slice(0, 2), 16) * (1 - t) + parseInt(b.slice(0, 2), 16) * t);
+  const g = Math.round(parseInt(a.slice(2, 4), 16) * (1 - t) + parseInt(b.slice(2, 4), 16) * t);
+  const bl = Math.round(parseInt(a.slice(4, 6), 16) * (1 - t) + parseInt(b.slice(4, 6), 16) * t);
+  return `#${[r, g, bl].map((v) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function warmIndoor(hex: string, night: boolean, darkness = 0.06): string {
+  if (!night) return hex;
+  return dim(mixHex(hex, '#FFE2A8', 0.22), 1 - darkness);
 }
 
 function dim(hex: string, factor: number): string {
@@ -1165,6 +1318,7 @@ export class StageRenderer {
   private view: StageView | null = null;
   private paintedRoom: RoomId | null = null;
   private paintedNight: boolean | null = null;
+  private paintedSeason: Season | null = null;
   private selectionKey = '';
   private fxHasContent = false;
   private drag: DragState | null = null;
@@ -1290,8 +1444,9 @@ export class StageRenderer {
   private rebuildAll(): void {
     if (!this.view) return;
     const { roomId, night } = this.view;
-    if (this.paintedRoom !== roomId || this.paintedNight !== night) {
-      paintRoom(this.bgDraw, this.fgDraw, roomId, night);
+    const season = seasonOf(now());
+    if (this.paintedRoom !== roomId || this.paintedNight !== night || this.paintedSeason !== season) {
+      paintRoom(this.bgDraw, this.fgDraw, roomId, night, season);
       if (this.app) {
         const frame = new Rectangle(0, 0, 1920, 884);
         this.bgTex?.destroy(true);
@@ -1316,6 +1471,7 @@ export class StageRenderer {
       this.rebuildSkyAndSunbeams(roomId, night);
       this.paintedRoom = roomId;
       this.paintedNight = night;
+      this.paintedSeason = season;
     }
     this.syncFarm();
     this.syncItems();
@@ -1485,7 +1641,7 @@ export class StageRenderer {
     const view = this.view;
     if (!view || view.roomId !== 'farm') return;
 
-    const nowMs = Date.now();
+    const nowMs = now();
     const plots = view.state.farm.plots;
     const gridCoords = [
       { x: 1235, y: 360 },
@@ -1512,12 +1668,20 @@ export class StageRenderer {
       if (!plot.unlocked) {
         g.roundRect(-78, -50, 156, 92, 14).fill(view.night ? '#465A38' : '#7D9949');
         g.roundRect(-78, -50, 156, 92, 14).stroke({ width: 2.8, color: INK, alpha: 0.55 });
-        // Golden padlock badge
+        // Tiny leaf sprout accent & golden padlock badge
+        g.ellipse(-30, 8, 8, 5).fill(view.night ? '#5B7847' : '#96B85C');
+        g.ellipse(-22, 6, 8, 5).fill(view.night ? '#5B7847' : '#96B85C');
         g.roundRect(-14, -10, 28, 22, 5).fill('#E9C65B');
         g.roundRect(-14, -10, 28, 22, 5).stroke({ width: 2.4, color: INK });
         g.arc(0, -10, 9, Math.PI, 0).stroke({ width: 3, color: INK });
       } else {
-        g.roundRect(-78, -50, 156, 92, 14).fill(view.night ? '#6C643C' : '#B2AC68');
+        const edgeCol = view.night ? '#6C643C' : '#B2AC68';
+        const tuftCol = view.night ? '#585F34' : '#8FA34D';
+        g.roundRect(-78, -50, 156, 92, 14).fill(edgeCol);
+        for (const tx of [-54, -18, 18, 54]) {
+          g.circle(tx, -50, 7).fill(tuftCol);
+          g.circle(tx, 42, 7).fill(tuftCol);
+        }
         g.roundRect(-78, -50, 156, 92, 14).stroke({ width: 3, color: INK });
         g.roundRect(-66, -38, 132, 68, 10).fill(view.night ? '#59422C' : '#8A6743');
         g.roundRect(-66, -38, 132, 68, 10).stroke({ width: 2, color: '#5E4226' });
@@ -1654,12 +1818,12 @@ export class StageRenderer {
       node.container.y = placed.y;
       node.container.alpha = 1;
       node.container.zIndex = placed.hostUid ? 9000 + placed.y : isFlatItem(placed.itemId) ? placed.y - 10_000 : placed.y;
-      this.syncItemVisualDecoration(node, view.night);
+      this.syncItemVisualDecoration(node, view.night, view.state.stations);
     }
     this.itemLayer.sortableChildren = true;
   }
 
-  private syncItemVisualDecoration(node: ItemNode, night: boolean): void {
+  private syncItemVisualDecoration(node: ItemNode, night: boolean, stations?: GameState['stations']): void {
     const isLamp = node.artKind === 'floorLamp' || node.artKind === 'tableLamp' || node.artKind === 'lantern';
     const nextGlowKey = `${node.usesPng}:${node.artKind}:${Math.round(node.baseW)}:${Math.round(node.baseH)}:${night}`;
     if (node.glowKey !== nextGlowKey) {
@@ -1677,14 +1841,42 @@ export class StageRenderer {
       }
     }
 
-    const nextOverlayKey = `${node.itemId}:${node.artKind}:${Math.round(node.baseW)}:${Math.round(node.baseH)}`;
+    const stationId: StationId | undefined =
+      node.artKind === 'pot'
+        ? 'pot'
+        : node.artKind === 'pan'
+          ? 'pan'
+          : node.artKind === 'mixingBowl'
+            ? 'bowl'
+            : node.artKind === 'oven'
+              ? 'oven'
+              : undefined;
+    const st = stationId && stations ? stations[stationId] : undefined;
+    const stationStatus =
+      st?.recipeId && !st.collected ? ((st.doneAt ?? Infinity) <= now() ? 'ready' : 'cooking') : 'idle';
+
+    const nextOverlayKey = `${node.itemId}:${node.artKind}:${Math.round(node.baseW)}:${Math.round(node.baseH)}:${stationStatus}`;
     if (node.overlayKey !== nextOverlayKey) {
       node.overlayKey = nextOverlayKey;
       node.overlay.clear();
       node.overlay.removeChildren().forEach((c) => c.destroy());
       node.overlayParts = undefined;
 
-      if (node.artKind === 'wallClock') {
+      if (stationId && stationStatus !== 'idle') {
+        const by = -node.baseH - 26;
+        node.overlay.roundRect(-24, by - 14, 48, 28, 12).fill('#FFFDF8');
+        node.overlay.roundRect(-24, by - 14, 48, 28, 12).stroke({ width: 2.5, color: INK });
+        node.overlay.poly([-5, by + 13, 5, by + 13, 0, by + 20]).fill('#FFFDF8');
+        node.overlay.moveTo(-5, by + 14).lineTo(0, by + 20).lineTo(5, by + 14).stroke({ width: 2.2, color: INK });
+        if (stationStatus === 'ready') {
+          node.overlay.poly([0, by - 9, 2.8, by - 2.8, 9, by, 2.8, by + 2.8, 0, by + 9, -2.8, by + 2.8, -9, by, -2.8, by - 2.8]).fill('#E9C65B');
+          node.overlay.poly([0, by - 9, 2.8, by - 2.8, 9, by, 2.8, by + 2.8, 0, by + 9, -2.8, by + 2.8, -9, by, -2.8, by - 2.8]).stroke({ width: 1.4, color: INK });
+        } else {
+          for (const dx of [-9, 0, 9]) {
+            node.overlay.circle(dx, by, 2.8).fill(INK);
+          }
+        }
+      } else if (node.artKind === 'wallClock') {
         const cx = 0;
         const cy = -node.baseH * 0.5;
         const r = node.baseW * (19 / 68);
@@ -1977,15 +2169,15 @@ export class StageRenderer {
     const humanSpots: Partial<
       Record<RoomId, { charIndex: 0 | 1 | 'baby'; x: number; y: number; pose?: 'idle' | 'read' | 'cook' | 'paint' }[]>
     > = {
-      living: [{ charIndex: 0, x: 525, y: 768, pose: 'read' }],
-      bedroom: [{ charIndex: 1, x: 1090, y: 764, pose: 'read' }],
-      kitchen: [{ charIndex: 0, x: 600, y: 768, pose: 'cook' }],
-      studio: [{ charIndex: 1, x: 740, y: 768, pose: 'paint' }],
+      living: [{ charIndex: 0, x: 350, y: 754, pose: 'read' }],
+      bedroom: [{ charIndex: 1, x: 1135, y: 752, pose: 'read' }],
+      kitchen: [{ charIndex: 0, x: 1315, y: 762, pose: 'cook' }],
+      studio: [{ charIndex: 1, x: 685, y: 754, pose: 'paint' }],
       porch: [{ charIndex: 0, x: 1090, y: 774, pose: 'idle' }],
       garden: [{ charIndex: 1, x: 820, y: 782, pose: 'idle' }],
       nursery: [
-        { charIndex: 0, x: 780, y: 768, pose: 'idle' },
-        ...(state.settings.showBaby ? [{ charIndex: 'baby' as const, x: 900, y: 776 }] : []),
+        { charIndex: 0, x: 1140, y: 746, pose: 'idle' },
+        ...(state.settings.showBaby ? [{ charIndex: 'baby' as const, x: 1245, y: 758 }] : []),
       ],
     };
     const activeHumans = humanSpots[view.roomId] ?? [];
@@ -2006,7 +2198,7 @@ export class StageRenderer {
         const c0 = state.characters[0];
         key = `baby:${c0.skin}:${c0.outfit}:${c0.hair}`;
         parts = babyRigParts({ skin: c0.skin, outfit: c0.outfit, hair: c0.hair });
-        targetW = 86;
+        targetW = 72;
       } else {
         const look = state.characters[h.charIndex];
         key = `char:${look.skin}:${look.hair}:${look.hairStyle}:${look.outfit}:${pose}`;
@@ -2017,7 +2209,7 @@ export class StageRenderer {
           outfit: look.outfit,
           pose,
         });
-        targetW = 128;
+        targetW = 104;
       }
       const existing = this.humanNodes.get(id);
       if (!existing) {
@@ -2112,7 +2304,7 @@ export class StageRenderer {
     for (const spot of critterSpots) {
       const key = `critterRig:${spot.kind}`;
       const parts = animalRigParts({ species: spot.kind, coat: spot.kind === 'bee' ? 'golden' : 'brown', pose: 'idle' });
-      const size = spot.kind === 'owl' ? 114 : spot.kind === 'hedgehog' ? 88 : 60;
+      const size = spot.kind === 'owl' ? 84 : spot.kind === 'hedgehog' ? 88 : 60;
       const existing = this.critterNodes.get(spot.id);
       if (!existing) {
         const node = this.buildAnimalRig(key, parts, size, spot.kind, 'idle', spot.x, spot.y, spot.id.length + spot.x * 0.01);
@@ -2124,47 +2316,51 @@ export class StageRenderer {
       }
     }
 
-    // 5. Farm producers (Daisy the cow & Pip the hen)
+    // 5. Farm producers (cow, hen, lily pond, and beehive)
     if (view.roomId !== 'farm') {
       for (const node of this.farmNodes.values()) {
         node.container.destroy({ children: true });
       }
       this.farmNodes.clear();
     } else {
-      const nowMs = Date.now();
+      const nowMs = now();
       const producerSpecs: {
-        id: 'cow' | 'hen';
+        id: 'cow' | 'hen' | 'pond' | 'beehive';
+        species: string;
         x: number;
         y: number;
         size: number;
         coat: string;
         yieldLabel: string;
         usePng: boolean;
+        seed: number;
       }[] = [
-        { id: 'cow', x: 410, y: 525, size: 175, coat: 'white', yieldLabel: '+1 Milk', usePng: true },
-        { id: 'hen', x: 215, y: 405, size: 88, coat: 'cream', yieldLabel: '+1 Egg', usePng: false },
+        { id: 'cow', species: 'cow', x: 410, y: 525, size: 175, coat: 'white', yieldLabel: '+1 Milk', usePng: true, seed: 2 },
+        { id: 'hen', species: 'hen', x: 215, y: 405, size: 88, coat: 'cream', yieldLabel: '+1 Egg', usePng: false, seed: 5 },
+        { id: 'pond', species: 'duck', x: 685, y: 785, size: 84, coat: 'cream', yieldLabel: '+1 Fish', usePng: false, seed: 8 },
+        { id: 'beehive', species: 'bee', x: 1815, y: 295, size: 62, coat: 'golden', yieldLabel: '+1 Honey', usePng: false, seed: 11 },
       ];
       for (const spec of producerSpecs) {
         const ready = (state.farm.producers[spec.id]?.readyAt ?? Infinity) <= nowMs;
-        const pngUrl = spec.usePng ? (animalPngFor(spec.id, spec.coat, 'idle') ?? undefined) : undefined;
+        const pngUrl = spec.usePng ? (animalPngFor(spec.species, spec.coat, 'idle') ?? undefined) : undefined;
         const key = `farmRig:${spec.id}`;
-        const parts = animalRigParts({ species: spec.id, coat: spec.coat, pose: 'idle' });
+        const parts = animalRigParts({ species: spec.species, coat: spec.coat, pose: 'idle' });
         let node = this.farmNodes.get(spec.id);
         if (!node) {
           node = this.buildAnimalRig(
             key,
             parts,
             spec.size,
-            spec.id,
+            spec.species,
             'idle',
             spec.x,
             spec.y,
-            spec.id === 'cow' ? 2 : 5,
+            spec.seed,
             () => {
               const hit = this.farmNodes.get(spec.id);
               if (hit) hit.jumpPop = 0.45;
               const store = useGameStore.getState();
-              const isReady = (store.state.farm.producers[spec.id]?.readyAt ?? Infinity) <= Date.now();
+              const isReady = (store.state.farm.producers[spec.id]?.readyAt ?? Infinity) <= now();
               if (isReady) {
                 this.spawnBurst(spec.x, spec.y - spec.size * 0.55, 'sparkle', 7, ['#E9C65B', '#FFFDF8', '#E8A6B0'], 105);
                 this.spawnLabel(spec.x, spec.y - spec.size * 0.85, spec.yieldLabel, '#6E8A55');
@@ -2175,6 +2371,28 @@ export class StageRenderer {
             },
             pngUrl,
           );
+          if (spec.id === 'pond') {
+            const pad = new Graphics();
+            pad.ellipse(0, 2, 34, 15).fill('#58945C');
+            pad.ellipse(0, 2, 34, 15).stroke({ width: 2.2, color: INK });
+            pad.ellipse(0, 6, 44, 19).stroke({ width: 2, color: '#D8EEF5', alpha: 0.7 });
+            node.container.addChildAt(pad, 0);
+          } else if (spec.id === 'beehive') {
+            const hive = new Graphics();
+            hive.roundRect(-8, -8, 16, 30, 3).fill('#9E754C');
+            hive.roundRect(-8, -8, 16, 30, 3).stroke({ width: 2.2, color: INK });
+            hive.ellipse(0, -14, 24, 11).fill('#DFB44E');
+            hive.ellipse(0, -24, 22, 10).fill('#E9C65B');
+            hive.ellipse(0, -34, 18, 9).fill('#DFB44E');
+            hive.ellipse(0, -42, 12, 7).fill('#E9C65B');
+            hive.ellipse(0, -14, 24, 11).stroke({ width: 2.2, color: INK });
+            hive.ellipse(0, -24, 22, 10).stroke({ width: 2.2, color: INK });
+            hive.ellipse(0, -34, 18, 9).stroke({ width: 2.2, color: INK });
+            hive.ellipse(0, -42, 12, 7).stroke({ width: 2.2, color: INK });
+            hive.circle(0, -22, 5.5).fill('#423329');
+            node.container.addChildAt(hive, 0);
+            node.rig.y = -48;
+          }
           node.facing = 1;
           const badge = new Graphics();
           badge.circle(0, 0, 16).fill('#FCE79C');
@@ -2849,19 +3067,24 @@ export class StageRenderer {
   private onTick = (ticker: Ticker): void => {
     if (!this.view || !this.ready) return;
 
+    const reduceMotion =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Throttle background rendering when a modal overlay covers the canvas
     const hasOverlay = useGameStore.getState().overlay !== null || document.body.classList.contains('has-overlay');
     if (this.app) {
-      const desiredFps = hasOverlay ? 4 : 30;
+      const desiredFps = hasOverlay ? 4 : reduceMotion ? 10 : 30;
       if (this.app.ticker.maxFPS !== desiredFps) this.app.ticker.maxFPS = desiredFps;
     }
 
     const dt = Math.min(0.05, ticker.deltaMS / 1000);
-    const now = performance.now() / 1000;
+    const nowSec = performance.now() / 1000;
 
-    // Smooth room cross-fade transition
+    // Smooth room cross-fade transition (instant when reduced motion is enabled)
     if (this.transitionAlpha < 1) {
-      this.transitionAlpha = Math.min(1, this.transitionAlpha + dt * 7);
+      this.transitionAlpha = reduceMotion ? 1 : Math.min(1, this.transitionAlpha + dt * 7);
       this.root.alpha = this.transitionAlpha;
     }
 
@@ -2869,59 +3092,87 @@ export class StageRenderer {
       return;
     }
 
-    this.drawSkyAndSunbeams(now);
-    this.animateItems(dt, now);
-    this.drawAmbientAndParticles(dt, now);
+    if (reduceMotion) {
+      this.animateItems(0, 0);
+      for (const node of this.petNodes.values()) {
+        node.container.position.set(node.visX, node.visY);
+        node.rig.position.set(0, 0);
+        if (node.readyBadge) node.readyBadge.scale.set(1);
+      }
+      for (const node of this.bubbleNodes.values()) {
+        const bubble = this.view.state.bubbles.find((b) => b.id === idOfBubbleNode(this.bubbleNodes, node));
+        if (bubble) {
+          const pos = this.bubbleSourcePosition(bubble);
+          node.container.position.set(pos.x, pos.y);
+          node.container.scale.set(1);
+        }
+      }
+      if (this.view.editMode && this.view.selectedUid) {
+        this.selection.alpha = 0.9;
+      }
+      return;
+    }
+
+    this.drawSkyAndSunbeams(nowSec);
+    this.animateItems(dt, nowSec);
+    this.drawAmbientAndParticles(dt, nowSec);
 
     // Heart bubbles
     for (const [id, node] of this.bubbleNodes) {
       const bubble = this.view.state.bubbles.find((b) => b.id === id);
       if (!bubble) continue;
       const pos = this.bubbleSourcePosition(bubble);
-      const popIn = Math.min(1, (now - node.bornAt) * 3.8);
+      const popIn = Math.min(1, (nowSec - node.bornAt) * 3.8);
       const popScale = popIn < 1 ? 0.4 + 0.6 * Math.sin((popIn * Math.PI) / 2) : 1;
       node.x = pos.x;
-      node.y = pos.y + Math.sin(now * 2.2 + id.length) * 6;
+      node.y = pos.y + Math.sin(nowSec * 2.2 + id.length) * 6;
       node.container.position.set(node.x, node.y);
-      node.container.scale.set(popScale * (1 + Math.sin(now * 3.2 + id.length) * 0.045));
-      node.halo.scale.set(1 + 0.14 * Math.sin(now * 3.2 + id.length));
+      node.container.scale.set(popScale * (1 + Math.sin(nowSec * 3.2 + id.length) * 0.045));
+      node.halo.scale.set(1 + 0.14 * Math.sin(nowSec * 3.2 + id.length));
     }
 
     // Pets
     for (const pet of this.view.state.pets) {
       if (pet.roomId !== this.view.roomId) continue;
       const node = this.petNodes.get(pet.id);
-      if (node) this.animateAnimalRig(node, dt, now, pet);
+      if (node) this.animateAnimalRig(node, dt, nowSec, pet);
     }
 
     // Visitors
     for (const visitor of this.view.state.visitors.active) {
       if (visitor.roomId !== this.view.roomId) continue;
       const node = this.visitorNodes.get(visitor.id);
-      if (node) this.animateAnimalRig(node, dt, now);
+      if (node) this.animateAnimalRig(node, dt, nowSec);
     }
 
     // Critters
     for (const spot of ROOMS[this.view.roomId].critterSpots) {
       const node = this.critterNodes.get(spot.id);
-      if (node) this.animateAnimalRig(node, dt, now);
+      if (node) this.animateAnimalRig(node, dt, nowSec);
     }
 
     // Farm producers
     for (const node of this.farmNodes.values()) {
-      this.animateAnimalRig(node, dt, now);
+      this.animateAnimalRig(node, dt, nowSec);
     }
 
     // Humans & Baby
     for (const node of this.humanNodes.values()) {
-      this.animateHumanRig(node, dt, now);
+      this.animateHumanRig(node, dt, nowSec);
     }
 
     // Pulse edit selection outline if active (without rebuilding geometry)
     if (this.view.editMode && this.view.selectedUid) {
-      this.selection.alpha = 0.78 + 0.22 * Math.sin(now * 5.5);
+      this.selection.alpha = 0.78 + 0.22 * Math.sin(nowSec * 5.5);
     }
   };
+}
+
+function idOfBubbleNode(map: Map<string, BubbleNode>, target: BubbleNode): string {
+  for (const [k, v] of map) {
+    if (v === target) return k;
+  }
+  return '';
 }
 
 export { animalArt };

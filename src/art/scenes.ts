@@ -75,26 +75,28 @@ function note(x: number, y: number): string {
 
 const SCENES: Record<string, () => string> = {
   truck: () =>
-    wall('#DCEAF0', '#9FB97C', 194) +
-    sunOrMoon(354, 52) +
-    // Distant cozy cottage & clouds
-    el(88, 56, 32, 12, '#FFFDF7') +
-    el(246, 44, 38, 13, '#FFFDF7') +
-    p('M 30 198 L 30 132 L 132 132 L 148 164 L 148 198 Z', '#FBF7EC') +
-    p('M 24 132 L 82 94 L 140 132 Z', '#D65B4A') +
-    r(68, 154, 28, 28, '#9CC0D4', 3) +
-    // Yellow moving van & stacked cardboard boxes
-    r(156, 144, 128, 56, '#EEC35A', 7) +
-    p('M 284 200 L 284 146 L 326 128 L 348 148 L 348 200 Z', '#EEC35A') +
-    r(292, 142, 34, 22, '#CFE3EC', 4) +
-    c(196, 206, 16, '#3B3632') +
-    c(196, 206, 7, '#B8C1C4') +
-    c(312, 206, 16, '#3B3632') +
-    c(312, 206, 7, '#B8C1C4') +
-    r(166, 114, 36, 26, '#C9A272', 4) +
-    r(206, 122, 32, 18, '#D7B284', 3) +
-    animalGroup('cat', 'ginger', 120, 182, 0.75, 'idle') +
-    heart(146, 108, 0.7),
+    wall('#DCEAF0', '#7B9954', 214) +
+    // House with red tile roof, white walls & green bush behind yellow moving truck (IMG_2708 card 1)
+    r(12, 92, 396, 122, '#F7F3E6', 2) +
+    p('M 12 96 L 76 58 L 368 58 L 408 96 Z', '#E46A56') +
+    r(36, 16, 198, 42, '#EFE8D6', 2) +
+    r(120, 26, 48, 22, '#BFD6E0', 2) +
+    r(296, 128, 72, 86, '#9B754E', 3) +
+    c(268, 134, 34, '#6A9455') +
+    c(296, 140, 26, '#567E45') +
+    // Yellow flatbed moving truck loaded with boxes
+    r(132, 114, 178, 52, '#C8A578', 4) +
+    r(148, 96, 48, 36, '#B88F5E', 3) +
+    r(200, 104, 42, 28, '#D7B587', 3) +
+    r(246, 98, 46, 34, '#8A7E72', 3) +
+    r(120, 152, 200, 22, '#F3CA3E', 4) +
+    p('M 42 184 L 42 114 L 116 114 L 116 184 Z', '#F3CA3E') +
+    p('M 46 122 L 88 122 L 88 148 L 46 148 Z', '#B7DCE8') +
+    r(34, 174, 294, 14, '#5E5B58', 4) +
+    c(92, 192, 20, '#3B3632') +
+    c(92, 192, 9, '#B8C1C4') +
+    c(244, 192, 20, '#3B3632') +
+    c(244, 192, 9, '#B8C1C4'),
 
   unboxing: () =>
     wall('#F5EFE2', '#CFA97A', 208) +
@@ -108,21 +110,31 @@ const SCENES: Record<string, () => string> = {
     heart(248, 86, 0.75),
 
   sofaNap: () =>
-    wall('#F5F0E3', '#C9A274', 198) +
-    windowFrame(38, 42, 130, 100) +
-    el(266, 232, 118, 24, '#C9D8AF') +
-    r(190, 128, 198, 68, '#9CB57D', 18) +
-    r(204, 140, 82, 34, '#C4D6A8', 12) +
-    r(292, 140, 82, 34, '#C4D6A8', 12) +
-    r(202, 188, 174, 14, '#8C6B4C', 6) +
-    r(214, 202, 10, 18, '#5B4130', 3) +
-    r(360, 202, 10, 18, '#5B4130', 3) +
-    animalGroup('cat', 'white', 274, 178, 0.82, 'sleep') +
-    // Yarn ball & fish toy on rug
-    c(150, 234, 13, '#E8A6B0') +
-    p('M 138 238 C 122 246 110 236 96 244', 'none', '#D67C8A', 2.4) +
-    heart(338, 126, 0.7) +
-    heart(92, 156, 0.6, '#E9C65B'),
+    // Plump white cat sleeping belly-up on warm wood floor with yarn ball & fish toy (IMG_2708 card 3)
+    wall('#D2AD7D', '#C59C68', 92) +
+    line(0, 148, SCENE_W, 148, INK, 1.5) +
+    line(0, 214, SCENE_W, 214, INK, 1.5) +
+    line(118, 92, 164, 148, INK, 1.4) +
+    line(276, 148, 326, 214, INK, 1.4) +
+    c(324, 108, 24, '#C6523C') +
+    p('M 310 100 q 14 -6 28 2 M 310 112 q 14 6 28 -2', 'none', INK, 1.8) +
+    c(368, 174, 9, '#E9C65B') +
+    el(96, 224, 14, 6, '#9AAAB8') +
+    p('M 82 224 L 72 218 L 72 230 Z', '#9AAAB8') +
+    // White sleeping cat curled belly-up
+    el(196, 176, 76, 44, '#FFFDF7') +
+    c(116, 164, 34, '#FFFDF7') +
+    p('M 92 140 L 88 122 L 106 132 Z', '#FFFDF7') +
+    p('M 122 132 L 136 120 L 138 140 Z', '#FFFDF7') +
+    p('M 102 160 q 6 4 12 0 M 120 158 q 6 4 12 0', 'none', INK, 2.4) +
+    p('M 110 170 q 4 4 8 0 q 4 4 8 0', 'none', INK, 2) +
+    // Outstretched paws with pink toe beans & long white tail
+    el(148, 118, 12, 18, '#FFFDF7', INK, 2.5, -24) +
+    el(172, 198, 16, 11, '#FFFDF7') +
+    c(170, 198, 3.5, '#EFA8B2', 'none', 0) +
+    el(248, 144, 15, 11, '#FFFDF7') +
+    c(250, 144, 3.5, '#EFA8B2', 'none', 0) +
+    p('M 270 184 C 312 184 358 202 360 228 C 362 246 340 248 330 232 C 318 212 288 206 266 206 Z', '#FFFDF7'),
 
   visitorTea: () =>
     wall('#F3EBDC', '#D8B78A', 200) +
@@ -172,46 +184,64 @@ const SCENES: Record<string, () => string> = {
     r(40, 224, 340, 12, '#C9B794', 3),
 
   sink: () =>
-    wall('#DCE7EA', '#C4D6DC', 216) +
-    // Wooden vanity & white basin matching IMG_2704
-    r(116, 132, 188, 90, '#A57E56', 8) +
-    r(108, 124, 204, 18, '#FBF7EC', 8) +
-    r(142, 136, 136, 18, '#DFEFF4', 8) +
-    r(132, 158, 74, 54, '#8A6744', 4) +
-    r(214, 158, 74, 54, '#8A6744', 4) +
-    line(288, 128, 288, 86, '#9AA6A8', 6) +
-    p('M 288 86 C 288 72 268 72 268 86', 'none', '#9AA6A8', 6) +
-    animalGroup('cat', 'white', 206, 178, 0.78, 'sleep') +
-    c(296, 114, 4, '#BFD8E3') +
-    c(280, 120, 3, '#BFD8E3') +
-    c(302, 126, 3, '#BFD8E3'),
+    // White cat curled in ceramic sink with green soap bottle, yellow sponge & blue tile wall (IMG_2708 card 4)
+    r(0, 0, SCENE_W, SCENE_H, '#7FB2CA', 0, INK, 4) +
+    line(276, 0, 276, 156, INK, 1.5) +
+    line(348, 0, 348, 156, INK, 1.5) +
+    line(220, 68, SCENE_W, 68, INK, 1.5) +
+    p('M 0 112 L 240 0 L 420 90 L 420 300 L 0 300 Z', '#FFFDF8') +
+    p('M 42 126 L 210 40 L 372 124 L 210 238 Z', '#EAECEF') +
+    // Green hand soap dispenser & yellow sponge
+    r(54, 46, 26, 54, '#8CB668', 8) +
+    r(62, 34, 10, 12, '#DCE2E4', 2) +
+    r(304, 186, 54, 34, '#E7DC72', 6) +
+    // Chrome faucet
+    r(218, 22, 16, 46, '#9AA4A8', 4) +
+    p('M 234 36 L 288 18 L 296 28 L 234 52 Z', '#BAC2C6') +
+    // White cat curled inside sink
+    el(190, 134, 58, 38, '#FFFDF7') +
+    c(208, 174, 24, '#FFFDF7') +
+    p('M 184 166 L 178 148 L 196 158 Z', '#FFFDF7') +
+    p('M 222 160 L 236 146 L 234 168 Z', '#FFFDF7') +
+    p('M 196 174 q 4 3 8 0 M 212 174 q 4 3 8 0', 'none', INK, 2.2) +
+    p('M 140 124 C 122 106 122 80 144 74 C 158 70 164 88 150 104', 'none', '#FFFDF7', 14),
 
   drawer: () =>
-    wall('#F0E3DC', '#CCA77A', 208) +
-    r(96, 86, 230, 150, '#8C6B4C', 10) +
-    r(112, 102, 198, 38, '#FBF7EC', 4) +
-    r(112, 148, 198, 38, '#FBF7EC', 4) +
-    r(112, 178, 198, 46, '#E4D9C2', 4) +
-    c(210, 121, 4, '#5B4130') +
-    c(210, 167, 4, '#5B4130') +
-    p('M 112 178 L 94 210 L 328 210 L 310 178 Z', '#C9A97C') +
-    animalGroup('cat', 'ginger', 190, 212, 0.72, 'sleep') +
-    heart(338, 116, 0.6) +
-    r(40, 236, 340, 10, '#B08A5E', 3),
+    // Ginger tabby cat diving into open brown dresser drawer with clothes & sock (IMG_2708 card 5)
+    wall('#C79B68', '#BC915E', 180) +
+    p('M 28 24 L 194 12 L 212 184 L 28 198 Z', '#6B584E') +
+    p('M 64 114 L 214 96 L 348 168 L 196 206 Z', '#7D6A5E') +
+    p('M 76 116 L 198 184 L 198 248 L 76 176 Z', '#8B776A') +
+    // Folded orange sweater, blue shirt, yellow cuff & white sock
+    el(178, 132, 46, 26, '#DF8B4D') +
+    el(264, 118, 42, 20, '#BFD2DC') +
+    r(122, 152, 44, 22, '#E9C65B', 6) +
+    p('M 164 202 L 192 190 L 216 238 L 182 248 Z', '#F7F4EC') +
+    // Ginger tabby cat hindquarters & striped tail sticking out of drawer
+    el(248, 172, 42, 26, '#DF9D4E') +
+    line(226, 156, 232, 176, '#B8722E', 4) +
+    line(246, 154, 252, 176, '#B8722E', 4) +
+    p('M 276 184 L 282 242 L 298 242 L 296 180 Z', '#DF9D4E') +
+    p('M 290 166 C 322 146 356 178 344 218 C 338 236 322 230 326 210 C 330 188 308 176 286 180 Z', '#DF9D4E'),
 
   snackBag: () =>
-    wall('#E7EBD9', '#D9C9A8', 206) +
-    r(72, 128, 278, 24, '#B08A5E', 5) +
-    r(88, 152, 240, 64, '#F3EFE0', 4) +
-    r(88, 152, 240, 10, '#9AA6A8', 2) +
-    r(94, 196, 10, 42, '#5B4130', 3) +
-    r(312, 196, 10, 42, '#5B4130', 3) +
-    p('M 186 118 L 236 118 L 230 68 L 192 68 Z', '#E9C65B') +
-    p('M 186 118 L 236 118 L 230 68 L 192 68 Z', 'none', INK, 3) +
-    c(210, 92, 11, '#FBF7EC') +
-    animalGroup('cat', 'charcoal', 176, 122, 0.6, 'special') +
-    heart(272, 92, 0.6) +
-    r(36, 240, 350, 10, '#C9B794', 3),
+    // Ginger tabby cat head-first inside tipped-over blue fish-kibble bag on wood floor (IMG_2708 card 6)
+    wall('#D2AE7D', '#C49A64', 100) +
+    line(0, 166, SCENE_W, 166, INK, 1.5) +
+    line(0, 232, SCENE_W, 232, INK, 1.5) +
+    // Tipped blue-and-cream pet kibble bag
+    p('M 84 186 L 190 120 L 266 196 L 176 254 Z', '#B7DCE6') +
+    p('M 176 254 L 266 196 L 236 168 L 146 226 Z', '#F3E3B6') +
+    el(164, 178, 16, 11, '#E4C368') +
+    el(192, 160, 14, 9, '#E4C368') +
+    // Ginger tabby cat with head buried inside bag opening + scattered kibble
+    el(276, 156, 50, 28, '#DF9D4E') +
+    line(252, 134, 258, 156, '#B8722E', 3.5) +
+    line(272, 132, 278, 154, '#B8722E', 3.5) +
+    line(292, 136, 296, 156, '#B8722E', 3.5) +
+    p('M 298 176 L 312 224 L 328 224 L 320 170 Z', '#DF9D4E') +
+    p('M 318 148 C 344 134 358 164 342 186 C 332 198 320 190 328 174 C 332 162 326 156 314 156 Z', '#DF9D4E') +
+    [[256, 218], [272, 232], [290, 224], [308, 240], [344, 214]].map(([x, y]) => c(x, y, 3.4, '#A97343')).join(''),
 
   windowOwl: () =>
     r(0, 0, SCENE_W, SCENE_H, '#2E3A50', 0, INK, 4) +
@@ -287,18 +317,19 @@ const SCENES: Record<string, () => string> = {
     animalGroup('rabbit', 'white', 240, 284, 0.6, 'sleep'),
 
   firstHome: () =>
-    wall('#F3EFE0', '#C39A6B', 210) +
-    windowFrame(28, 38, 120, 96) +
-    r(186, 128, 150, 62, '#A8BE86', 15) +
-    r(196, 138, 58, 28, '#C9D8AF', 10) +
-    r(260, 138, 58, 28, '#C9D8AF', 10) +
-    r(186, 182, 150, 12, '#8C6B4C', 5) +
-    r(348, 96, 44, 104, '#B08A5E', 4) +
-    r(356, 108, 28, 30, '#E9C65B', 3) +
-    r(356, 146, 28, 30, '#E8A6B0', 3) +
-    animalGroup('cat', 'ginger', 250, 208, 0.7, 'idle') +
-    heart(312, 112, 0.8) +
-    r(20, 236, 380, 12, '#B08A5E', 3),
+    // Packed room of cardboard boxes, quilted carrier, backpack & white cat on plastic bin (IMG_2708 card 2)
+    wall('#E7E0D0', '#CFA778', 110) +
+    r(18, 42, 76, 62, '#A7B8C4', 8) +
+    r(86, 56, 76, 58, '#F7F2E4', 8) +
+    r(206, 28, 72, 56, '#C8A578', 4) +
+    r(292, 36, 86, 66, '#A3A8AC', 4) +
+    r(322, 104, 84, 72, '#8E9499', 4) +
+    r(262, 134, 52, 62, '#DFC478', 10) +
+    r(108, 168, 94, 62, '#C7D3DA', 8) +
+    r(104, 160, 102, 14, '#E7EEF2', 4) +
+    r(18, 162, 82, 58, '#536A7E', 16) +
+    r(218, 164, 44, 48, '#A97C50', 6) +
+    animalGroup('cat', 'white', 120, 136, 0.62, 'idle'),
 
   crib: () =>
     wall('#F6EAE4', '#E0C7A5', 214) +

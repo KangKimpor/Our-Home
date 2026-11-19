@@ -46,7 +46,7 @@
     "offline": "Works offline",
     "savedLocally": "Saved on this device",
     "installHint": "Add to Home Screen to play full screen",
-    "credits": "Original art, music and words"
+    "credits": "Hand-inked scenes, cozy audio and words"
   },
   "hud": {
     "menu": "Menu",
@@ -177,7 +177,9 @@
     "hint": "Hint: {{hint}}",
     "next": "Keep an eye out for: {{hint}}",
     "captured": "Captured",
-    "unseen": "Not yet captured"
+    "unseen": "Not yet captured",
+    "savePhoto": "Save photo",
+    "savedPhoto": "Saved photo PNG."
   },
   "recipes": {
     "title": "Our recipe book",
@@ -288,11 +290,19 @@
     "snapshotDone": "A snapshot was saved.",
     "aboutText": "Our Home is an original, offline-first cozy game made for slow afternoons. Decorate nine rooms, grow a little garden, cook for the ones you love, and keep a photo album of small moments.",
     "showBaby": "Show the baby",
+    "clockTitle": "Time & season clock",
+    "clockReset": "Reset",
     "privacyText": "No accounts are required to play. No ads, purchases or tracking. Your game is saved on this device. Cloud save is opt-in and uses an email sign-in; only your save data is stored.",
     "musicCredit": "Music and sounds were synthesised for this game.",
-    "artCredit": "All art is drawn from original shapes and colours.",
-    "dataCredit": "Built with open-source tools. No third-party game assets are used.",
+    "artCredit": "Procedural SVG illustrations combined with selected manifest-verified cutouts from Cozy Home & Garden 2D Asset Pack v1.1.",
+    "dataCredit": "Built with open-source tools and selected user-provided v1.1 pack art.",
     "dangerZone": "Danger zone"
+  },
+  "season": {
+    "spring": "Spring",
+    "summer": "Summer",
+    "autumn": "Autumn",
+    "winter": "Winter"
   },
   "pets": {
     "title": "Our pets",

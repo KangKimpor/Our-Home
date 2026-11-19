@@ -371,7 +371,8 @@ img {
   box-shadow: none;
 }
 .btn-sm {
-  padding: 7px 13px;
+  min-height: 44px;
+  padding: 8px 14px;
   font-size: 0.82rem;
   border-width: 2px;
 }
@@ -387,8 +388,8 @@ img {
 .icon-btn {
   display: inline-grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   color: var(--ink);
   position: relative;
@@ -399,8 +400,8 @@ img {
 }
 .icon-btn-badge {
   position: absolute;
-  top: 1px;
-  right: 1px;
+  top: 2px;
+  right: 2px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -421,10 +422,12 @@ img {
 .chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-height: 44px;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 999px;
-  border: 2px solid rgba(46, 42, 38, 0.18);
+  border: 2px solid rgba(46, 42, 38, 0.24);
   background: var(--paper);
   font-weight: 700;
   font-size: 0.8rem;
@@ -432,7 +435,7 @@ img {
   transition: all 0.14s ease;
 }
 .chip:hover {
-  border-color: rgba(46, 42, 38, 0.4);
+  border-color: rgba(46, 42, 38, 0.45);
 }
 .chip.is-active {
   background: var(--sage);
@@ -449,8 +452,8 @@ img {
 }
 
 .swatch {
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2.5px solid var(--ink);
   box-shadow: 0 2px 0 rgba(46, 42, 38, 0.18);
@@ -677,9 +680,18 @@ img {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px 18px 12px;
-  border-bottom: 2px solid rgba(46, 42, 38, 0.12);
-  background: linear-gradient(180deg, rgba(255, 253, 246, 0.6), transparent);
+  padding: 15px 18px 12px;
+  border-bottom: 3px solid var(--ink);
+  background:
+    repeating-linear-gradient(
+      4deg,
+      rgba(155, 114, 58, 0.1) 0 3px,
+      transparent 3px 11px
+    ),
+    linear-gradient(180deg, #ebd7a1 0%, #dac07a 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 252, 232, 0.55),
+    inset 0 -2px 0 rgba(124, 88, 41, 0.14);
   position: relative;
   z-index: 1;
 }
@@ -703,14 +715,15 @@ img {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: var(--pink);
+  background: #fffdf8;
   border: 2px solid var(--ink);
   flex: none;
 }
 .modal-head p {
   margin-top: 3px;
   font-size: 0.78rem;
-  color: var(--ink-soft);
+  font-weight: 700;
+  color: #5b4528;
 }
 
 .modal-body {
@@ -743,8 +756,15 @@ img {
   position: relative;
   z-index: 1;
 }
+.modal-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .modal-foot > .btn:last-child,
-.modal-foot > button:last-child {
+.modal-foot > button:last-child,
+.modal-foot > .modal-footer-actions:last-child {
   margin-left: auto;
 }
 
@@ -786,8 +806,9 @@ img {
 .tab {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 6px;
-  padding: 8px 13px;
+  padding: 8px 14px;
   border-radius: 10px;
   font-weight: 800;
   font-size: 0.8rem;
@@ -1041,10 +1062,12 @@ img {
   pointer-events: none;
   filter: drop-shadow(0 4px 0 rgba(43, 37, 33, 0.14));
 }
-.title-decor .item-art {
+.title-decor .item-art,
+.title-decor .animal-art {
   width: 100%;
-  max-width: none;
-  max-height: 100%;
+  height: auto;
+  max-width: none !important;
+  max-height: none !important;
 }
 .title-pet {
   transform-origin: 50% 95%;
@@ -1064,7 +1087,9 @@ img {
 }
 .title-pet .animal-art {
   width: 100%;
-  max-width: none;
+  height: auto;
+  max-width: none !important;
+  max-height: none !important;
 }
 @keyframes pet-bob {
   0%,
@@ -1401,8 +1426,8 @@ img {
   gap: 8px;
 }
 .hud-round {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border-radius: 12px;
@@ -1429,9 +1454,11 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  min-width: 174px;
-  padding: 7px 26px 8px;
+  min-width: 192px;
+  min-height: 44px;
+  padding: 6px 26px 7px;
   border-radius: 13px;
   border: 3px solid var(--ink);
   background:
@@ -1571,8 +1598,9 @@ img {
   z-index: 1;
   display: flex;
   align-items: center;
+  min-height: 44px;
   gap: 4px;
-  padding: 5px 8px 5px 24px;
+  padding: 6px 10px 6px 24px;
   border-radius: 9px;
   border: 2.5px solid var(--ink);
   color: #fff;
@@ -1712,8 +1740,10 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
   min-width: 62px;
+  min-height: 44px;
   padding: 6px 10px 5px;
   border-radius: 12px;
   font-size: 0.62rem;
@@ -1815,8 +1845,10 @@ img {
 .mini-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-height: 44px;
   gap: 5px;
-  padding: 5px 9px;
+  padding: 6px 11px;
   border-radius: 9px;
   border: 2px solid rgba(43, 37, 33, 0.22);
   background: var(--paper);
@@ -1857,9 +1889,9 @@ img {
 .variant-chip {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  padding: 1px;
+  width: 44px;
+  height: 44px;
+  padding: 2px;
   border-radius: 9px;
   border: 2px solid transparent;
   background: rgba(43, 37, 33, 0.06);
@@ -2194,11 +2226,12 @@ img {
 .ingredient-dot {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2.5px solid var(--ink);
-  color: #fff;
+  background: var(--cream);
+  color: var(--ink);
   flex: none;
 }
 .ingredient-dot-small {
@@ -2789,8 +2822,9 @@ img {
 .crop-choice {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 7px;
+  min-height: 44px;
+  gap: 5px;
+  padding: 6px 10px;
   border-radius: 8px;
   border: 2px solid rgba(46, 42, 38, 0.16);
   background: var(--cream);
@@ -2828,8 +2862,8 @@ img {
 .producer-icon {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 10px;
   background: var(--cream);
   flex: none;
@@ -3494,11 +3528,19 @@ img {
 }
 .map-diorama-prop {
   position: absolute;
+  display: block;
   width: auto;
   max-width: 56%;
-  object-fit: contain;
   pointer-events: none;
   filter: drop-shadow(0 2px 0 rgba(43, 37, 33, 0.16));
+}
+.map-diorama-prop > img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none !important;
+  max-height: 100% !important;
+  object-fit: contain;
 }
 .map-you {
   position: absolute;
@@ -3926,8 +3968,8 @@ img {
     top: 8px;
   }
   .hud-peek {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     gap: 4px;
     border-radius: 11px;
     border-width: 2px;
@@ -3948,14 +3990,15 @@ img {
     gap: 5px;
   }
   .hud-round {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     border-width: 2px;
   }
   .room-plaque {
-    min-width: 124px;
-    padding: 4px 16px 5px;
+    min-width: 156px;
+    min-height: 44px;
+    padding: 4px 14px 5px;
     border-width: 2.5px;
     border-radius: 10px;
   }
@@ -3969,6 +4012,7 @@ img {
     right: 12px;
     top: 8px;
     min-width: 106px;
+    min-height: 44px;
     padding: 4px 9px 5px 7px;
     gap: 5px;
     border-width: 2.5px;
@@ -3995,8 +4039,8 @@ img {
   }
   .event-tags {
     right: 14px;
-    top: 56px;
-    width: 108px;
+    top: 58px;
+    width: 116px;
     gap: 5px;
   }
   .event-tags::before {
@@ -4005,7 +4049,8 @@ img {
     border-right-width: 2px;
   }
   .event-tag {
-    padding: 3px 6px 3px 18px;
+    min-height: 44px;
+    padding: 5px 8px 5px 20px;
     font-size: 0.6rem;
     border-width: 2px;
     border-radius: 7px;
@@ -4054,11 +4099,12 @@ img {
     padding: 3px 5px;
     border-width: 2.5px;
     border-radius: 14px;
-    gap: 2px;
+    gap: 3px;
   }
   .dock-btn {
-    min-width: 46px;
-    padding: 4px 6px;
+    min-width: 48px;
+    min-height: 44px;
+    padding: 4px 7px;
     font-size: 0.52rem;
   }
   .dock-btn svg {
@@ -4066,14 +4112,14 @@ img {
     height: 16px;
   }
   .save-pill {
-    top: 13.5%;
+    top: 56px;
     font-size: 0.54rem;
     padding: 2px 8px;
     border-width: 1.5px;
   }
   .edit-bar,
   .placing-bar {
-    bottom: 17%;
+    bottom: 64px;
     padding: 5px 7px;
     border-width: 2.5px;
     gap: 4px;
@@ -4082,13 +4128,14 @@ img {
     font-size: 0.62rem;
   }
   .mini-btn {
-    padding: 4px 7px;
-    font-size: 0.6rem;
+    min-height: 44px;
+    padding: 4px 10px;
+    font-size: 0.62rem;
     border-width: 1.5px;
   }
   .variant-chip {
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
   }
   .hud-menu {
     left: 5%;
@@ -4099,7 +4146,8 @@ img {
     padding: 5px;
   }
   .hud-menu button[role='menuitem'] {
-    padding: 4px 8px;
+    min-height: 44px;
+    padding: 6px 8px;
     font-size: 0.68rem;
     gap: 7px;
   }
@@ -4152,13 +4200,13 @@ img {
     border-top-width: 1.5px;
   }
   .icon-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
   }
   .icon-btn svg {
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
   }
 
   .tabs {
@@ -4167,7 +4215,8 @@ img {
     border-radius: 10px;
   }
   .tab {
-    padding: 5px 9px;
+    min-height: 44px;
+    padding: 6px 10px;
     font-size: 0.68rem;
     gap: 4px;
     border-radius: 8px;
@@ -4451,10 +4500,10 @@ img {
   }
 }
 
-@media (max-width: 760px) and (orientation: landscape) {
+@media (max-height: 540px) and (orientation: landscape), (max-width: 920px) and (orientation: landscape) {
   .title-screen {
-    grid-template-columns: 0.9fr 1.1fr;
-    padding: 2vh 3vw;
+    grid-template-columns: 0.92fr 1.08fr;
+    padding: 1.5vh 2.5vw;
     gap: 10px;
   }
   .title-card {
@@ -4462,12 +4511,19 @@ img {
     gap: 5px;
     border-radius: 18px;
   }
+  .title-plaque-bar {
+    padding: 4px 12px;
+  }
   .title-card h1 {
-    font-size: 2rem;
+    font-size: 1.88rem;
+  }
+  .title-card h1::after {
+    margin-top: 4px;
+    height: 6px;
   }
   .title-lede {
     font-size: 0.72rem;
-    line-height: 1.35;
+    line-height: 1.32;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -4476,11 +4532,13 @@ img {
   .title-actions .btn {
     padding: 8px 14px;
     font-size: 0.86rem;
+    min-height: 44px;
   }
   .title-notes {
     font-size: 0.6rem;
     gap: 4px 10px;
-    padding-top: 6px;
+    padding-top: 5px;
+    margin-top: 2px;
   }
   .title-languages {
     font-size: 0.68rem;

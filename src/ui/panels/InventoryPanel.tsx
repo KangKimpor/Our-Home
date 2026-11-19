@@ -7,7 +7,7 @@ import { RECIPES_BY_ID } from '../../data/recipes';
 import { availableCount } from '../../game/placement';
 import type { RoomId } from '../../game/types';
 import { useGameStore } from '../../store/gameStore';
-import { Button, Chip, Empty, ItemArt, Modal, Tabs, useItemLabel, cx } from '../bits';
+import { Button, Chip, Empty, FoodArt, IngredientArt, ItemArt, Modal, Tabs, useItemLabel, cx } from '../bits';
 import { Icon } from '../icons';
 
 const ALL = 'all';
@@ -123,7 +123,7 @@ export function InventoryPanel() {
               return (
                 <article key={id} className="inventory-card food-card">
                   <span className="food-bowl" aria-hidden="true">
-                    <Icon name="pot" size={42} />
+                    <FoodArt recipeId={id} category={recipe?.category} size={46} />
                   </span>
                   <strong>{recipe ? t(recipe.nameKey, { defaultValue: recipe.name }) : id}</strong>
                   <small>{recipe ? t(`recipes.${recipe.category}`) : ''}</small>
@@ -149,8 +149,8 @@ export function InventoryPanel() {
               const count = state.pantry.ingredients[ingredient.id] ?? 0;
               return (
                 <article key={ingredient.id} className={cx('ingredient-card', count === 0 && 'is-empty')}>
-                  <span className="ingredient-dot" style={{ background: ingredient.color }}>
-                    <Icon name={ingredient.kind === 'crop' ? 'leaf' : 'sparkle'} size={20} />
+                  <span className="ingredient-dot">
+                    <IngredientArt ingredientId={ingredient.id} size={34} />
                   </span>
                   <div>
                     <strong>{t(ingredient.nameKey, { defaultValue: ingredient.name })}</strong>

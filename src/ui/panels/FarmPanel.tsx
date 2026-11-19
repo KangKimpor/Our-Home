@@ -5,7 +5,7 @@ import { now } from '../../config/time';
 import { CROPS, INGREDIENTS, PRODUCERS } from '../../data/farm';
 import { ROOMS } from '../../data/rooms';
 import { useGameStore } from '../../store/gameStore';
-import { Button, Empty, Modal, cx } from '../bits';
+import { AnimalArt, Button, Empty, IngredientArt, Modal, cx } from '../bits';
 import { Icon } from '../icons';
 
 const INGREDIENT_NAMES = new Map(INGREDIENTS.map((ingredient) => [ingredient.id, ingredient]));
@@ -83,9 +83,7 @@ export function FarmPanel() {
                 <article key={plot.id} className={cx('plot-card', crop && 'is-planted', ready && 'is-ready')}>
                   <span className={cx('plot-dirt', ready && 'is-ready')} style={crop ? { background: `linear-gradient(180deg, #8A6042 0%, ${crop.colors[1]} 100%)` } : undefined}>
                     {crop ? (
-                      <span className="crop-dot" style={{ background: crop.colors[0] }}>
-                        <Icon name={ready ? 'sparkle' : 'leaf'} size={18} />
-                      </span>
+                      <IngredientArt ingredientId={crop.id} size={34} />
                     ) : (
                       <Icon name="seed" size={24} />
                     )}
@@ -120,7 +118,7 @@ export function FarmPanel() {
                                 setPlantingPlot(null);
                               }}
                             >
-                              <span style={{ background: entry.colors[0] }} />
+                              <IngredientArt ingredientId={entry.id} size={18} />
                               {t(entry.nameKey, { defaultValue: entry.name })}
                             </button>
                           ))}
@@ -151,7 +149,11 @@ export function FarmPanel() {
               return (
                 <article key={producer.id} className={cx('producer-card', ready && 'is-ready')}>
                   <span className="producer-icon">
-                    <Icon name={producer.id === 'beehive' ? 'sparkle' : producer.id === 'pond' ? 'leaf' : 'paw'} size={24} />
+                    <AnimalArt
+                      species={producer.art === 'fish' ? 'duck' : producer.art}
+                      coat={producer.id === 'cow' ? 'white' : producer.id === 'beehive' ? 'golden' : 'cream'}
+                      size={44}
+                    />
                   </span>
                   <div>
                     <strong>{t(producer.nameKey, { defaultValue: producer.name })}</strong>
@@ -183,7 +185,7 @@ export function FarmPanel() {
           const count = state.pantry.ingredients[ingredient.id] ?? 0;
           return (
             <span key={ingredient.id} className={cx('pantry-item', count === 0 && 'is-empty')}>
-              <span className="ingredient-dot-small" style={{ background: ingredient.color }} />
+              <IngredientArt ingredientId={ingredient.id} size={20} />
               {t(ingredient.nameKey, { defaultValue: ingredient.name })}
               <em>{count}</em>
             </span>

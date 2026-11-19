@@ -30,7 +30,7 @@ export const ROOMS: Record<RoomId, RoomDef> = {
       { id: 'chair', x: 1640, y: 720, kind: 'sleep' },
       { id: 'floor', x: 1120, y: 790, kind: 'sleep' },
     ],
-    critterSpots: [{ id: 'owl', x: 205, y: 455, kind: 'owl' }],
+    critterSpots: [{ id: 'owl', x: 235, y: 446, kind: 'owl' }],
     surfaceSpots: [],
   },
   bedroom: {

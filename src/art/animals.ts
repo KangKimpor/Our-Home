@@ -402,33 +402,39 @@ function birdPartsSvg(o: AnimalOptions, coat: Coat, kind: 'canary' | 'duck' | 's
       ? p('M 88 41 C 85 28 93 24 95 34 C 98 21 106 25 103 36 C 107 28 112 32 108 41 Z', '#C4483B', INK, 2.2) +
         c(109, 68, 3.6, '#C4483B', INK, 1.8)
       : kind === 'owl'
-        ? shadedPath('M 83 41 L 79 27 L 92 36 Z', coat.patch) + shadedPath('M 101 36 L 113 27 L 110 41 Z', coat.patch)
+        ? shadedPath('M 83 44 L 77 27 L 91 37 Z', coat.patch) + shadedPath('M 101 37 L 114 27 L 109 44 Z', coat.patch)
         : kind === 'duck' || kind === 'canary'
           ? p('M 88 41 C 92 29 102 29 100 41', 'none', coat.patch, 4)
           : '';
 
   const body =
     extras +
-    el(66, 86, 30, 22, coat.body) +
-    (kind === 'owl' ? el(71, 91, 18, 14, coat.belly, 'none', 0) : '');
+    el(66, 86, 28, 21, coat.body) +
+    (kind === 'owl'
+      ? el(72, 92, 17, 13, coat.belly, 'none', 0) +
+        p('M 64 90 q 3 3 6 0 M 74 90 q 3 3 6 0', 'none', coat.patch, 1.8)
+      : '');
 
   const owlLetter =
     kind === 'owl'
-      ? `<g transform="rotate(-12 83 88)">${r(72, 79, 22, 15, '#FBF7EC', 2.5, INK, 2.2)}${p('M 72 80 L 83 88 L 94 80', 'none', INK, 1.8)}${c(83, 88, 2.4, '#C4483B', 'none', 0)}</g>`
+      ? `<g transform="rotate(-10 86 90)">${r(74, 80, 24, 16, '#FFFDF7', 2.5, INK, 2.2)}${p('M 74 81 L 86 89 L 98 81', 'none', INK, 1.8)}${c(86, 89, 2.5, '#C4483B', 'none', 0)}</g>`
       : '';
 
-  const wing = el(60, 84, 19, 14, coat.patch) + p('M 48 84 q 10 5 22 0', 'none', coat.belly, 2) + owlLetter;
+  const wing = el(60, 84, 18, 13, coat.patch) + p('M 49 84 q 9 4 20 0', 'none', coat.belly, 2) + owlLetter;
 
   const beak =
     kind === 'swan'
       ? p('M 111 57 L 126 51 L 111 63 Z', '#E9A94B')
-      : kind === 'hen' || kind === 'canary' || kind === 'owl'
-        ? p('M 111 55 L 123 59 L 111 65 Z', '#E9A94B')
-        : p('M 111 57 L 129 61 L 111 67 Z', '#E9A94B');
+      : kind === 'owl'
+        ? p('M 94 58 L 99 64 L 104 58 Z', '#E9A94B')
+        : kind === 'hen' || kind === 'canary'
+          ? p('M 111 55 L 123 59 L 111 65 Z', '#E9A94B')
+          : p('M 111 57 L 129 61 L 111 67 Z', '#E9A94B');
 
   const head =
     headTop +
-    c(96, 56, 17.5, coat.body) +
+    c(96, 56, 17, coat.body) +
+    (kind === 'owl' ? el(97, 57, 14, 11, coat.belly, 'none', 0) : '') +
     `<ellipse cx="94" cy="61" rx="4" ry="2.2" fill="#E89CA8" opacity="0.45"/>` +
     beak +
     (o.accessory === 'scarf' ? r(90, 70, 24, 7, '#C4483B', 3) + r(104, 74, 7, 18, '#C4483B', 3) : '') +
@@ -437,18 +443,18 @@ function birdPartsSvg(o: AnimalOptions, coat: Coat, kind: 'canary' | 'duck' | 's
 
   const eyesOpen =
     kind === 'owl'
-      ? c(92, 56, 6.2, '#FBF7EC') +
-        c(102, 56, 6.2, '#FBF7EC') +
-        c(92, 56, 2.8, INK, 'none', 0) +
-        c(102, 56, 2.8, INK, 'none', 0) +
-        `<circle cx="93" cy="54.6" r="1.15" fill="#FFFDF8"/><circle cx="103" cy="54.6" r="1.15" fill="#FFFDF8"/>`
+      ? c(91, 54, 5.4, '#FFFDF7') +
+        c(103, 54, 5.4, '#FFFDF7') +
+        c(91, 54, 2.4, INK, 'none', 0) +
+        c(103, 54, 2.4, INK, 'none', 0) +
+        `<circle cx="92" cy="52.6" r="1.05" fill="#FFFDF8"/><circle cx="104" cy="52.6" r="1.05" fill="#FFFDF8"/>`
       : c(100, 54, 3, INK, 'none', 0) + `<circle cx="101.2" cy="52.8" r="1.1" fill="#FFFDF8"/>`;
 
   const eyesClosed =
     kind === 'owl'
-      ? c(92, 56, 6.2, '#FBF7EC') +
-        c(102, 56, 6.2, '#FBF7EC') +
-        `<path d="M 88 56 q 4 3 8 0 M 98 56 q 4 3 8 0" fill="none" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>`
+      ? c(91, 54, 5.4, '#FFFDF7') +
+        c(103, 54, 5.4, '#FFFDF7') +
+        `<path d="M 87.5 54 q 3.5 2.8 7 0 M 99.5 54 q 3.5 2.8 7 0" fill="none" stroke="${INK}" stroke-width="2.1" stroke-linecap="round"/>`
       : `<path d="M 96 54 q 4 3 8 0" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`;
 
   return { shadow, legs, body, wing, head, eyesOpen, eyesClosed };

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { now } from '../../config/time';
 import { VISITORS, VISITORS_BY_ID } from '../../data/visitors';
 import { useGameStore } from '../../store/gameStore';
 import { AnimalArt, Bar, Button, Empty, Modal, durationLabel } from '../bits';
@@ -48,7 +49,7 @@ export function VisitorsPanel() {
                     <strong>{name}</strong>
                     <span className="leaving-pill">
                       <Icon name="clock" size={13} />
-                      {t('visitors.leaving')} · {durationLabel(visitor.leavesAt - Date.now(), t)}
+                      {t('visitors.leaving')} · {durationLabel(visitor.leavesAt - now(), t)}
                     </span>
                   </div>
                   <p className="visitor-line">{t(def.lineKey)}</p>

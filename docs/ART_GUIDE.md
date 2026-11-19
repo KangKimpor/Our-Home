@@ -28,6 +28,8 @@
 - **Display:** `Fredoka` (OFL) — rounded, friendly headers and counters.
 - **Body:** `Nunito` (OFL) — legible rounded sans-serif for descriptions and controls.
 
-## 5. Originality Guardrails
-- All room layouts, furniture silhouettes, animal species/coats, visitor characters, and Moment polaroid scenes are authored from scratch as procedural SVG generators in `src/art/`.
-- No reference screenshots, logos, character designs, or third-party game assets are traced, imported, or reused.
+## 5. Asset Pipeline & Cutout Rules
+- All room architectures, furniture silhouettes, animal species/coats, character parts, and Moment polaroid scenes have crisp procedural SVG generators in `src/art/`.
+- Selected user-provided PNG cutouts from `public/asset-pack-v1.1/` are registered in `src/art/assetPack.ts` **only** when `transparent_background` is `true` in `manifest.json` and visual inspection confirms clean separation without baked-in HUD/crop artifacts.
+- Opaque `reference_fragment` crops, tiles, and Photo Card crops are strictly used as palette/proportion references and never mounted directly over the playable scene.
+- Unrelated external titles, logos, or hardcoded text timestamps are never copied into *Our Home*.

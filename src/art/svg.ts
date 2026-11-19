@@ -49,18 +49,10 @@ export function r(
   sw = 2.8,
 ): string {
   const radius = rx > 0 ? ` rx="${rx}"` : '';
-  const body = `<rect x="${x}" y="${y}" width="${w}" height="${h}"${radius} fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
-  if (fill === 'none' || w < 14 || h < 12) return body;
-  const inset = Math.min(2.5, sw * 0.65);
-  const innerRx = Math.max(0, rx - 1.5);
-  const innerRadius = innerRx > 0 ? ` rx="${innerRx}"` : '';
-  return (
-    body +
-    `<rect x="${x + inset * 0.5}" y="${y + inset * 0.5}" width="${Math.max(2, w - inset)}" height="${Math.max(2, h - inset)}"${innerRadius} fill="url(#oh-warm)" pointer-events="none"/>`
-  );
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}"${radius} fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
 }
 
-/** Cushion or plump upholstered panel with soft crown highlight and curved seam. */
+/** Cushion or plump upholstered panel with a crisp flat fill and subtle highlight seam. */
 export function cushion(
   x: number,
   y: number,
@@ -72,25 +64,16 @@ export function cushion(
   sw = 2.6,
 ): string {
   const radius = rx > 0 ? ` rx="${rx}"` : '';
-  const inset = 2;
-  const innerRx = Math.max(2, rx - 2);
   return (
     `<rect x="${x}" y="${y}" width="${w}" height="${h}"${radius} fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>` +
-    `<rect x="${x + inset}" y="${y + inset}" width="${Math.max(4, w - inset * 2)}" height="${Math.max(4, h - inset * 2)}" rx="${innerRx}" fill="url(#oh-cushion)" pointer-events="none"/>` +
     (w > 34
-      ? `<path d="M ${x + 10} ${y + 5} Q ${x + w / 2} ${y + 3} ${x + w - 10} ${y + 5}" fill="none" stroke="#FFFDF8" stroke-width="2" stroke-linecap="round" opacity="0.38" pointer-events="none"/>`
+      ? `<path d="M ${x + 10} ${y + 5} Q ${x + w / 2} ${y + 3.5} ${x + w - 10} ${y + 5}" fill="none" stroke="#FFFDF8" stroke-width="1.8" stroke-linecap="round" opacity="0.42" pointer-events="none"/>`
       : '')
   );
 }
 
 export function c(cx: number, cy: number, rad: number, fill: string, stroke = INK, sw = 2.8): string {
-  const base = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-  if (fill === 'none' || rad < 7) return base;
-  return (
-    base +
-    `<circle cx="${cx}" cy="${cy}" r="${Math.max(1, rad - sw * 0.45)}" fill="url(#oh-warm)" pointer-events="none"/>` +
-    `<ellipse cx="${cx - rad * 0.25}" cy="${cy - rad * 0.3}" rx="${rad * 0.38}" ry="${rad * 0.2}" fill="#FFFDF8" opacity="0.3" transform="rotate(-22 ${cx - rad * 0.25} ${cy - rad * 0.3})" pointer-events="none"/>`
-  );
+  return `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
 }
 
 export function el(
@@ -104,13 +87,7 @@ export function el(
   rotate = 0,
 ): string {
   const transform = rotate ? ` transform="rotate(${rotate} ${cx} ${cy})"` : '';
-  const base = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"${transform}/>`;
-  if (fill === 'none' || rx < 10 || ry < 7 || rotate !== 0) return base;
-  return (
-    base +
-    `<ellipse cx="${cx}" cy="${cy}" rx="${Math.max(2, rx - 1.5)}" ry="${Math.max(2, ry - 1.5)}" fill="url(#oh-warm)" pointer-events="none"/>` +
-    `<ellipse cx="${cx - rx * 0.16}" cy="${cy - ry * 0.34}" rx="${rx * 0.5}" ry="${ry * 0.2}" fill="#FFFDF8" opacity="0.24" pointer-events="none"/>`
-  );
+  return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"${transform}/>`;
 }
 
 export function p(
@@ -123,7 +100,7 @@ export function p(
   return `<path d="${d}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round"${extra ? ' ' + extra : ''}/>`;
 }
 
-/** Path with automatic warm top-to-bottom shading overlay for solid shapes. */
+/** Crisp flat-filled storybook path preserving consistent ink weight. */
 export function shadedPath(
   d: string,
   fill: string,
@@ -131,10 +108,7 @@ export function shadedPath(
   sw = 2.8,
   extra = '',
 ): string {
-  return (
-    p(d, fill, stroke, sw, extra) +
-    (fill !== 'none' ? `<path d="${d}" fill="url(#oh-warm)" pointer-events="none"/>` : '')
-  );
+  return p(d, fill, stroke, sw, extra);
 }
 
 export function line(x1: number, y1: number, x2: number, y2: number, color = INK, sw = 2.8): string {

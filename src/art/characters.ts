@@ -150,47 +150,46 @@ function frontArmSvg(o: CharacterArtOptions, skinShade: string): string {
 
 function headSvg(o: CharacterArtOptions, includeEyes: boolean, eyesClosed = false): string {
   const skinShade = shade(o.skin);
-  const ears = c(41, 68, 5.2, skinShade, INK, 2.5) + c(99, 68, 5.2, skinShade, INK, 2.5);
+  const ears = c(44.5, 68, 4.6, skinShade, INK, 2.5) + c(95.5, 68, 4.6, skinShade, INK, 2.5);
   const bangs =
-    p('M 42 54 C 41 31 56 20 70 20 C 85 20 99 31 98 54 C 91 44 82 40 70 40 C 58 40 49 44 42 54 Z', o.hair, INK, 2.9) +
-    line(56, 39, 55, 49, INK, 1.8) +
-    line(66, 38, 66, 48, INK, 1.8) +
-    line(76, 38, 77, 48, INK, 1.8) +
-    p('M 54 30 C 64 25 78 25 86 31', 'none', '#FFFDF8', 2.2, 'opacity="0.22"') +
+    p('M 45 57 C 44 34 57 24 70 24 C 83 24 96 34 95 57 C 89 47 81 43 70 43 C 59 43 51 47 45 57 Z', o.hair, INK, 2.8) +
+    line(57, 42, 56, 51, INK, 1.7) +
+    line(67, 41, 67, 50, INK, 1.7) +
+    line(77, 41, 78, 50, INK, 1.7) +
     (o.hairStyle === 'long'
-      ? p('M 41 54 C 37 74 39 86 43 90 L 50 85 C 45 77 44 68 45 56 Z', o.hair, INK, 2.7) +
-        p('M 99 54 C 103 74 101 86 97 90 L 90 85 C 95 77 96 68 95 56 Z', o.hair, INK, 2.7)
+      ? p('M 45 56 C 40 74 42 86 46 90 L 52 84 C 48 77 47 68 48 58 Z', o.hair, INK, 2.6) +
+        p('M 95 56 C 100 74 98 86 94 90 L 88 84 C 92 77 93 68 92 58 Z', o.hair, INK, 2.6)
       : '') +
-    (o.hairStyle === 'bun' ? c(70, 22, 6.5, o.hair, INK, 2.4) : '');
+    (o.hairStyle === 'bun' ? c(70, 23, 6.2, o.hair, INK, 2.4) : '');
 
   const faceFeatures =
-    p('M 69 68 q 2 3.2 0 5.5', 'none', skinShade, 2) +
-    p('M 64 79 q 6 4.5 12 0', 'none', INK, 2.4) +
-    p('M 55 58 q 5 -2.2 10 0', 'none', INK, 2) +
-    p('M 75 58 q 5 -2.2 10 0', 'none', INK, 2) +
-    `<ellipse cx="53" cy="74" rx="5" ry="2.6" fill="#E89CA8" opacity="0.52"/>` +
-    `<ellipse cx="87" cy="74" rx="5" ry="2.6" fill="#E89CA8" opacity="0.52"/>`;
+    p('M 69 68 q 1.8 2.8 0 4.8', 'none', skinShade, 2) +
+    p('M 65 78 q 5 3.6 10 0', 'none', INK, 2.3) +
+    p('M 57 59 q 4.5 -1.8 9 0', 'none', INK, 1.9) +
+    p('M 74 59 q 4.5 -1.8 9 0', 'none', INK, 1.9) +
+    `<ellipse cx="54" cy="74" rx="4.4" ry="2.2" fill="#E89CA8" opacity="0.48"/>` +
+    `<ellipse cx="86" cy="74" rx="4.4" ry="2.2" fill="#E89CA8" opacity="0.48"/>`;
 
   const eyes = !includeEyes
     ? ''
     : eyesClosed
-      ? p('M 55 67 q 5 3.8 10 0 M 75 67 q 5 3.8 10 0', 'none', INK, 2.5)
+      ? characterEyesClosedSvg()
       : characterEyesOpenSvg();
 
-  return ears + el(70, 66, 29, 32, o.skin, INK, 2.9) + bangs + faceFeatures + eyes;
+  return ears + el(70, 67, 25, 27.5, o.skin, INK, 2.8) + bangs + faceFeatures + eyes;
 }
 
 function characterEyesOpenSvg(): string {
   return (
-    `<ellipse cx="60" cy="66" rx="3.1" ry="3.5" fill="${INK}"/>` +
-    `<ellipse cx="80" cy="66" rx="3.1" ry="3.5" fill="${INK}"/>` +
-    `<circle cx="61" cy="64.8" r="1.15" fill="#FFFDF8"/>` +
-    `<circle cx="81" cy="64.8" r="1.15" fill="#FFFDF8"/>`
+    `<ellipse cx="61" cy="66" rx="2.6" ry="3.1" fill="${INK}"/>` +
+    `<ellipse cx="79" cy="66" rx="2.6" ry="3.1" fill="${INK}"/>` +
+    `<circle cx="62" cy="64.9" r="1.05" fill="#FFFDF8"/>` +
+    `<circle cx="80" cy="64.9" r="1.05" fill="#FFFDF8"/>`
   );
 }
 
 function characterEyesClosedSvg(): string {
-  return p('M 55 67 q 5 3.8 10 0 M 75 67 q 5 3.8 10 0', 'none', INK, 2.5);
+  return p('M 57 67 q 4 3.2 8 0 M 75 67 q 4 3.2 8 0', 'none', INK, 2.4);
 }
 
 export function characterArt(o: CharacterArtOptions): ArtResult {

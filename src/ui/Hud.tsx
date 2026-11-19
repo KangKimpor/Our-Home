@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dayPhase, now } from '../config/time';
+import { dayPhase, now, seasonOf } from '../config/time';
 import { EVENTS, eventActive, eventEndTimestamp } from '../data/events';
 import { ITEMS_BY_ID } from '../data/items';
 import { ROOMS } from '../data/rooms';
@@ -58,15 +58,17 @@ export function Hud() {
   const variants = selectedDef ? variantSwatches(selectedDef.id) : [];
   const phase = dayPhase(now());
 
+  const season = seasonOf(now());
+
   const activeEvents = useMemo(
     () =>
-      EVENTS.filter((event) => eventActive(event, Date.now()))
+      EVENTS.filter((event) => eventActive(event, now()))
         .slice(0, 3)
         .map((event) => ({
           event,
           progress: eventsState[event.id]?.progress ?? 0,
           claimed: eventsState[event.id]?.claimed ?? false,
-          days: Math.max(0, Math.ceil((eventEndTimestamp(event, Date.now()) - Date.now()) / 86_400_000)),
+          days: Math.max(0, Math.ceil((eventEndTimestamp(event, now()) - now()) / 86_400_000)),
         })),
     [eventsState],
   );
@@ -124,7 +126,7 @@ export function Hud() {
           <span>{t(room.nameKey)}</span>
           <small>
             <Icon name={phase === 'night' ? 'moon' : 'sun'} size={12} />
-            {phase === 'night' ? t('hud.night') : t('hud.day')}
+            {t(`season.${season}`)} · {phase === 'night' ? t('hud.night') : t('hud.day')}
           </small>
         </button>
         <button type="button" className="hud-round" aria-label={t('hud.roomNext')} title={t('hud.roomNext')} onClick={() => store().stepRoom(1)}>

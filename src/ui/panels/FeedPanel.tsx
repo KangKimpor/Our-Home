@@ -4,7 +4,7 @@ import { RECIPES_BY_ID } from '../../data/recipes';
 import { VISITORS_BY_ID } from '../../data/visitors';
 import type { FoodCategory } from '../../game/types';
 import { useGameStore } from '../../store/gameStore';
-import { AnimalArt, Bar, Button, Empty, Modal, cx } from '../bits';
+import { AnimalArt, Bar, Button, Empty, FoodArt, Modal, cx } from '../bits';
 import { Icon } from '../icons';
 
 type Target = { type: 'pet'; id: string } | { type: 'visitor'; id: string };
@@ -111,7 +111,7 @@ export function FeedPanel({ arg }: { arg?: string }) {
             return (
               <article key={id} className={cx('food-choice', matched && 'is-favourite')}>
                 <span className="food-choice-icon">
-                  <Icon name="pot" size={28} />
+                  <FoodArt recipeId={id} category={recipe.category} size={34} />
                 </span>
                 <div>
                   <strong>{t(recipe.nameKey, { defaultValue: recipe.name })}</strong>

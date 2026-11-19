@@ -28,25 +28,30 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
       w: 260,
       h: 118,
       body:
-        // Curved upholstered backrest
-        cushion(20, 20, 220, 62, m, 18) +
-        // Left & right plump back cushions
-        cushion(34, 32, 92, 42, s, 13) +
-        cushion(134, 32, 92, 42, s, 13) +
+        // Curved backrest & sloped side armrests (IMG_2699)
+        cushion(18, 22, 224, 62, m, 18) +
+        cushion(34, 32, 92, 42, s, 12) +
+        cushion(134, 32, 92, 42, s, 12) +
+        // Ribbed fabric stitching lines
+        line(64, 36, 64, 70, p.leaf, 1.8) +
+        line(96, 36, 96, 70, p.leaf, 1.8) +
+        line(164, 36, 164, 70, p.leaf, 1.8) +
+        line(196, 36, 196, 70, p.leaf, 1.8) +
         // Decorative throw pillows tucked in corners
         `<g transform="rotate(-12 46 56)">${cushion(32, 42, 28, 28, p.accent, 8)}</g>` +
         `<g transform="rotate(11 214 56)">${cushion(200, 42, 28, 28, p.paper, 8)}</g>` +
         // Rolled armrests
-        cushion(8, 52, 38, 48, m, 15) +
-        cushion(214, 52, 38, 48, m, 15) +
-        // Deep seat cushions with seam
-        cushion(32, 72, 98, 28, s, 10) +
-        cushion(130, 72, 98, 28, s, 10) +
-        // Exposed walnut rail with grain & tapered legs
-        r(22, 96, 216, 11, p.wood, 5) +
-        woodGrain(24, 96, 212, 11) +
-        leg(32, 106, 11, p.dark) +
-        leg(220, 106, 11, p.dark),
+        cushion(8, 50, 38, 48, m, 15) +
+        cushion(214, 50, 38, 48, m, 15) +
+        // Deep 3-cushion seat deck with stitched seams
+        cushion(32, 70, 66, 28, s, 9) +
+        cushion(97, 70, 66, 28, s, 9) +
+        cushion(162, 70, 66, 28, s, 9) +
+        // Warm wood base rail & legs
+        r(20, 95, 220, 11, p.wood, 5) +
+        woodGrain(24, 95, 212, 11) +
+        leg(32, 105, 11, p.dark) +
+        leg(220, 105, 11, p.dark),
     };
   },
 
@@ -54,21 +59,18 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
     w: 150,
     h: 132,
     body:
-      cushion(26, 16, 98, 76, p.main, 22) +
-      cushion(38, 28, 74, 46, p.second, 14) +
-      // Tuft button detail
-      c(60, 48, 2.5, p.dark, INK, 1.5) +
-      c(90, 48, 2.5, p.dark, INK, 1.5) +
-      // Small accent throw cushion
-      `<g transform="rotate(-10 56 62)">${cushion(42, 48, 28, 24, p.accent, 7)}</g>` +
-      // Rolled arms & seat deck
-      cushion(12, 58, 32, 46, p.main, 13) +
-      cushion(106, 58, 32, 46, p.main, 13) +
-      cushion(28, 76, 94, 28, p.second, 11) +
-      r(24, 100, 102, 11, p.wood, 5) +
-      woodGrain(26, 100, 98, 11) +
-      leg(34, 110, 18, p.dark, 6.5) +
-      leg(110, 110, 18, p.dark, 6.5),
+      cushion(24, 16, 102, 74, p.main, 20) +
+      cushion(36, 28, 78, 46, p.second, 13) +
+      // Grid tufting stitch lines & cozy cream sheepskin throw (IMG_2702)
+      line(62, 32, 62, 70, p.dark, 1.5) +
+      line(88, 32, 88, 70, p.dark, 1.5) +
+      shadedPath('M 42 52 C 56 44 88 42 104 54 C 110 64 102 82 94 94 C 76 96 54 96 42 90 C 36 78 38 62 42 52 Z', '#FFFDF8') +
+      cushion(12, 58, 30, 44, p.main, 12) +
+      cushion(108, 58, 30, 44, p.main, 12) +
+      r(24, 98, 102, 11, p.wood, 5) +
+      woodGrain(26, 98, 98, 11) +
+      leg(34, 108, 18, p.dark, 6.5) +
+      leg(110, 108, 18, p.dark, 6.5),
   }),
 
   coffeeTable: (p) => ({
@@ -168,37 +170,30 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
       r(24, 54, 132, 7, p.wood, 3) +
       r(8, 26, 164, 15, p.wood, 6) +
       woodGrain(10, 26, 160, 15) +
-      cushion(18, 13, 144, 15, p.second, 6),
+      cushion(16, 12, 148, 17, '#FAF6EC', 7) +
+      // Cozy grey knit throw draped across the center-right (IMG_2702)
+      shadedPath('M 84 12 L 122 12 L 106 58 L 68 56 Z', '#9BA0A6') +
+      line(76, 48, 98, 50, INK, 1.6),
   }),
 
   bed: (p) => ({
     w: 300,
     h: 176,
     body:
-      // Carved timber headboard with inset panels
-      r(32, 4, 236, 86, p.wood, 18) +
-      woodGrain(38, 10, 224, 24) +
-      r(46, 18, 96, 52, p.second, 10) +
-      r(158, 18, 96, 52, p.second, 10) +
-      // Crisp linen sheet & twin plump pillows
-      cushion(18, 62, 264, 34, p.paper, 12) +
-      cushion(32, 52, 72, 34, p.main, 14) +
-      cushion(110, 52, 72, 34, p.main, 14) +
-      // Cozy quilted duvet & folded throw blanket at foot
-      cushion(24, 88, 252, 48, p.accent, 14) +
-      r(24, 88, 252, 18, p.paper, 8) +
-      line(34, 118, 266, 118, p.second, 2.5) +
-      dots(
-        [
-          [60, 112],
-          [104, 124],
-          [150, 114],
-          [198, 124],
-          [240, 112],
-        ],
-        p.second,
-        3,
-      ) +
+      // Slatted cream/timber headboard (IMG_2702)
+      r(32, 4, 236, 84, p.paper, 8) +
+      line(34, 24, 266, 24, INK, 2) +
+      line(34, 44, 266, 44, INK, 2) +
+      // Twin white sleeping pillows + front tan bolster pillows
+      cushion(38, 24, 102, 40, '#FFFFFF', 10) +
+      cushion(160, 24, 102, 40, '#FFFFFF', 10) +
+      cushion(34, 54, 108, 22, '#D8BA8E', 8) +
+      cushion(158, 54, 108, 22, '#D8BA8E', 8) +
+      // Soft striped cozy comforter duvet
+      cushion(18, 72, 264, 64, p.paper, 14) +
+      r(24, 82, 252, 14, p.second, 6, 'none', 0) +
+      r(24, 108, 252, 14, p.second, 6, 'none', 0) +
+      path('M 54 114 q 10 4 20 0 M 214 110 q 12 -4 24 0 M 126 96 q 14 4 26 0', 'none', INK, 2) +
       // Timber bed rail & legs
       r(18, 128, 264, 14, p.wood, 6) +
       woodGrain(22, 128, 256, 14) +
@@ -312,37 +307,35 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
     w: 220,
     h: 132,
     body:
-      r(10, 8, 196, 104, p.dark, 12) +
-      r(18, 16, 180, 88, '#2C373B', 7) +
-      // Warm illustrated mountain & sunset broadcast glow
-      `<rect x="24" y="22" width="168" height="76" rx="5" fill="#779BB3"/>` +
-      `<rect x="24" y="22" width="168" height="44" rx="5" fill="#F2C88B" opacity="0.45"/>` +
-      path('M 28 96 L 74 52 L 106 78 L 144 40 L 188 96 Z', '#557A66', INK, 2) +
-      c(156, 39, 9, '#F7DF94', INK, 1.8) +
-      // Diagonal glass screen highlight
-      `<rect x="24" y="22" width="168" height="76" rx="5" fill="url(#oh-glass)" pointer-events="none"/>` +
-      c(192, 94, 3, '#A6D89A', INK, 1.2) +
-      r(92, 112, 36, 8, p.dark, 3) +
-      r(70, 118, 80, 7, p.dark, 3.5),
+      r(10, 12, 200, 102, '#5E6469', 8) +
+      r(18, 20, 184, 86, '#2C373B', 5) +
+      // Cozy illustrated pastoral scene on TV screen (IMG_2697 / IMG_2699)
+      `<rect x="22" y="24" width="176" height="78" rx="4" fill="#CBE0E6"/>` +
+      shadedPath('M 22 102 L 22 72 Q 68 56 116 74 Q 160 58 198 76 L 198 102 Z', '#8BB174', INK, 1.8) +
+      c(162, 42, 10, '#F5D36C', INK, 1.8) +
+      c(74, 42, 12, '#FFFFFF', 'none', 0) +
+      c(88, 44, 10, '#FFFFFF', 'none', 0) +
+      c(190, 96, 2.5, '#A6D89A', INK, 1.2) +
+      r(94, 114, 32, 7, p.dark, 2) +
+      r(72, 120, 76, 6, p.dark, 3),
   }),
 
   tvcabinet: (p) => ({
     w: 230,
     h: 78,
     body:
-      leg(22, 62, 14, p.dark, 7) +
-      leg(198, 62, 14, p.dark, 7) +
-      r(10, 18, 210, 46, p.wood, 8) +
-      woodGrain(14, 20, 202, 12) +
-      r(22, 30, 88, 24, p.main, 4) +
-      r(120, 30, 88, 24, p.main, 4) +
-      // Slatted panel lines
-      line(40, 33, 40, 51, p.second, 2) +
-      line(56, 33, 56, 51, p.second, 2) +
-      line(156, 33, 156, 51, p.second, 2) +
-      line(172, 33, 172, 51, p.second, 2) +
-      c(88, 42, 3.2, '#E9C65B') +
-      c(142, 42, 3.2, '#E9C65B'),
+      // 3-drawer oak/cream TV console cabinet with round wooden pulls (IMG_2697)
+      leg(20, 62, 14, p.dark, 7) +
+      leg(203, 62, 14, p.dark, 7) +
+      r(10, 16, 210, 48, '#D7B46E', 6) +
+      r(10, 14, 210, 10, '#E3C382', 4) +
+      woodGrain(14, 18, 202, 10) +
+      r(18, 30, 60, 26, '#C9A45A', 3) +
+      r(85, 30, 60, 26, '#C9A45A', 3) +
+      r(152, 30, 60, 26, '#C9A45A', 3) +
+      c(48, 43, 3.4, p.paper) +
+      c(115, 43, 3.4, p.paper) +
+      c(182, 43, 3.4, p.paper),
   }),
 
   piano: (p) => ({
@@ -540,19 +533,22 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
     w: 196,
     h: 118,
     body:
-      r(18, 34, 11, 70, p.dark, 3) +
-      r(166, 34, 11, 70, p.dark, 3) +
-      r(102, 34, 72, 34, p.wood, 4) +
-      r(108, 40, 60, 22, p.main, 3) +
-      c(138, 51, 3.2, '#E9C65B') +
-      r(8, 20, 180, 15, p.wood, 5) +
-      woodGrain(12, 20, 172, 15) +
-      // Open notebook & pencil cup
-      r(28, 10, 50, 10, p.paper, 2) +
-      r(32, 3, 42, 8, p.accent, 2) +
-      r(148, 6, 13, 14, p.second, 3) +
-      line(152, 0, 152, 8, p.accent, 2.5) +
-      line(157, 2, 157, 8, p.leaf, 2.5),
+      // Cream writing desk with drawer, laptop, books, red mug & tiny plant (IMG_2702)
+      r(18, 36, 12, 70, p.paper, 3) +
+      r(166, 36, 12, 70, p.paper, 3) +
+      r(104, 36, 70, 38, p.paper, 4) +
+      r(110, 42, 58, 22, p.second, 3) +
+      line(132, 53, 146, 53, INK, 2.4) +
+      r(8, 24, 180, 15, p.paper, 4) +
+      // Open silver laptop & mug
+      path('M 76 24 L 84 4 L 118 4 L 110 24 Z', '#B7BEC4', INK, 2.4) +
+      r(70, 20, 44, 5, '#DDE2E6', 2) +
+      r(50, 12, 13, 12, '#D65B4A', 3) +
+      // Stacked books & little desk plant
+      r(22, 16, 22, 8, '#D65B4A', 2) +
+      r(24, 9, 18, 7, '#7F9B5C', 2) +
+      r(144, 12, 16, 12, p.paper, 3) +
+      c(152, 8, 6, p.leaf),
   }),
 
   easel: (p) => ({
@@ -613,16 +609,15 @@ export const FURNITURE_SHAPES: Record<string, Shape> = {
     w: 150,
     h: 176,
     body:
-      path('M 26 26 L 26 164 M 124 26 L 124 164 M 26 26 C 60 6 90 6 124 26', 'none', INK, 9) +
-      path('M 26 26 L 26 164 M 124 26 L 124 164 M 26 26 C 60 6 90 6 124 26', 'none', p.wood, 5) +
-      r(38, 38, 24, 72, p.main, 4) +
-      r(67, 32, 22, 80, p.second, 4) +
-      r(95, 42, 21, 68, p.accent, 4) +
-      line(40, 108, 40, 150, p.dark, 2) +
-      line(70, 110, 70, 150, p.dark, 2) +
-      line(98, 108, 98, 150, p.dark, 2) +
-      r(18, 154, 14, 9, p.dark, 3) +
-      r(118, 154, 14, 9, p.dark, 3),
+      // Wooden A-frame garment rail with 5 colorful hanging shirts (IMG_2702)
+      path('M 18 164 L 28 22 M 132 164 L 122 22 M 16 22 L 134 22', 'none', INK, 8) +
+      path('M 18 164 L 28 22 M 132 164 L 122 22 M 16 22 L 134 22', 'none', p.wood, 4.5) +
+      r(24, 142, 102, 10, p.wood, 3) +
+      r(28, 36, 19, 76, '#D65B4A', 4) +
+      r(49, 34, 19, 68, '#FFFDF8', 4) +
+      r(70, 36, 19, 74, '#B9C0C5', 4) +
+      r(91, 34, 17, 70, '#E9C65B', 4) +
+      r(108, 36, 18, 78, '#8B7968', 4),
   }),
 
   laundryBasket: (p) => ({
@@ -1449,36 +1444,52 @@ export const SMALL_SHAPES: Record<string, Shape> = {
       c(104, 59, 4, '#D65B4A'),
   }),
 
-  pool: (p) => ({
+  pool: (_p) => ({
     w: 430,
-    h: 160,
+    h: 210,
     body:
-      el(215, 80, 204, 60, p.paper) +
-      el(215, 80, 190, 51, p.glass) +
-      `<ellipse cx="215" cy="80" rx="188" ry="49" fill="url(#oh-glass)" pointer-events="none"/>` +
-      el(215, 80, 190, 51, 'none', '#8FB9C9', 3) +
-      path('M 70 72 C 90 62 110 82 130 72 M 150 92 C 170 82 190 102 210 92 M 220 62 C 240 52 260 72 280 62', 'none', '#FFFFFF', 2.8, 'opacity="0.65"') +
-      el(160, 46, 18, 6, p.leaf) +
-      c(160, 44, 4.5, p.second) +
-      el(280, 66, 14, 5, p.leaf) +
-      r(340, 30, 10, 26, p.metal, 2) +
-      path('M 345 30 C 345 22 360 22 360 30', 'none', p.metal, 3),
+      // Perspective rectangular tiled garden pool with stone coping & dual chrome ladders (IMG_2698 / IMG_2701)
+      shadedPath('M 64 26 L 412 26 L 348 194 L 16 194 Z', '#ECE7D8') +
+      // Blue tiled inner wall & tiled floor water basin
+      shadedPath('M 76 38 L 392 38 L 336 178 L 32 178 Z', '#2F94C4') +
+      shadedPath('M 76 58 L 384 58 L 336 178 L 32 178 Z', '#3FA6D6') +
+      // Tile grid lines across water
+      Array.from({ length: 8 }, (_, i) => {
+        const xTop = 98 + i * 36;
+        const xBot = 56 + i * 36;
+        return line(xTop, 38, xBot, 178, '#256F96', 1.6);
+      }).join('') +
+      [74, 98, 124, 150].map((y) => line(74 - (y - 58) * 0.35, y, 386 - (y - 58) * 0.35, y, '#256F96', 1.6)).join('') +
+      // Dual chrome pool ladders on left & right rim
+      path('M 74 72 L 74 28 C 74 16 96 16 96 28 L 96 76 M 112 72 L 112 28 C 112 16 134 16 134 28 L 134 76', 'none', INK, 6) +
+      path('M 74 72 L 74 28 C 74 16 96 16 96 28 L 96 76 M 112 72 L 112 28 C 112 16 134 16 134 28 L 134 76', 'none', '#D8DFE3', 3) +
+      path('M 308 164 L 308 122 C 308 110 330 110 330 122 L 330 166 M 342 164 L 342 122 C 342 110 364 110 364 122 L 364 166', 'none', INK, 6) +
+      path('M 308 164 L 308 122 C 308 110 330 110 330 122 L 330 166 M 342 164 L 342 122 C 342 110 364 110 364 122 L 364 166', 'none', '#D8DFE3', 3),
   }),
 
   flowerBed: (p) => ({
     w: 180,
     h: 112,
     body:
-      r(8, 52, 164, 50, p.wood, 5) +
-      woodGrain(12, 56, 156, 42) +
-      r(18, 60, 144, 34, p.dark, 3) +
-      [0, 1, 2, 3, 4]
+      // Raised timber garden bed with lavender spikes or cheerful daisies (IMG_2701)
+      r(8, 52, 164, 52, '#7D5C3E', 4) +
+      line(10, 69, 170, 69, INK, 2) +
+      line(10, 86, 170, 86, INK, 2) +
+      r(16, 46, 148, 14, '#5E4228', 3) +
+      [0, 1, 2, 3, 4, 5]
         .map((i) => {
-          const x = 34 + i * 28;
-          return line(x, 62, x, 42, p.leaf, 3) + c(x, 36, 8, i % 2 ? p.main : p.accent) + c(x, 36, 3, p.second);
+          const x = 30 + i * 24;
+          const h = i % 2 === 0 ? 32 : 24;
+          return (
+            line(x, 52, x, 52 - h, '#58824B', 3) +
+            c(x - 6, 48 - h * 0.4, 5, '#6E9A59') +
+            c(x + 6, 48 - h * 0.4, 5, '#6E9A59') +
+            c(x, 46 - h, 7.5, i % 2 ? p.main : p.accent) +
+            c(x, 46 - h, 2.8, '#E9C65B')
+          );
         })
         .join('') +
-      r(8, 44, 164, 12, p.second, 4),
+      r(8, 48, 164, 10, '#96714E', 3),
   }),
 
   hedge: (p) => ({
@@ -1557,13 +1568,22 @@ export const SMALL_SHAPES: Record<string, Shape> = {
     w: 150,
     h: 150,
     body:
-      r(34, 16, 60, 62, p.wood, 14) +
-      cushion(42, 24, 44, 44, p.second, 8) +
-      cushion(24, 68, 84, 14, p.wood, 5) +
-      path('M 30 82 L 22 108 M 100 82 L 108 108', 'none', p.dark, 6) +
-      path('M 8 122 C 44 146 108 146 142 118', 'none', p.wood, 7) +
-      line(32, 110, 32, 128, p.dark, 3) +
-      line(100, 110, 100, 128, p.dark, 3),
+      // Mint polka-dot nursery rocking chair with draped pink throw (IMG_2703)
+      r(32, 16, 68, 64, '#5CB09E', 14) +
+      dots([[46, 32], [66, 28], [84, 38], [52, 54], [78, 60]], '#DDF5EC', 2.4) +
+      // Pink fringed blanket draped over top backrest
+      r(44, 10, 42, 46, '#F29FA8', 6) +
+      [48, 58, 68, 78].map((x) => line(x, 56, x, 64, '#F29FA8', 2.5)).join('') +
+      // Wooden armrests & cushion seat
+      cushion(22, 68, 88, 16, '#5CB09E', 6) +
+      dots([[40, 76], [62, 74], [88, 77]], '#DDF5EC', 2) +
+      r(20, 56, 84, 10, '#C78E54', 4) +
+      path('M 30 84 L 22 114 M 102 84 L 110 114', 'none', INK, 7) +
+      path('M 30 84 L 22 114 M 102 84 L 110 114', 'none', p.wood, 4) +
+      path('M 8 120 C 44 146 108 146 142 116', 'none', INK, 10) +
+      path('M 8 120 C 44 146 108 146 142 116', 'none', '#C78E54', 6) +
+      line(34, 114, 34, 130, p.dark, 3) +
+      line(100, 114, 100, 130, p.dark, 3),
   }),
 
   toyBasket: (p) => ({
@@ -1581,16 +1601,19 @@ export const SMALL_SHAPES: Record<string, Shape> = {
     w: 120,
     h: 120,
     body:
-      r(18, 30, 84, 50, p.main, 20) +
-      r(30, 40, 60, 30, p.second, 15) +
-      r(48, 44, 24, 22, p.paper, 8) +
-      c(54, 52, 3, INK, 'none', 0) +
-      c(66, 52, 3, INK, 'none', 0) +
-      c(24, 84, 9, p.dark) +
-      c(96, 84, 9, p.dark) +
-      c(50, 92, 8, p.dark) +
-      c(70, 92, 8, p.dark) +
-      r(42, 18, 36, 8, p.metal, 4),
+      // Pastel blue circular nursery walker with plush cushion & rolling wheels (IMG_2703)
+      el(60, 90, 48, 16, '#B9E2E8') +
+      el(60, 86, 36, 10, '#DFF3F6', 'none', 0) +
+      line(28, 54, 24, 86, '#7E7A75', 5) +
+      line(92, 54, 96, 86, '#7E7A75', 5) +
+      line(60, 58, 60, 94, '#7E7A75', 5) +
+      el(60, 46, 42, 18, '#B9E2E8') +
+      cushion(42, 34, 36, 22, '#9A8CC6', 10) +
+      c(24, 94, 6, '#5D5A56') +
+      c(96, 94, 6, '#5D5A56') +
+      c(60, 102, 6, '#5D5A56') +
+      c(42, 46, 2.5, p.paper) +
+      c(78, 46, 2.5, p.paper),
   }),
 
   mobile: (p) => ({

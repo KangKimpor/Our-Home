@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { now } from '../../config/time';
 import { EVENTS, eventActive, eventEndTimestamp, eventStartTimestamp } from '../../data/events';
 import { useGameStore } from '../../store/gameStore';
 import { Bar, Button, Empty, Modal, cx, useDateLabel } from '../bits';
@@ -18,7 +19,7 @@ export function EventPanel({ arg }: { arg?: string }) {
   const state = useGameStore((s) => s.state);
   const closeOverlay = useGameStore((s) => s.closeOverlay);
   const claimEvent = useGameStore((s) => s.claimEvent);
-  const at = Date.now();
+  const at = now();
 
   const entries = useMemo(
     () =>

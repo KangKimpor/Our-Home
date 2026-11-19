@@ -5,7 +5,7 @@ import { RECIPES, RECIPES_BY_ID, STATIONS } from '../../data/recipes';
 import { now } from '../../config/time';
 import type { FoodCategory, StationId } from '../../game/types';
 import { useGameStore } from '../../store/gameStore';
-import { Button, Empty, Modal, Tabs, cx } from '../bits';
+import { Button, Empty, FoodArt, IngredientArt, Modal, Tabs, cx } from '../bits';
 import { Icon } from '../icons';
 
 const INGREDIENT_NAMES = new Map(INGREDIENTS.map((ingredient) => [ingredient.id, ingredient]));
@@ -101,7 +101,7 @@ export function RecipesPanel() {
               <article key={recipe.id} className={cx('recipe-card', learned && 'is-learned')}>
                 <div className="recipe-card-head">
                   <span className="recipe-badge">
-                    <Icon name={recipe.station === 'oven' ? 'home' : recipe.station === 'bowl' ? 'bowl' : 'pot'} size={18} />
+                    <FoodArt recipeId={recipe.id} category={recipe.category} size={32} />
                   </span>
                   <div>
                     <strong>{t(recipe.nameKey, { defaultValue: recipe.name })}</strong>
@@ -119,7 +119,7 @@ export function RecipesPanel() {
                     const enough = have >= need.qty;
                     return (
                       <span key={need.id} className={cx('ingredient-pill', !enough && 'is-short')}>
-                        <span className="ingredient-dot-small" style={{ background: ingredient?.color ?? '#D9CFBB' }} />
+                        <IngredientArt ingredientId={need.id} size={18} />
                         {t(ingredient?.nameKey ?? need.id, { defaultValue: ingredient?.name ?? need.id })}
                         <em>
                           {have}/{need.qty}

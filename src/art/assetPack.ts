@@ -246,27 +246,16 @@ function spriteRef(assetName: string): ItemSpriteMapping {
  */
 export const ITEM_SPRITE_MAP: Record<string, ItemSpriteMapping> = {
   // Living room
-  'living.tvCabinet': spriteRef('console_cabinet'),
-  'living.catBookshelf': spriteRef('bookshelf_with_cat'),
-  'living.vase': spriteRef('vase_on_bookshelf'),
   'living.shelf': spriteRef('wall_cabinet'),
   'living.umbrellaStand': spriteRef('umbrella_stand'),
-  'living.catCarrier': spriteRef('cat_carrier'),
+  'living.bookStack': spriteRef('book_stack'),
 
   // Bathroom
   'bathroom.storageShelf': spriteRef('bathroom_storage_shelf'),
 
   // Nursery
-  'nursery.rockingChair': spriteRef('nursery_rocking_chair'),
-  'nursery.walker': spriteRef('nursery_baby_walker'),
   'nursery.toyBasket': spriteRef('nursery_plush_toy_basket'),
   'nursery.rug': spriteRef('nursery_strawberry_rug'),
-
-  // Garden
-  'garden.flowerRed': spriteRef('garden_raised_flower_beds'),
-
-  // Farm
-  'farm.raisedBeds': spriteRef('farm_raised_vegetable_beds'),
 };
 
 export function getItemSprite(itemId: string): ItemSpriteMapping | null {
