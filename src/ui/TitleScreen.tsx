@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../store/gameStore';
 import { unlockAudio } from '../audio/engine';
+import { titleBackdropArt } from '../art/scenes';
+import { svgDoc } from '../art/svg';
 import { AnimalArt, Button, ItemArt } from './bits';
 import { Icon } from './icons';
 
 const VERSION = '0.1.0';
-const PACK = '/asset-pack-v1.1/assets/';
 
 interface DioramaItem {
   itemId: string;
@@ -35,6 +36,10 @@ export function TitleScreen() {
   const hearts = useGameStore((s) => s.state.hearts);
   const [confirmNew, setConfirmNew] = useState(false);
   const store = useGameStore.getState;
+  const backdropUrl = useMemo(
+    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgDoc(titleBackdropArt()))}`,
+    [],
+  );
 
   const play = () => {
     unlockAudio();
@@ -51,19 +56,7 @@ export function TitleScreen() {
   return (
     <div className="title-screen">
       <div className="title-scene" aria-hidden="true">
-        <div className="title-wall" />
-        <div className="title-wainscot" />
-        <div className="title-window">
-          <div className="title-sun" />
-          <div className="title-cloud title-cloud-a" />
-          <div className="title-cloud title-cloud-b" />
-          <div className="title-hill title-hill-a" />
-          <div className="title-hill title-hill-b" />
-          <div className="title-window-cross-v" />
-          <div className="title-window-cross-h" />
-        </div>
-        <div className="title-sunbeam" />
-        <div className="title-floor" />
+        <img className="title-backdrop" src={backdropUrl} alt="" draggable={false} />
         {DIORAMA_ITEMS.map((item) => (
           <div
             key={item.itemId}
@@ -85,20 +78,18 @@ export function TitleScreen() {
         >
           <AnimalArt species="redPanda" coat="rust" size={200} />
         </div>
-        <img
-          src={`${PACK}animals/calico_cat_lounging.png`}
-          alt=""
-          draggable={false}
-          className="title-sprite title-pet-cat"
-          style={{ left: '37%', bottom: '25%', width: '13%', zIndex: 4 }}
-        />
-        <img
-          src={`${PACK}animals/shiba_dog_standing.png`}
-          alt=""
-          draggable={false}
-          className="title-sprite title-pet"
-          style={{ left: '79%', bottom: '11%', width: '15%', zIndex: 5 }}
-        />
+        <div
+          className="title-decor title-pet title-pet-cat"
+          style={{ left: '37%', bottom: '25%', width: '12%', zIndex: 4 }}
+        >
+          <AnimalArt species="cat" coat="calico" size={200} />
+        </div>
+        <div
+          className="title-decor title-pet"
+          style={{ left: '79%', bottom: '11%', width: '14%', zIndex: 5 }}
+        >
+          <AnimalArt species="dog" coat="golden" size={220} />
+        </div>
       </div>
 
       <main className="title-card">

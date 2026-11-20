@@ -4567,3 +4567,598 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Hand-drawn layer
+   Paper, ink and handwriting over the whole interface. Surfaces are cut by hand
+   (no two corners alike), sit on solid ink shadows like stickers on a page, and
+   carry a faint paper tooth. This layer intentionally comes last and overrides
+   the base styles above.
+   ========================================================================== */
+
+:root {
+  --font: 'Patrick Hand', 'Segoe Print', 'Comic Sans MS', system-ui, sans-serif;
+  --display: 'Gaegu', 'Patrick Hand', 'Segoe Print', system-ui, sans-serif;
+  --radius: 20px 14px 22px 15px / 15px 22px 14px 20px;
+  --radius-sm: 11px 8px 13px 9px / 9px 13px 8px 11px;
+  --hand-r: 18px 11px 20px 13px / 13px 19px 11px 17px;
+  --hand-r-sm: 12px 7px 13px 8px / 8px 12px 7px 13px;
+  --hand-r-pill: 40px 26px 38px 30px / 28px 36px 26px 40px;
+  --ink-shadow: 2px 3px 0 rgba(43, 37, 33, 0.88);
+  --shadow: var(--ink-shadow);
+  --shadow-lift: 3px 5px 0 rgba(43, 37, 33, 0.88), 0 16px 30px rgba(43, 37, 33, 0.16);
+  --paper-tooth: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.17  0 0 0 0 0.13  0 0 0 0 0.1  0 0 0 0.6 -0.22'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --paper: #fdf8ec;
+  --cream: #f7efdc;
+  --tape: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 3px, transparent 3px 8px);
+}
+
+body {
+  font-size: calc(15.5px * var(--text-scale));
+  letter-spacing: 0.01em;
+  background: #e9dfc8;
+}
+
+body::before {
+  background:
+    var(--paper-tooth),
+    radial-gradient(circle at 18% 0%, rgba(235, 202, 96, 0.22), transparent 44%),
+    radial-gradient(circle at 82% 100%, rgba(124, 155, 89, 0.22), transparent 48%),
+    linear-gradient(160deg, #f2ead6 0%, #e4d8be 100%);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* ---- The stage reads like an illustrated page ---------------------------- */
+
+.app-game {
+  background:
+    var(--paper-tooth),
+    radial-gradient(circle at 50% 42%, #3d332a 0%, #211b16 100%);
+}
+
+.stage-frame {
+  border-radius: 6px 10px 7px 12px / 11px 6px 12px 7px;
+}
+
+.stage-view::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--paper-tooth);
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  box-shadow: inset 0 0 90px rgba(92, 64, 34, 0.2);
+}
+
+/* ---- Handwritten icons ------------------------------------------------------ */
+
+.hand-icon {
+  display: block;
+  pointer-events: none;
+}
+
+/* ---- Buttons -------------------------------------------------------------- */
+
+.btn {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
+  border-radius: var(--hand-r-pill);
+  border-width: 2.5px 3px 3px 2.5px;
+  box-shadow: var(--ink-shadow);
+  background-image: var(--paper-tooth);
+}
+.btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px) rotate(-0.6deg);
+  box-shadow: 3px 4px 0 rgba(43, 37, 33, 0.88);
+}
+.btn:active:not(:disabled) {
+  transform: translate(2px, 3px);
+  box-shadow: 0 0 0 rgba(43, 37, 33, 0.88);
+}
+.btn-primary {
+  background: var(--paper-tooth), #eea7ae;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--paper-tooth), #f3b4ba;
+}
+.btn-secondary {
+  background: var(--paper-tooth), #fdf7ea;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--paper-tooth), #fffbf2;
+}
+.btn-danger {
+  background: var(--paper-tooth), #eba49c;
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--paper-tooth), #f1b1aa;
+}
+.btn-ghost {
+  background: var(--paper-tooth), rgba(253, 249, 240, 0.6);
+  border-style: dashed;
+  box-shadow: none;
+}
+.btn-ghost:hover:not(:disabled) {
+  box-shadow: none;
+}
+.btn-soft {
+  background: var(--paper-tooth), var(--cream);
+  box-shadow: none;
+}
+.btn-sm {
+  font-size: 0.96rem;
+}
+.btn-lg {
+  font-size: 1.32rem;
+}
+
+/* ---- Modals: a sheet of paper taped to the screen -------------------------- */
+
+.modal {
+  border-radius: 26px 18px 28px 20px / 20px 28px 18px 26px;
+  border-width: 3px 3.5px 3.5px 3px;
+  background: var(--paper-tooth), var(--cream);
+  box-shadow: 4px 6px 0 rgba(43, 37, 33, 0.85), 0 26px 50px rgba(0, 0, 0, 0.26);
+  overflow: visible;
+}
+.modal::before {
+  inset: 9px;
+  border: 1.5px dashed rgba(46, 42, 38, 0.16);
+  border-radius: 20px 14px 22px 16px / 16px 22px 14px 20px;
+}
+.modal::after {
+  content: '';
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  width: 118px;
+  height: 26px;
+  transform: translateX(-50%) rotate(-2.5deg);
+  background: var(--tape), rgba(233, 183, 128, 0.78);
+  clip-path: polygon(0 8%, 4% 0, 8% 10%, 12% 0, 100% 6%, 97% 50%, 100% 94%, 92% 100%, 88% 90%, 84% 100%, 0 96%, 3% 50%);
+  z-index: 3;
+  pointer-events: none;
+}
+.modal-head {
+  border-radius: 23px 15px 0 0 / 17px 25px 0 0;
+  border-bottom: 3px solid var(--ink);
+  background: var(--paper-tooth), #ecdcae;
+  box-shadow: none;
+}
+.modal-head h2 {
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+.modal-body {
+  overflow: auto;
+}
+
+/* ---- Toasts ------------------------------------------------------------------ */
+
+.toast {
+  font-family: var(--font);
+  font-size: 1rem;
+  border-radius: var(--hand-r-sm);
+  background-image: var(--paper-tooth);
+  box-shadow: var(--ink-shadow);
+}
+
+/* ---- Title screen -------------------------------------------------------------- */
+
+.title-scene {
+  border-radius: 24px 16px 26px 18px / 18px 26px 16px 24px;
+  border-width: 3px 3.5px 3.5px 3px;
+  box-shadow: 4px 6px 0 rgba(43, 37, 33, 0.85), 0 18px 40px rgba(43, 37, 33, 0.2);
+  transform: rotate(-0.7deg);
+}
+.title-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  pointer-events: none;
+}
+.title-scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--paper-tooth);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  z-index: 10;
+}
+.title-card {
+  border-radius: 28px 18px 30px 20px / 20px 30px 18px 28px;
+  border-width: 3px 3.5px 3.5px 3px;
+  background: var(--paper-tooth), #fdf8ec;
+  box-shadow: 4px 6px 0 rgba(43, 37, 33, 0.85), 0 18px 40px rgba(43, 37, 33, 0.16);
+  transform: rotate(0.6deg);
+}
+.title-card::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  right: 46px;
+  width: 104px;
+  height: 26px;
+  transform: rotate(4deg);
+  background: var(--tape), rgba(160, 196, 154, 0.8);
+  clip-path: polygon(0 8%, 4% 0, 8% 10%, 12% 0, 100% 6%, 97% 50%, 100% 94%, 92% 100%, 88% 90%, 84% 100%, 0 96%, 3% 50%);
+}
+.title-plaque-bar {
+  border-radius: var(--hand-r-sm);
+  background: var(--paper-tooth), #f2dc9f;
+  box-shadow: var(--ink-shadow);
+  transform: rotate(-1.2deg);
+}
+.title-plaque-bar .plaque-nail {
+  display: none;
+}
+.title-kicker {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+}
+.title-card h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2.8rem, 5.4vw, 4.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+.title-card h1::after {
+  width: 150px;
+  height: 14px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 14'><path d='M3 9 C 20 3, 32 12, 50 7 S 82 3, 100 8 S 132 11, 147 5' fill='none' stroke='%23E28C98' stroke-width='5' stroke-linecap='round'/><path d='M8 11 C 30 7, 60 12, 92 9' fill='none' stroke='%232B2521' stroke-width='1.6' stroke-linecap='round' opacity='0.5'/></svg>") no-repeat left center / contain;
+}
+.title-lede {
+  font-size: clamp(1rem, 1.3vw, 1.18rem);
+}
+
+/* ---- HUD -------------------------------------------------------------------- */
+
+.hud {
+  font-family: var(--font);
+}
+
+/* Peek (menu) — a round paper badge */
+.hud-peek {
+  border-radius: 50% 46% 52% 44% / 46% 52% 44% 50%;
+  border: 2.5px solid var(--ink);
+  background: var(--paper-tooth), #fdf6e4;
+  box-shadow: var(--ink-shadow);
+  transform: rotate(-4deg);
+}
+.hud-peek:hover {
+  transform: rotate(-4deg) translateY(-2px);
+  background: var(--paper-tooth), #fffbef;
+}
+.hud-peek.is-open {
+  background: var(--paper-tooth), #f2d27e;
+}
+.peek-eye {
+  width: 11px;
+  height: 17px;
+  border-radius: 50% 46% 52% 48% / 58% 56% 44% 42%;
+}
+
+/* Room switcher — arrows on scraps, name on a taped label */
+.hud-round {
+  border-radius: var(--hand-r-sm);
+  border-width: 2.5px 3px 3px 2.5px;
+  background: var(--paper-tooth), #fdf6e4;
+  box-shadow: var(--ink-shadow);
+}
+.hud-round:first-child {
+  transform: rotate(-3deg);
+}
+.hud-round:last-child {
+  transform: rotate(2.5deg);
+}
+.hud-round:hover {
+  background: var(--paper-tooth), #fffbef;
+}
+.room-plaque {
+  border-radius: 14px 8px 16px 10px / 9px 15px 8px 14px;
+  border-width: 2.5px 3px 3px 2.5px;
+  background: var(--paper-tooth), #fdf6e4;
+  box-shadow: var(--ink-shadow);
+  transform: rotate(-0.8deg);
+  padding: 8px 30px 6px;
+}
+.room-plaque::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 70px;
+  height: 20px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: var(--tape), rgba(226, 150, 146, 0.78);
+  clip-path: polygon(0 8%, 5% 0, 10% 10%, 15% 0, 100% 6%, 96% 50%, 100% 94%, 90% 100%, 85% 90%, 80% 100%, 0 96%, 4% 50%);
+}
+.room-plaque:hover {
+  transform: rotate(-0.8deg) translateY(-1px);
+}
+.room-plaque .plaque-nail {
+  display: none;
+}
+.room-plaque span:not(.plaque-nail) {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.42rem;
+  line-height: 0.95;
+}
+.room-plaque small {
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+/* Hearts — a paper tag on a string */
+.heart-plaque {
+  border-radius: 10px 16px 12px 18px / 16px 10px 18px 12px;
+  border-width: 2.5px 3px 3px 2.5px;
+  background: var(--paper-tooth), #fdf6e4;
+  box-shadow: var(--ink-shadow);
+  transform: rotate(2deg);
+  padding: 5px 16px 5px 30px;
+}
+.heart-plaque::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-top: -5px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: #e9dfc8;
+}
+.heart-plaque::after {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 50%;
+  width: 34px;
+  height: 14px;
+  margin-top: -9px;
+  border-top: 2px solid rgba(43, 37, 33, 0.7);
+  border-radius: 50% 50% 0 0;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+.heart-plaque:hover {
+  transform: rotate(2deg) translateY(-1px);
+}
+.heart-strap {
+  display: none;
+}
+.heart-plaque strong {
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+/* Events — sticky notes stuck down the side */
+.event-tags {
+  gap: 10px;
+}
+.event-tags::before {
+  display: none;
+}
+.event-tag {
+  border-radius: 3px 5px 4px 12px / 4px 3px 14px 5px;
+  border-width: 2px 2.5px 2.5px 2px;
+  box-shadow: 2px 3px 0 rgba(43, 37, 33, 0.8);
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 0.98rem;
+  color: var(--ink);
+  padding: 7px 10px 6px 26px;
+}
+.event-tag:nth-child(1) {
+  transform: rotate(-2deg);
+}
+.event-tag:nth-child(2) {
+  transform: rotate(1.5deg);
+}
+.event-tag:nth-child(3) {
+  transform: rotate(-1deg);
+}
+.event-tag:hover {
+  transform: rotate(0deg) translateX(-3px);
+}
+.event-tag::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 14px;
+  width: 30px;
+  height: 13px;
+  transform: rotate(8deg);
+  background: var(--tape), rgba(255, 250, 235, 0.7);
+  clip-path: polygon(0 10%, 8% 0, 100% 8%, 94% 50%, 100% 92%, 90% 100%, 0 90%, 6% 50%);
+}
+.event-tag-teal {
+  background:
+    linear-gradient(90deg, rgba(76, 140, 130, 0.16) 1px, transparent 1px) 0 0 / 11px 11px,
+    linear-gradient(180deg, rgba(76, 140, 130, 0.16) 1px, transparent 1px) 0 0 / 11px 11px,
+    var(--paper-tooth),
+    #e2f0e6;
+  color: var(--ink);
+}
+.event-tag-navy {
+  background: var(--paper-tooth), #dfe5f3;
+  color: var(--ink);
+}
+.event-tag-plum {
+  background:
+    repeating-linear-gradient(0deg, rgba(139, 91, 121, 0.14) 0 1.5px, transparent 1.5px 10px),
+    var(--paper-tooth),
+    #f4e0e8;
+  color: var(--ink);
+}
+.event-tag-progress {
+  font-size: 0.86rem;
+  opacity: 0.75;
+}
+
+/* Feed + corner tools — paper tiles, each set down a little crooked */
+.hud-feed {
+  border-radius: 14px 9px 16px 10px / 10px 15px 9px 14px;
+  border-width: 2.5px 3px 3px 2.5px;
+  background: var(--paper-tooth), #f6dd8c;
+  box-shadow: var(--ink-shadow);
+  transform: rotate(-3deg);
+}
+.hud-feed:hover {
+  transform: rotate(-3deg) translateY(-2px);
+}
+.hud-square {
+  border-radius: 13px 9px 15px 10px / 10px 14px 9px 13px;
+  border-width: 2.5px 3px 3px 2.5px;
+  box-shadow: var(--ink-shadow);
+}
+.hud-inventory {
+  background: var(--paper-tooth), #c9ddef;
+  transform: rotate(2deg);
+}
+.hud-shop {
+  background: var(--paper-tooth), #fbf3e2;
+  transform: rotate(-2deg);
+}
+.hud-map {
+  background: var(--paper-tooth), #d4e8d6;
+  transform: rotate(1deg);
+}
+.hud-inventory:hover {
+  transform: rotate(2deg) translateY(-2px);
+}
+.hud-shop:hover {
+  transform: rotate(-2deg) translateY(-2px);
+}
+.hud-map:hover {
+  transform: rotate(1deg) translateY(-2px);
+}
+
+/* Dock — a strip of paper with tape at both ends */
+.hud-dock {
+  border-radius: 12px 20px 14px 22px / 20px 12px 22px 14px;
+  border-width: 2.5px 3px 3px 2.5px;
+  background: var(--paper-tooth), #fdf6e4;
+  box-shadow: 3px 4px 0 rgba(43, 37, 33, 0.85);
+}
+.hud-dock::before,
+.hud-dock::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  width: 44px;
+  height: 18px;
+  background: var(--tape), rgba(160, 196, 154, 0.8);
+  clip-path: polygon(0 8%, 6% 0, 12% 10%, 100% 6%, 95% 50%, 100% 94%, 88% 100%, 0 96%, 5% 50%);
+  pointer-events: none;
+}
+.hud-dock::before {
+  left: -14px;
+  transform: rotate(-24deg);
+}
+.hud-dock::after {
+  right: -14px;
+  transform: rotate(22deg);
+}
+.dock-btn {
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 0.92rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  border-radius: var(--hand-r-sm);
+}
+.dock-btn.is-active {
+  background: var(--paper-tooth), #f2d27e;
+}
+
+.save-pill {
+  font-family: var(--font);
+  font-weight: 400;
+  border-radius: var(--hand-r-pill);
+  background-image: var(--paper-tooth);
+}
+
+.mini-btn {
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 0.98rem;
+  border-radius: var(--hand-r-sm);
+  background-image: var(--paper-tooth);
+  box-shadow: 2px 2px 0 rgba(43, 37, 33, 0.8);
+}
+.edit-bar,
+.placing-bar,
+.hud-menu {
+  border-radius: var(--hand-r);
+  background-image: var(--paper-tooth);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Item, animal and food thumbnails inherit the hand filter from their SVG; keep them crisp. */
+.item-art,
+.animal-art {
+  image-rendering: auto;
+}
+
+/* Cards inside panels: hand-cut paper with an ink drop shadow */
+.shop-card,
+.inventory-card,
+.pet-card,
+.recipe-card,
+.event-card,
+.friend-card,
+.visitor-card,
+.map-card,
+.moment-card,
+.plot-card,
+.producer-card,
+.station-card,
+.ingredient-card,
+.room-unlock-card {
+  border-radius: 16px 10px 18px 12px / 12px 17px 10px 16px;
+  background-image: var(--paper-tooth);
+  box-shadow: 2px 3px 0 rgba(43, 37, 33, 0.7);
+}
+.shop-card:nth-child(3n + 1),
+.inventory-card:nth-child(3n + 1),
+.recipe-card:nth-child(3n + 1) {
+  border-radius: 12px 17px 11px 18px / 17px 12px 18px 11px;
+}
+.variant-chip,
+.count-pill,
+.claimed-pill,
+.leaving-pill {
+  border-radius: var(--hand-r-pill);
+  font-family: var(--font);
+}

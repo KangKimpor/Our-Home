@@ -1,4 +1,5 @@
 import type { ReactNode, SVGProps } from 'react';
+import { INK, c, dots, el, p as hp, r, svgDoc } from '../art/svg';
 
 export type IconName =
   | 'heart'
@@ -280,194 +281,221 @@ export function Icon({ name, size = 22, title, className, ...rest }: IconProps) 
       {...rest}
     >
       {title ? <title>{title}</title> : null}
-      {PATHS[name]}
+      <g filter="url(#oh-ui-wobble)">{PATHS[name]}</g>
     </svg>
   );
 }
 
-/** Hand-drawn coral heart overlapped by a golden yellow '+' badge (ui_heart_counter_368 style). */
+// ---------------------------------------------------------------------------
+// HUD illustrations — drawn with the same hand-inked primitives as the rooms, so the
+// buttons look like they were sketched on the same paper as the house.
+// ---------------------------------------------------------------------------
+
+const handIconCache = new Map<string, string>();
+
+function handIconUrl(key: string, w: number, h: number, make: () => string): string {
+  let url = handIconCache.get(key);
+  if (!url) {
+    url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgDoc({ w, h, body: make() }))}`;
+    handIconCache.set(key, url);
+  }
+  return url;
+}
+
+function HandIcon({ id, w, h, size, make }: { id: string; w: number; h: number; size: number; make: () => string }) {
+  return (
+    <img
+      className="hand-icon"
+      src={handIconUrl(id, w, h, make)}
+      width={size}
+      height={Math.round((size * h) / w)}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+    />
+  );
+}
+
+const heartPath = (x: number, y: number, s: number) =>
+  `M ${x} ${y + 9 * s} C ${x - 3 * s} ${y + 3 * s} ${x - 13 * s} ${y + 2 * s} ${x - 13 * s} ${y - 6 * s} ` +
+  `C ${x - 13 * s} ${y - 13 * s} ${x - 4 * s} ${y - 15 * s} ${x} ${y - 7 * s} ` +
+  `C ${x + 4 * s} ${y - 15 * s} ${x + 13.5 * s} ${y - 12 * s} ${x + 12.5 * s} ${y - 5 * s} ` +
+  `C ${x + 12 * s} ${y + 2 * s} ${x + 3 * s} ${y + 4 * s} ${x} ${y + 9 * s} Z`;
+
+/** A hand-drawn heart with a little sprout tucked behind it. */
 export function HudHeartBadge({ size = 34 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 40 36" width={size} height={Math.round((size * 36) / 40)} aria-hidden="true" focusable="false">
-      <path
-        d="M16.5 30.5C15.5 29.8 4.2 21.8 4.2 12.6C4.2 7.5 8.1 4.2 12.2 4.2C14.7 4.2 16.2 5.6 16.8 6.9C17.4 5.6 18.9 4.2 21.4 4.2C25.5 4.2 29.4 7.5 29.4 12.6C29.4 21.8 18.1 29.8 17.1 30.5C16.9 30.6 16.7 30.6 16.5 30.5Z"
-        fill="#E5684C"
-        stroke="#2B2521"
-        strokeWidth="2.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 10.5C9.4 8.7 10.8 7.5 12.5 7.4"
-        fill="none"
-        stroke="#F6B09D"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-      />
-      <path
-        d="M27.2 13.5C28.8 13.5 29.8 14.5 29.8 16.1V19.6H33.3C34.9 19.6 35.9 20.6 35.9 22.2C35.9 23.8 34.9 24.8 33.3 24.8H29.8V28.3C29.8 29.9 28.8 30.9 27.2 30.9C25.6 30.9 24.6 29.9 24.6 28.3V24.8H21.1C19.5 24.8 18.5 23.8 18.5 22.2C18.5 20.6 19.5 19.6 21.1 19.6H24.6V16.1C24.6 14.5 25.6 13.5 27.2 13.5Z"
-        fill="#F7D859"
-        stroke="#2B2521"
-        strokeWidth="2.6"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <HandIcon
+      id="heart"
+      w={40}
+      h={36}
+      size={size}
+      make={() =>
+        hp('M 27 14 Q 31 7 35 4', 'none', INK, 2) +
+        el(33.5, 6.5, 4.2, 2.2, '#8DB36A', INK, 1.6, -35) +
+        hp(heartPath(19, 20, 1.15), '#E26D5A', INK, 2.6) +
+        hp('M 10 13 Q 11 9.5 14.5 9', 'none', '#FFD8CC', 2.2) +
+        `<path d="M 13 23 l 2 -1.5 M 17 25.5 l 2 -1.5 M 21 26 l 2 -2" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" opacity="0.35"/>`
+      }
+    />
   );
 }
 
-/** Hand-drawn ceramic pet bowl with "CAT" label (ui_cat_food_button_368 style). */
-export function HudCatBowl({ size = 44 }: { size?: number }) {
+/** Feed: a glazed pottery bowl with a painted band and a fish flopped on top. */
+export function HudFeedBowl({ size = 44 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 56 44" width={size} height={Math.round((size * 44) / 56)} aria-hidden="true" focusable="false">
-      {/* Bowl body */}
-      <path
-        d="M11 15.5L6.5 32C6.2 36.2 15.8 39.5 28 39.5C40.2 39.5 49.8 36.2 49.5 32L45 15.5Z"
-        fill="#FFFDF6"
-        stroke="#2B2521"
-        strokeWidth="3"
-        strokeLinejoin="round"
-      />
-      {/* Top rim */}
-      <ellipse cx="28" cy="15.5" rx="17" ry="6.2" fill="#FFFDF6" stroke="#2B2521" strokeWidth="3" />
-      {/* Inner recessed well */}
-      <ellipse cx="28" cy="16" rx="12.5" ry="3.8" fill="#DCD2BE" stroke="#2B2521" strokeWidth="2.2" />
-      {/* Golden kibble mound */}
-      <path d="M19 16.5C21 13.2 25 12.8 28 13.5C31 12.6 35 13.4 36.8 16.4Z" fill="#DDA14B" stroke="#2B2521" strokeWidth="1.8" strokeLinejoin="round" />
-      <circle cx="24" cy="15.3" r="1.2" fill="#B57524" />
-      <circle cx="29" cy="14.9" r="1.2" fill="#B57524" />
-      <circle cx="32.5" cy="15.8" r="1.1" fill="#B57524" />
-      {/* Hand-lettered "CAT" */}
-      <text
-        x="28"
-        y="33.5"
-        textAnchor="middle"
-        fill="#8E6424"
-        fontFamily="var(--display)"
-        fontWeight="700"
-        fontSize="11.5"
-        letterSpacing="1.6"
-      >
-        CAT
-      </text>
-    </svg>
+    <HandIcon
+      id="feed"
+      w={56}
+      h={44}
+      size={size}
+      make={() =>
+        hp('M 9 18 Q 10 37 28 38.5 Q 46 37 47 18 Z', '#F7F1E3', INK, 2.6) +
+        hp('M 10.5 26 Q 28 31 45.5 26 L 44.6 30.5 Q 28 35.5 11.6 30.5 Z', '#7FA9C9', 'none', 0) +
+        dots(
+          [
+            [18, 29.5],
+            [28, 32],
+            [38, 29.5],
+          ],
+          '#F7F1E3',
+          1.3,
+        ) +
+        el(28, 18, 19, 5.4, '#F7F1E3', INK, 2.6) +
+        el(28, 18.4, 15, 3.4, '#C9B48E', 'none', 0) +
+        hp('M 16 15 Q 24 6.5 34 12 L 40 7.5 L 39.5 17 L 34.5 13.8 Q 25 20 16 15 Z', '#E9A35B', INK, 2) +
+        `<circle cx="21" cy="12.6" r="1.3" fill="${INK}"/>` +
+        hp('M 25.5 10.5 Q 27 13 25.8 15.4', 'none', INK, 1.3)
+      }
+    />
   );
 }
 
-/** Hand-drawn cardboard storage box with armchair and yellow lamp (ui_storage_chest_button style). */
-export function HudStorageBox({ size = 44 }: { size?: number }) {
+/** Belongings: a wicker basket with a folded quilt. */
+export function HudBasket({ size = 44 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 56 56" width={size} height={size} aria-hidden="true" focusable="false">
-      {/* Ground shadow */}
-      <ellipse cx="28" cy="48.5" rx="19" ry="3" fill="rgba(43,37,33,0.22)" />
-      {/* White chair in box */}
-      <path d="M16 14L27 11L30 24L19 27Z" fill="#FFFDF8" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
-      <path d="M18 25L29 22L36 27L25 31Z" fill="#EFE8D8" stroke="#2B2521" strokeWidth="2.4" strokeLinejoin="round" />
-      <path d="M18 25V34M25 31V37" stroke="#2B2521" strokeWidth="2.5" strokeLinecap="round" />
-      {/* Yellow lamp */}
-      <path d="M35 20V31" stroke="#2B2521" strokeWidth="2.6" strokeLinecap="round" />
-      <path d="M31.5 19.5L34.5 11.5H40.5L43.5 19.5Z" fill="#E9C75A" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
-      {/* Cardboard box front */}
-      <path d="M14 29L28 34L42 29V44L28 48.5L14 44Z" fill="#C9965B" stroke="#2B2521" strokeWidth="2.6" strokeLinejoin="round" />
-      <path d="M28 34V48.5" stroke="#2B2521" strokeWidth="2.4" />
-      {/* Open box flaps */}
-      <path d="M14 29L9.5 24.5L23.5 27.5L28 34Z" fill="#D9A96E" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
-      <path d="M42 29L46.5 24.5L32.5 27.5L28 34Z" fill="#D9A96E" stroke="#2B2521" strokeWidth="2.5" strokeLinejoin="round" />
-    </svg>
+    <HandIcon
+      id="basket"
+      w={56}
+      h={56}
+      size={size}
+      make={() =>
+        hp('M 15 23 Q 28 4 41 23', 'none', INK, 2.6) +
+        hp('M 15.5 23 Q 28 7.5 40.5 23', 'none', '#C99A5E', 1.4) +
+        r(14, 17, 28, 9, '#E7A9A0', 3, INK, 2.2) +
+        `<path d="M 18 21.5 L 38 21.5" stroke="${INK}" stroke-width="1.2" stroke-dasharray="2 2.5" opacity="0.6"/>` +
+        r(16, 13, 24, 7, '#F2D27E', 3, INK, 2) +
+        hp('M 9 25 L 47 25 L 43 47 Q 28 50 13 47 Z', '#D7A96C', INK, 2.7) +
+        `<path d="M 12 32 Q 28 34.5 45.5 32 M 13 39 Q 28 41.5 44.3 39" stroke="${INK}" stroke-width="1.5" fill="none" opacity="0.55"/>` +
+        `<path d="M 18 25.5 L 17.5 47.5 M 24 25.5 L 24 48.5 M 30 25.5 L 30.5 48.5 M 37 25.5 L 37.5 47.5" stroke="${INK}" stroke-width="1.3" fill="none" opacity="0.4"/>` +
+        r(7.5, 22.5, 41, 5, '#C99A5E', 2, INK, 2.2)
+      }
+    />
   );
 }
 
-/** Hand-drawn shopping cart with coral handle & front plate (ui_shopping_cart_button style). */
-export function HudShoppingCart({ size = 42 }: { size?: number }) {
+/** Shop: a canvas market tote with a loaf and leeks poking out. */
+export function HudTote({ size = 42 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 56 56" width={size} height={size} aria-hidden="true" focusable="false">
-      {/* Handle bar */}
-      <path d="M31 12L46 14L44 17.5L30 15.5Z" fill="#E17055" stroke="#2B2521" strokeWidth="2.4" strokeLinejoin="round" />
-      {/* Basket frame */}
-      <path d="M12 21L38 18L35 34L15 36Z" fill="none" stroke="#2B2521" strokeWidth="2.8" strokeLinejoin="round" />
-      <path d="M38 18L44 15.5L40 32.5L35 34" fill="none" stroke="#2B2521" strokeWidth="2.6" strokeLinejoin="round" />
-      {/* Grid wires */}
-      <path d="M13.5 28.5L36.5 26M18 20.5L20 35.5M25 19.5L26 35M32 19L31.5 34" stroke="#2B2521" strokeWidth="2" strokeLinecap="round" />
-      {/* Coral front badge */}
-      <path d="M13 23L22 24.5L21.5 31L13.5 29.5Z" fill="#E17055" stroke="#2B2521" strokeWidth="2.2" strokeLinejoin="round" />
-      {/* Lower chassis */}
-      <path d="M16 36L14 40.5L37 37.5L35 34" fill="none" stroke="#2B2521" strokeWidth="2.6" strokeLinejoin="round" />
-      {/* Wheels */}
-      <circle cx="17" cy="43.5" r="3.4" fill="#6E6B68" stroke="#2B2521" strokeWidth="2.4" />
-      <circle cx="27" cy="44.5" r="3.4" fill="#6E6B68" stroke="#2B2521" strokeWidth="2.4" />
-      <circle cx="38" cy="41.5" r="3.4" fill="#6E6B68" stroke="#2B2521" strokeWidth="2.4" />
-    </svg>
+    <HandIcon
+      id="tote"
+      w={56}
+      h={56}
+      size={size}
+      make={() =>
+        hp('M 34 21 L 41 6', 'none', '#6E9A55', 3.4) +
+        el(41.5, 6, 3.4, 2.4, '#A9CF86', INK, 1.6, -60) +
+        hp('M 30 22 L 33 8', 'none', '#6E9A55', 3) +
+        el(17.5, 15.5, 9, 5.6, '#D9A35A', INK, 2.2, -22) +
+        `<path d="M 13 14 l 2 3 M 17 12 l 2 3 M 21 11 l 2 3" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>` +
+        hp('M 19 21 Q 19 10 28 10 Q 37 10 37 21', 'none', INK, 2.4) +
+        hp('M 10 20 L 46 20 L 43.5 48 L 12.5 48 Z', '#F2E9D6', INK, 2.7) +
+        hp(heartPath(28, 35, 0.48), '#E26D5A', INK, 1.8) +
+        `<path d="M 11 26 L 45 26" stroke="${INK}" stroke-width="1.2" stroke-dasharray="2.5 2.5" opacity="0.45"/>`
+      }
+    />
   );
 }
 
-/** Hand-drawn red-roofed little house (ui_home_button_368 style). */
-export function HudHouse({ size = 42 }: { size?: number }) {
+/** Map: a folded paper map with a dotted path to a little house pin. */
+export function HudMap({ size = 42 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 56 56" width={size} height={size} aria-hidden="true" focusable="false">
-      {/* House walls */}
-      <rect x="13" y="25" width="30" height="20" rx="1.5" fill="#FFFDF8" stroke="#2B2521" strokeWidth="2.8" strokeLinejoin="round" />
-      {/* Red striped roof */}
-      <path d="M8.5 26L15 12H41L47.5 26Z" fill="#DF6A4E" stroke="#2B2521" strokeWidth="2.8" strokeLinejoin="round" />
-      <path d="M21 12L18 26M28 12V26M35 12L38 26" stroke="#2B2521" strokeWidth="2.2" />
-      {/* Window */}
-      <rect x="17.5" y="29.5" width="8" height="6" rx="1" fill="#A6D4E8" stroke="#2B2521" strokeWidth="2.4" />
-      {/* Door */}
-      <rect x="29.5" y="32" width="8.5" height="13" rx="1" fill="#9E9B97" stroke="#2B2521" strokeWidth="2.4" />
-    </svg>
+    <HandIcon
+      id="map"
+      w={56}
+      h={56}
+      size={size}
+      make={() =>
+        hp('M 7 14 L 19 10 L 32 14.5 L 49 10 L 49 42 L 32 46.5 L 19 42 L 7 46 Z', '#F4EBD3', INK, 2.6) +
+        hp('M 19 10 L 19 42', 'none', INK, 1.6) +
+        hp('M 32 14.5 L 32 46.5', 'none', INK, 1.6) +
+        `<path d="M 19 10 L 32 14.5 L 32 46.5 L 19 42 Z" fill="${INK}" opacity="0.07"/>` +
+        el(14, 33, 5, 3.4, '#9CC48A', 'none', 0) +
+        el(42, 22, 4.6, 3, '#9CC4D9', 'none', 0) +
+        `<path d="M 11 39 Q 18 30 26 33 Q 34 36 38 26" fill="none" stroke="#C4513F" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.5 3.6"/>` +
+        hp('M 34 24 L 40 18.5 L 46 24 L 46 30 L 34 30 Z', '#FFFDF8', INK, 2) +
+        hp('M 32.5 24.5 L 40 17 L 47.5 24.5', 'none', '#D9654E', 2.6)
+      }
+    />
   );
 }
 
-/** Event tag left-edge celestial/tropical badge (ui_timer_event_stack style). */
+/** Event badges: a seedling, a sleepy moon, and a doodled sun. */
 export function HudEventBadge({ kind, size = 28 }: { kind: 'leaf' | 'moon' | 'star'; size?: number }) {
   if (kind === 'leaf') {
     return (
-      <svg viewBox="0 0 34 32" width={size} height={size} aria-hidden="true" focusable="false">
-        <circle cx="13" cy="14" r="10.5" fill="#C8339C" stroke="#2B2521" strokeWidth="2.2" />
-        <path d="M4 13H22M5 17H21" stroke="#6F177E" strokeWidth="1.6" />
-        <ellipse cx="18" cy="25.5" rx="11" ry="2.8" fill="#7BC96F" stroke="#2B2521" strokeWidth="2" />
-        <path d="M18 25C18 18 19 14 21 11" fill="none" stroke="#2B2521" strokeWidth="2.4" strokeLinecap="round" />
-        <path
-          d="M21 11C16 9 12 11 11 14C15 13 18 13 21 11ZM21 11C24 8 28 9 30 12C27 12 24 12 21 11ZM21 11C25 12 27 16 26 19C24 16 23 13 21 11Z"
-          fill="#63D492"
-          stroke="#2B2521"
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <HandIcon
+        id="ev-leaf"
+        w={34}
+        h={32}
+        size={size}
+        make={() =>
+          hp('M 9 20 L 25 20 L 23 30 L 11 30 Z', '#D98F6B', INK, 2.2) +
+          r(7.5, 18, 19, 4, '#E7A684', 1.5, INK, 2) +
+          hp('M 17 18 Q 17 12 18 8', 'none', INK, 2) +
+          hp('M 18 9 Q 10 3 6 9 Q 12 13 18 9 Z', '#8DC06F', INK, 1.9) +
+          hp('M 18 8 Q 25 1 30 6 Q 24 12 18 8 Z', '#A9D488', INK, 1.9)
+        }
+      />
     );
   }
   if (kind === 'moon') {
     return (
-      <svg viewBox="0 0 34 32" width={size} height={size} aria-hidden="true" focusable="false">
-        <path
-          d="M20 5C12.5 5 7 10.6 7 17.5C7 24.4 12.5 29.5 20 29.5C22.8 29.5 25.4 28.6 27.4 27C21.2 26.8 16.8 22.4 16.8 17C16.8 11.6 21 7.3 26.8 6.8C24.8 5.6 22.5 5 20 5Z"
-          fill="#E8C266"
-          stroke="#2B2521"
-          strokeWidth="2.4"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M23.5 9L25.2 12.8L29.4 13.3L26.2 16.1L27.1 20.2L23.5 18L19.9 20.2L20.8 16.1L17.6 13.3L21.8 12.8Z"
-          fill="#F4D77B"
-          stroke="#2B2521"
-          strokeWidth="2.1"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <HandIcon
+        id="ev-moon"
+        w={34}
+        h={32}
+        size={size}
+        make={() =>
+          hp('M 20 4 Q 7 5.5 7 17 Q 8 28.5 20 29 Q 25 29 28 26 Q 17 25 16.5 16.5 Q 16.8 8 26 5.5 Q 23.5 4 20 4 Z', '#F0CF6E', INK, 2.3) +
+          hp('M 11 16 q 1.8 1.6 3.6 0', 'none', INK, 1.4) +
+          '<circle cx="11.5" cy="20.5" r="1.6" fill="#E9967F" opacity="0.7"/>' +
+          hp('M 27 11 l 0 5 M 24.5 13.5 l 5 0', 'none', '#F7E3A0', 1.8)
+        }
+      />
     );
   }
   return (
-    <svg viewBox="0 0 34 32" width={size} height={size} aria-hidden="true" focusable="false">
-      <path
-        d="M17 2.5L20 7.5L25.8 6.2L24.5 12L29.5 15.5L24.8 19.2L26.2 25L20.4 24L17 29L13.6 24L7.8 25L9.2 19.2L4.5 15.5L9.5 12L8.2 6.2L14 7.5Z"
-        fill="#D69E4E"
-        stroke="#2B2521"
-        strokeWidth="2.2"
-        strokeLinejoin="round"
-      />
-      <circle cx="17" cy="15.8" r="7.5" fill="#F2CB78" stroke="#2B2521" strokeWidth="2.1" />
-      <path d="M17 8.3A7.5 7.5 0 0 1 17 23.3C14.8 20.5 14.8 11.1 17 8.3Z" fill="#D28F4A" stroke="#2B2521" strokeWidth="1.7" />
-      <circle cx="13.5" cy="15.5" r="0.9" fill="#2B2521" />
-      <circle cx="20.2" cy="15.5" r="0.9" fill="#2B2521" />
-    </svg>
+    <HandIcon
+      id="ev-sun"
+      w={34}
+      h={32}
+      size={size}
+      make={() => {
+        let rays = '';
+        for (let i = 0; i < 9; i++) {
+          const a = (i / 9) * Math.PI * 2 + 0.2;
+          const r1 = 10.5;
+          const r2 = 14 + (i % 2) * 1.5;
+          rays += `M ${(17 + Math.cos(a) * r1).toFixed(1)} ${(16 + Math.sin(a) * r1).toFixed(1)} L ${(17 + Math.cos(a) * r2).toFixed(1)} ${(16 + Math.sin(a) * r2).toFixed(1)} `;
+        }
+        return (
+          `<path d="${rays}" stroke="${INK}" stroke-width="2" stroke-linecap="round" fill="none"/>` +
+          c(17, 16, 8.5, '#F2C35E', INK, 2.3) +
+          `<circle cx="14" cy="15" r="1" fill="${INK}"/><circle cx="20" cy="15" r="1" fill="${INK}"/>` +
+          hp('M 14.5 18.5 Q 17 20.5 19.5 18.5', 'none', INK, 1.3)
+        );
+      }}
+    />
   );
 }
-

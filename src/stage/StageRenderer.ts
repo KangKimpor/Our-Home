@@ -3,7 +3,9 @@ import { animalArt, animalRigParts, type AnimalRigParts, type RigPart } from '..
 import { babyRigParts, characterRigParts, type CharacterRigParts } from '../art/characters';
 import { itemArt } from '../art/items';
 import { PALETTES } from '../art/palettes';
-import { SVG_DEFS } from '../art/svg';
+import { jitterRng } from '../art/hand';
+import { svgMarkup } from '../art/svg';
+import { Sketch } from './sketch';
 import { CROPS_BY_ID } from '../data/farm';
 import { ITEMS_BY_ID } from '../data/items';
 import { ROOMS, ROOM_PALETTES } from '../data/rooms';
@@ -184,87 +186,11 @@ interface SkyActor {
   winW?: number;
 }
 
-/**
- * Entries in public/asset-pack-v1.1/manifest.json with transparent_background: false.
- * These are NEVER rendered as PNG sprites — only as visual/color style references.
- */
-const OPAQUE_PACK_FILES = new Set<string>([
-  'assets/outdoor/garden_fence_backdrop_strip.png',
-  'assets/tiles/grass_ground_patch.png',
-  'assets/tiles/pool_water_grid_tile.png',
-  'assets/tiles/wood_floor_texture_sample.png',
-  'assets/nursery/nursery_mother_crib_scene.png',
-  'assets/nursery/nursery_canopy_tent_scene.png',
-  'assets/bedroom/bedroom_chaise_lounge.png',
-  'assets/bedroom/bedroom_plant_cluster.png',
-  'assets/bedroom/bedroom_window_cat_scene.png',
-  'assets/bathroom/bathroom_vanity_sink.png',
-  'assets/bathroom/bathroom_bathtub_and_plant.png',
-  'assets/bathroom/bathroom_large_bath_mat.png',
-  'assets/bathroom/bathroom_laundry_basket.png',
-  'assets/studio/studio_bookshelf.png',
-  'assets/kitchen/kitchen_sink_counter.png',
-  'assets/kitchen/kitchen_hanging_utensils_and_pans.png',
-  'assets/kitchen/kitchen_lower_cabinets.png',
-  'assets/farm/farm_crop_plot_grid.png',
-  'assets/farm/farm_diagonal_picket_fence.png',
-  'assets/farm/farm_riverbank_and_water.png',
-  'assets/farm/farm_stone_river_crossing.png',
-  'assets/garden/garden_picnic_blanket_setup.png',
-  'assets/garden/garden_pool_scene_expanded.png',
-  'assets/pet_care/pet_bowls_and_mat_set.png',
-  'assets/music_living/living_spiral_staircase_scene.png',
-  'assets/ui_gallery/moments_gallery_header.png',
-  'assets/ui_gallery/moments_photo_card_01.png',
-  'assets/ui_gallery/moments_photo_card_02.png',
-  'assets/ui_gallery/moments_photo_card_03.png',
-  'assets/ui_gallery/moments_photo_card_04.png',
-  'assets/ui_gallery/moments_photo_card_05.png',
-  'assets/ui_gallery/moments_photo_card_06.png',
-  'assets/tiles_extra/tile_bathroom_blue_floor_sample.png',
-  'assets/tiles_extra/tile_bedroom_wood_floor_sample.png',
-  'assets/tiles_extra/tile_farm_soil_plot_sample.png',
-  'assets/tiles_extra/tile_river_water_sample.png',
-]);
-
-/** Clean, artifact-free transparent_background: true cutouts mapped by item id as optional fallback. */
-const ITEM_SPRITE_FALLBACK: Record<string, string> = {
-  'nursery.toyBasket': '/asset-pack-v1.1/assets/nursery/nursery_plush_toy_basket.png',
-  'nursery.rug': '/asset-pack-v1.1/assets/nursery/nursery_strawberry_rug.png',
-};
-
-/** Clean transparent PNG cutouts for idle/lounging animal poses. */
-function animalPngFor(species: string, coat: string | undefined, pose: 'idle' | 'walk' | 'sleep' | 'special'): string | null {
-  if (pose !== 'idle') return null;
-  if (species === 'dog') {
-    if (coat === 'golden' || coat === 'rust') {
-      return '/asset-pack-v1.1/assets/animals/shiba_dog_standing.png';
-    }
-    if (coat === 'grey') {
-      return '/asset-pack-v1.1/assets/animals/black_white_cat_walking.png';
-    }
-  }
-  if (species === 'cat') {
-    if (coat === 'calico') return '/asset-pack-v1.1/assets/animals/calico_cat_lounging.png';
-    if (coat === 'white' || coat === 'cream') return '/asset-pack-v1.1/assets/animals/white_cat_lounging.png';
-  }
-  return null;
-}
-
-function normalizePackUrl(sprite: string): string | null {
-  const cleaned = sprite.replace(/^\/+/, '');
-  const rel = cleaned.startsWith('asset-pack-v1.1/') ? cleaned.slice('asset-pack-v1.1/'.length) : cleaned;
-  if (OPAQUE_PACK_FILES.has(rel)) return null;
-  if (sprite.startsWith('/asset-pack-v1.1/')) return sprite;
-  if (cleaned.startsWith('asset-pack-v1.1/')) return `/${cleaned}`;
-  return `/asset-pack-v1.1/${rel}`;
-}
-
 const textureCache = new Map<string, Texture>();
 const textureLoading = new Set<string>();
 
 function svgDataUrl(body: string, w: number, h: number): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.max(2, Math.round(w * 2))}" height="${Math.max(2, Math.round(h * 2))}" viewBox="0 0 ${w} ${h}">${SVG_DEFS}${body}</svg>`;
+  const svg = svgMarkup(body, w, h, Math.max(2, Math.round(w * 2)), Math.max(2, Math.round(h * 2)));
   return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
 }
 
@@ -342,16 +268,16 @@ function updateRigPartTexture(
 }
 
 const WINDOWS: Partial<Record<RoomId, [number, number, number, number]>> = {
-  living: [14, 18, 206, 396],
-  bedroom: [52, 22, 178, 360],
-  kitchen: [92, 0, 438, 258],
-  bathroom: [1130, 0, 680, 148],
-  studio: [10, 0, 252, 398],
-  nursery: [54, 34, 178, 222],
+  living: [60, 70, 210, 210],
+  bedroom: [70, 80, 180, 250],
+  kitchen: [120, 70, 360, 190],
+  bathroom: [1300, 70, 330, 130],
+  studio: [40, 50, 250, 320],
+  nursery: [70, 90, 180, 190],
 };
 
 function drawGardenView(
-  g: Graphics,
+  g: Sketch,
   x: number,
   y: number,
   w: number,
@@ -419,450 +345,534 @@ function drawGardenView(
   }
 }
 
-function drawHerringboneFloor(
-  g: Graphics,
-  floorTop: number,
-  colA: string,
-  colB: string,
-  colC: string,
-  night: boolean,
+// ---------------------------------------------------------------------------
+// Hand-painted indoor architecture
+// ---------------------------------------------------------------------------
+
+type WallMotif = 'sprig' | 'stars' | 'clouds' | 'stripe' | 'splatter' | 'none';
+
+/** Loose, near-transparent brush strokes so walls read as painted rather than filled. */
+function brushWash(s: Sketch, x0: number, x1: number, y0: number, y1: number, color: string, seed: number, alpha = 0.06): void {
+  const rnd = jitterRng(seed);
+  const rows = Math.max(4, Math.round((y1 - y0) / 24));
+  for (let i = 0; i < rows; i++) {
+    const y = y0 + ((i + 0.5) / rows) * (y1 - y0) + rnd() * 8;
+    let x = x0 - 60 + rnd() * 80;
+    while (x < x1) {
+      const len = 240 + Math.abs(rnd()) * 420;
+      const lift = rnd() * 9;
+      s.moveTo(x, y)
+        .bezierCurveTo(x + len * 0.3, y - 6 + lift, x + len * 0.7, y + 6 - lift, x + len, y + rnd() * 6)
+        .stroke({ width: 18 + Math.abs(rnd()) * 26, color, alpha: alpha * (0.6 + Math.abs(rnd()) * 0.8) });
+      x += len * (0.75 + Math.abs(rnd()) * 0.35);
+    }
+  }
+}
+
+/** Hand-printed wallpaper motifs, each mark slightly different from its neighbours. */
+function drawWallpaper(
+  s: Sketch,
+  x0: number,
+  x1: number,
+  y0: number,
+  y1: number,
+  motif: WallMotif,
+  accent: string,
+  accent2: string,
+  seed: number,
 ): void {
-  const cA = warmIndoor(colA, night, 0.11);
-  const cB = warmIndoor(colB, night, 0.11);
-  const cC = warmIndoor(colC, night, 0.11);
-  g.rect(0, floorTop, 1920, 884 - floorTop).fill(cA);
-
-  // Diagonal chevron/herringbone parquet columns clamped cleanly below floorTop
-  const colW = 84;
-  const stepY = 38;
-  const tilt = 22;
-  let colIdx = 0;
-  for (let x = -colW; x < 1920 + colW; x += colW) {
-    colIdx++;
-    const dir = colIdx % 2 === 0 ? 1 : -1;
-    let rowIdx = 0;
-    for (let y = floorTop - tilt; y < 884 + stepY; y += stepY) {
-      rowIdx++;
-      const fill = (rowIdx + colIdx) % 3 === 0 ? cB : (rowIdx + colIdx) % 2 === 0 ? cC : cA;
-      const yLTop = Math.max(floorTop, dir > 0 ? y : y + tilt);
-      const yRTop = Math.max(floorTop, dir > 0 ? y + tilt : y);
-      const yRBot = Math.min(884, (dir > 0 ? y + tilt : y) + stepY);
-      const yLBot = Math.min(884, (dir > 0 ? y : y + tilt) + stepY);
-      if (yLBot <= yLTop && yRBot <= yRTop) continue;
-      g.poly([x, yLTop, x + colW, yRTop, x + colW, yRBot, x, yLBot]).fill(fill);
-      g.poly([x, yLTop, x + colW, yRTop, x + colW, yRBot, x, yLBot]).stroke({
-        width: 1.6,
-        color: INK,
-        alpha: night ? 0.32 : 0.38,
-      });
+  if (motif === 'none') return;
+  const rnd = jitterRng(seed);
+  if (motif === 'stripe') {
+    for (let x = x0 + 30; x < x1; x += 72) {
+      s.moveTo(x + rnd() * 3, y0).bezierCurveTo(x + rnd() * 5, y0 + (y1 - y0) * 0.35, x + rnd() * 5, y0 + (y1 - y0) * 0.7, x + rnd() * 3, y1)
+        .stroke({ width: 16, color: accent, alpha: 0.32 });
+      s.moveTo(x + 22, y0).lineTo(x + 22 + rnd() * 3, y1).stroke({ width: 1.4, color: accent2, alpha: 0.45 });
+    }
+    return;
+  }
+  const gx = motif === 'splatter' ? 150 : 128;
+  const gy = motif === 'splatter' ? 120 : 104;
+  let row = 0;
+  for (let y = y0 + gy * 0.55; y < y1 - 18; y += gy, row++) {
+    for (let x = x0 + (row % 2 ? gx / 2 : 0) + 24; x < x1 - 10; x += gx) {
+      const px = x + rnd() * 14;
+      const py = y + rnd() * 12;
+      if (motif === 'sprig') {
+        const lean = rnd() * 0.5;
+        s.moveTo(px, py + 16).quadraticCurveTo(px + lean * 14, py, px + lean * 8, py - 16).stroke({ width: 1.6, color: accent2, alpha: 0.75 });
+        for (const [dx, dy, rot] of [
+          [-7, 4, -1],
+          [7, -3, 1],
+          [-5, -10, -1],
+        ] as [number, number, number][]) {
+          const lx = px + dx + lean * 6;
+          const ly = py + dy;
+          s.poly([lx, ly, lx + rot * 9, ly - 5, lx + rot * 12, ly + 1, lx + rot * 4, ly + 5]).fill({ color: accent, alpha: 0.8 });
+        }
+        if (Math.abs(rnd()) > 0.55) s.circle(px + lean * 8, py - 19, 3).fill({ color: accent2, alpha: 0.7 });
+      } else if (motif === 'stars') {
+        const r0 = 5 + Math.abs(rnd()) * 3;
+        s.moveTo(px - r0, py).lineTo(px + r0, py).stroke({ width: 2, color: accent, alpha: 0.9 });
+        s.moveTo(px, py - r0).lineTo(px, py + r0).stroke({ width: 2, color: accent, alpha: 0.9 });
+        s.circle(px + gx * 0.3, py + gy * 0.32, 2.4).fill({ color: accent2, alpha: 0.6 });
+        if (Math.abs(rnd()) > 0.6) s.circle(px - gx * 0.28, py + gy * 0.4, 1.8).fill({ color: accent, alpha: 0.7 });
+      } else if (motif === 'clouds') {
+        const k = 0.8 + Math.abs(rnd()) * 0.4;
+        s.ellipse(px, py, 15 * k, 8 * k).fill({ color: accent, alpha: 0.85 });
+        s.ellipse(px - 9 * k, py + 2, 9 * k, 6 * k).fill({ color: accent, alpha: 0.85 });
+        s.ellipse(px + 10 * k, py + 2, 10 * k, 6 * k).fill({ color: accent, alpha: 0.85 });
+        s.moveTo(px - 18 * k, py + 7 * k).bezierCurveTo(px - 6 * k, py + 9 * k, px + 8 * k, py + 9 * k, px + 19 * k, py + 7 * k)
+          .stroke({ width: 1.5, color: accent2, alpha: 0.55 });
+      } else if (motif === 'splatter') {
+        const cols = [accent, accent2, '#E39A86', '#8FB4C9'];
+        const col = cols[Math.floor(Math.abs(rnd()) * cols.length) % cols.length];
+        s.circle(px, py, 3 + Math.abs(rnd()) * 3).fill({ color: col, alpha: 0.42 });
+        s.circle(px + 9, py - 6, 1.6).fill({ color: col, alpha: 0.42 });
+        s.circle(px - 7, py + 8, 1.2).fill({ color: col, alpha: 0.42 });
+      }
     }
   }
-  // Top shadow from wall baseboard & gentle bottom vignette
-  g.rect(0, floorTop, 1920, 14).fill({ color: '#2B2521', alpha: 0.14 });
-  g.rect(0, 830, 1920, 54).fill({ color: '#2B2521', alpha: 0.08 });
 }
 
-function drawHorizontalPlankFloor(
-  g: Graphics,
+/** A band of quick diagonal pencil hatching, used for contact shadows along edges. */
+function hatchBand(s: Sketch, x0: number, x1: number, y: number, h: number, alpha: number, step = 10): void {
+  for (let x = x0; x < x1; x += step) {
+    s.moveTo(x, y + h).lineTo(x + h * 0.85, y).stroke({ width: 1.3, color: INK, alpha });
+  }
+}
+
+function drawCornice(s: Sketch, trim: string, night: boolean): void {
+  const col = warmIndoor(trim, night, 0.06);
+  s.rect(0, 0, 1920, 20).fill(col);
+  s.moveTo(0, 20).lineTo(1920, 20).stroke({ width: 2.8, color: INK });
+  s.moveTo(0, 13).lineTo(1920, 13).stroke({ width: 1.4, color: INK, alpha: 0.4 });
+  hatchBand(s, 0, 1920, 22, 9, 0.16, 12);
+}
+
+function drawBaseboard(s: Sketch, floorTop: number, trim: string, night: boolean, h = 24): void {
+  const col = warmIndoor(trim, night, 0.06);
+  s.rect(0, floorTop - h, 1920, h).fill(col);
+  s.moveTo(0, floorTop - h).lineTo(1920, floorTop - h).stroke({ width: 2.6, color: INK });
+  s.moveTo(0, floorTop - h + 6).lineTo(1920, floorTop - h + 6).stroke({ width: 1.3, color: INK, alpha: 0.35 });
+  s.moveTo(0, floorTop).lineTo(1920, floorTop).stroke({ width: 3, color: INK });
+  hatchBand(s, 0, 1920, floorTop + 2, 13, 0.2, 9);
+}
+
+/** Board-and-batten panelling on the lower wall with a chair rail. */
+function drawWainscot(s: Sketch, floorTop: number, height: number, panel: string, night: boolean, seed: number): void {
+  const top = floorTop - height;
+  const col = warmIndoor(panel, night, 0.07);
+  s.rect(0, top, 1920, height).fill(col);
+  brushWash(s, 0, 1920, top + 6, floorTop - 20, '#FFFFFF', seed, 0.08);
+  for (let x = 46; x < 1920; x += 92) {
+    s.moveTo(x, top + 12).lineTo(x, floorTop - 24).stroke({ width: 2, color: INK, alpha: 0.4 });
+    s.moveTo(x + 4, top + 14).lineTo(x + 4, floorTop - 26).stroke({ width: 1.6, color: '#FFFFFF', alpha: 0.4 });
+  }
+  s.rect(0, top - 6, 1920, 14).fill(warmIndoor(mixHex(panel, '#FFFFFF', 0.3), night, 0.06));
+  s.moveTo(0, top - 6).lineTo(1920, top - 6).stroke({ width: 2.6, color: INK });
+  s.moveTo(0, top + 8).lineTo(1920, top + 8).stroke({ width: 2.2, color: INK, alpha: 0.85 });
+}
+
+/** Staggered planks that widen toward the viewer, with grain, knots and nail heads. */
+function drawBoardFloor(s: Sketch, floorTop: number, main: string, alt: string, night: boolean, seed: number): void {
+  const base = warmIndoor(main, night, 0.11);
+  const altC = warmIndoor(alt, night, 0.11);
+  const light = warmIndoor(mixHex(main, '#FFF3DC', 0.35), night, 0.11);
+  s.rect(0, floorTop, 1920, 884 - floorTop).fill(base);
+  const rnd = jitterRng(seed);
+  let y = floorTop;
+  let row = 0;
+  while (y < 884) {
+    const h = Math.min(78, 34 + row * 8);
+    let x = -Math.abs(rnd()) * 260;
+    while (x < 1920) {
+      const len = 230 + Math.abs(rnd()) * 330;
+      const tone = rnd();
+      if (tone > 0.15) s.rect(x, y, len, h).fill({ color: altC, alpha: 0.18 + tone * 0.32 });
+      else if (tone < -0.55) s.rect(x, y, len, h).fill({ color: light, alpha: 0.35 });
+      // Grain: two long lazy squiggles per board
+      for (let gI = 0; gI < 2; gI++) {
+        const gy = y + h * (0.32 + gI * 0.34) + rnd() * 3;
+        const gx = x + 18 + Math.abs(rnd()) * 30;
+        const gl = len * (0.45 + Math.abs(rnd()) * 0.35);
+        s.moveTo(gx, gy).bezierCurveTo(gx + gl * 0.3, gy - 3 + rnd() * 2, gx + gl * 0.6, gy + 3, gx + gl, gy + rnd() * 2)
+          .stroke({ width: 1.4, color: INK, alpha: 0.13 });
+      }
+      if (Math.abs(rnd()) > 0.72) {
+        const kx = x + len * (0.3 + Math.abs(rnd()) * 0.4);
+        const ky = y + h * 0.5;
+        s.ellipse(kx, ky, 9, 3.6).stroke({ width: 1.4, color: INK, alpha: 0.28 });
+        s.ellipse(kx, ky, 3.5, 1.5).fill({ color: INK, alpha: 0.26 });
+      }
+      const jx = x + len;
+      if (jx > 4 && jx < 1916) {
+        s.moveTo(jx, y + 1).lineTo(jx + rnd() * 1.5, y + h - 1).stroke({ width: 2, color: INK, alpha: 0.48 });
+        s.circle(jx - 9, y + h * 0.3, 1.9).fill({ color: INK, alpha: 0.4 });
+        s.circle(jx - 9, y + h * 0.72, 1.9).fill({ color: INK, alpha: 0.4 });
+        s.circle(jx + 9, y + h * 0.3, 1.9).fill({ color: INK, alpha: 0.4 });
+        s.circle(jx + 9, y + h * 0.72, 1.9).fill({ color: INK, alpha: 0.4 });
+      }
+      x = jx;
+    }
+    if (row > 0) s.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: INK, alpha: 0.5 });
+    y += h;
+    row++;
+  }
+}
+
+/** Hand-ruled tile floor with a gentle perspective spread; optional checkerboard. */
+function drawTileFloor(
+  s: Sketch,
   floorTop: number,
-  colMain: string,
-  colAlt: string,
-  plankH: number,
+  a: string,
+  b: string,
+  grout: string,
   night: boolean,
+  checker: boolean,
+  tile = 96,
 ): void {
-  const fillMain = warmIndoor(colMain, night, 0.1);
-  const fillAlt = warmIndoor(colAlt, night, 0.1);
-  g.rect(0, floorTop, 1920, 884 - floorTop).fill(fillMain);
-
-  let rowIdx = 0;
-  for (let y = floorTop; y < 884; y += plankH) {
-    rowIdx++;
-    if (rowIdx % 2 === 0) {
-      g.rect(0, y, 1920, plankH).fill({ color: fillAlt, alpha: 0.42 });
-    }
-    g.moveTo(0, y).lineTo(1920, y).stroke({ width: 2, color: INK, alpha: night ? 0.32 : 0.4 });
-    const offset = (rowIdx * 170) % 340;
-    for (let x = -80 + offset; x < 1960; x += 340) {
-      g.moveTo(x, y).lineTo(x, Math.min(884, y + plankH)).stroke({
-        width: 1.8,
-        color: INK,
-        alpha: night ? 0.24 : 0.3,
-      });
+  const ca = warmIndoor(a, night, 0.1);
+  const cb = warmIndoor(b, night, 0.1);
+  const cg = warmIndoor(grout, night, 0.12);
+  s.rect(0, floorTop, 1920, 884 - floorTop).fill(ca);
+  const rows: number[] = [floorTop];
+  let h = tile * 0.42;
+  while (rows[rows.length - 1] < 884) {
+    rows.push(rows[rows.length - 1] + h);
+    h *= 1.16;
+  }
+  const spread = (x: number, y: number) => x + (x - 960) * ((y - floorTop) / 884) * 0.32;
+  const cols: number[] = [];
+  for (let x = 960 - tile * 14; x <= 960 + tile * 14; x += tile) cols.push(x);
+  if (checker) {
+    for (let r = 0; r < rows.length - 1; r++) {
+      for (let c = 0; c < cols.length - 1; c++) {
+        if ((r + c) % 2 === 0) continue;
+        const y0 = rows[r];
+        const y1 = Math.min(884, rows[r + 1]);
+        s.poly([spread(cols[c], y0), y0, spread(cols[c + 1], y0), y0, spread(cols[c + 1], y1), y1, spread(cols[c], y1), y1]).fill(cb);
+      }
     }
   }
-  g.rect(0, floorTop, 1920, 16).fill({ color: '#2B2521', alpha: 0.12 });
+  for (const y of rows.slice(1)) {
+    if (y < 884) s.moveTo(0, y).lineTo(1920, y).stroke({ width: 2, color: cg, alpha: 0.95 });
+  }
+  for (const x of cols) {
+    s.moveTo(spread(x, floorTop), floorTop).lineTo(spread(x, 884), 884).stroke({ width: 2, color: cg, alpha: 0.95 });
+  }
 }
 
-function drawSpiralStaircase(bg: Graphics, fg: Graphics, night: boolean): void {
-  const stairWall = warmIndoor('#EFE7D6', night, 0.08);
-  const treadCol = warmIndoor('#C9A87E', night, 0.1);
-  const treadDark = warmIndoor('#A8875E', night, 0.1);
-  const railCol = warmIndoor('#FBF7EC', night, 0.05);
-
-  // Curved alcove wall & shadow in top-right (x: 1510..1920)
-  bg.poly([1580, 0, 1920, 0, 1920, 456, 1590, 456, 1555, 290, 1560, 120]).fill(stairWall);
-  bg.poly([1580, 0, 1560, 120, 1555, 290, 1590, 456]).stroke({ width: 3, color: INK, alpha: 0.55 });
-
-  // Central newel post / curved column
-  bg.rect(1795, 0, 38, 444).fill(railCol);
-  bg.rect(1795, 0, 38, 444).stroke({ width: 2.8, color: INK });
-
-  // Sweeping wood treads fanning from top-right down to floor (y: 44..446)
-  const steps = 11;
-  for (let i = 0; i < steps; i++) {
-    const t = i / (steps - 1);
-    const y = 52 + t * 384;
-    const leftX = 1660 - Math.sin(t * Math.PI * 0.85) * 145;
-    const rightX = 1916;
-    const h = 24;
-    bg.roundRect(leftX, y, rightX - leftX, h, 4).fill(i % 2 === 0 ? treadCol : treadDark);
-    bg.roundRect(leftX, y, rightX - leftX, h, 4).stroke({ width: 2.5, color: INK });
-    // Vertical baluster rods
-    if (i % 2 === 0) {
-      fg.moveTo(leftX + 18, y).lineTo(leftX + 18, y - 62).stroke({ width: 3.2, color: INK, alpha: 0.75 });
+/** Hand-drawn square tiles on a wall band (bathroom, kitchen backsplash). */
+function drawWallTiles(s: Sketch, x0: number, x1: number, y0: number, y1: number, fill: string, grout: string, night: boolean, tw = 52, th = 40, brick = false): void {
+  s.rect(x0, y0, x1 - x0, y1 - y0).fill(warmIndoor(fill, night, 0.06));
+  const g = warmIndoor(grout, night, 0.1);
+  let row = 0;
+  for (let y = y0 + th; y < y1; y += th, row++) {
+    s.moveTo(x0, y).lineTo(x1, y).stroke({ width: 1.8, color: g });
+  }
+  row = 0;
+  for (let y = y0; y < y1; y += th, row++) {
+    const off = brick && row % 2 ? tw / 2 : 0;
+    for (let x = x0 + off + tw; x < x1; x += tw) {
+      s.moveTo(x, y + 1).lineTo(x, Math.min(y1, y + th) - 1).stroke({ width: 1.8, color: g });
     }
   }
-
-  // Sweeping white curved handrail & bottom post
-  fg.moveTo(1660, 0)
-    .bezierCurveTo(1535, 130, 1500, 270, 1585, 392)
-    .stroke({ width: 12, color: railCol });
-  fg.moveTo(1660, 0)
-    .bezierCurveTo(1535, 130, 1500, 270, 1585, 392)
-    .stroke({ width: 3, color: INK });
-  fg.roundRect(1572, 376, 22, 74, 4).fill(railCol);
-  fg.roundRect(1572, 376, 22, 74, 4).stroke({ width: 2.8, color: INK });
-  fg.circle(1583, 374, 13).fill(railCol);
-  fg.circle(1583, 374, 13).stroke({ width: 2.8, color: INK });
+  s.moveTo(x0, y0).lineTo(x1, y0).stroke({ width: 2.6, color: INK });
 }
 
-function drawLivingRoom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
+interface WindowOpts {
+  frame: string;
+  panesX: number;
+  panesY: number;
+  sill?: boolean;
+  curtain?: string;
+  cafe?: string;
+  showFence?: boolean;
+  sky: string;
+}
+
+/** Window: garden view on the back layer, a hand-built frame, sill and drapes in front. */
+function drawWindow(bg: Sketch, fg: Sketch, rect: [number, number, number, number], floorTop: number, night: boolean, season: Season, o: WindowOpts): void {
+  const [wx, wy, ww, wh] = rect;
+  drawGardenView(bg, wx, wy, ww, wh, night, o.sky, !!o.showFence, season);
+  const frame = warmIndoor(o.frame, night, 0.08);
+  // Casing
+  fg.rect(wx - 14, wy - 14, ww + 28, 14).fill(frame).stroke({ width: 2.6, color: INK });
+  fg.rect(wx - 14, wy, 14, wh).fill(frame).stroke({ width: 2.6, color: INK });
+  fg.rect(wx + ww, wy, 14, wh).fill(frame).stroke({ width: 2.6, color: INK });
+  fg.rect(wx, wy, ww, wh).stroke({ width: 2.4, color: INK });
+  // Muntins
+  for (let i = 1; i < o.panesX; i++) {
+    const mx = wx + (ww * i) / o.panesX;
+    fg.rect(mx - 4, wy, 8, wh).fill(frame).stroke({ width: 2, color: INK });
+  }
+  for (let j = 1; j < o.panesY; j++) {
+    const my = wy + (wh * j) / o.panesY;
+    fg.rect(wx, my - 4, ww, 8).fill(frame).stroke({ width: 2, color: INK });
+  }
+  // Glass glints: two quick strokes per pane column
+  for (let i = 0; i < o.panesX; i++) {
+    const px = wx + (ww * i) / o.panesX + 12;
+    fg.moveTo(px, wy + wh * 0.42).lineTo(px + 22, wy + wh * 0.42 - 26).stroke({ width: 3, color: '#FFFFFF', alpha: night ? 0.12 : 0.5 });
+    fg.moveTo(px + 6, wy + wh * 0.42 + 10).lineTo(px + 18, wy + wh * 0.42 - 4).stroke({ width: 2, color: '#FFFFFF', alpha: night ? 0.1 : 0.4 });
+  }
+  if (o.sill !== false) {
+    fg.rect(wx - 26, wy + wh, ww + 52, 16).fill(frame).stroke({ width: 2.6, color: INK });
+    hatchBand(fg, wx - 20, wx + ww + 20, wy + wh + 18, 8, 0.18, 9);
+  }
+  if (o.cafe) {
+    const cafe = warmIndoor(o.cafe, night, 0.08);
+    const top = wy + wh * 0.52;
+    fg.moveTo(wx - 8, top).lineTo(wx + ww + 8, top).stroke({ width: 4, color: INK });
+    const pts: number[] = [wx - 4, top + 2];
+    for (let x = wx - 4; x <= wx + ww + 4; x += 24) pts.push(x, top + 2);
+    pts.push(wx + ww + 4, top + 2, wx + ww + 4, wy + wh - 6);
+    for (let x = wx + ww + 4; x >= wx - 4; x -= 18) pts.push(x, wy + wh - 6 + (Math.round((x - wx) / 18) % 2 ? 6 : 0));
+    fg.poly(pts).fill(cafe).stroke({ width: 2.2, color: INK });
+    for (let x = wx + 26; x < wx + ww; x += 40) fg.moveTo(x, top + 8).lineTo(x - 3, wy + wh - 12).stroke({ width: 1.4, color: INK, alpha: 0.35 });
+  }
+  if (o.curtain) {
+    const cur = warmIndoor(o.curtain, night, 0.08);
+    const rodY = wy - 30;
+    fg.moveTo(wx - 70, rodY).lineTo(wx + ww + 70, rodY).stroke({ width: 5, color: INK });
+    fg.circle(wx - 74, rodY, 7).fill(frame).stroke({ width: 2.2, color: INK });
+    fg.circle(wx + ww + 74, rodY, 7).fill(frame).stroke({ width: 2.2, color: INK });
+    const bottom = Math.min(floorTop - 30, wy + wh + 70);
+    for (const side of [-1, 1]) {
+      const outer = side < 0 ? wx - 62 : wx + ww + 62;
+      const inner = side < 0 ? wx + 18 : wx + ww - 18;
+      const tieY = wy + wh * 0.62;
+      const pinch = side < 0 ? wx - 30 : wx + ww + 30;
+      fg.poly([
+        outer, rodY + 2,
+        inner, rodY + 2,
+        inner - side * 6, wy + wh * 0.3,
+        pinch + side * 6, tieY,
+        pinch + side * 10, bottom - 10,
+        pinch + side * 22, bottom,
+        outer + side * 4, bottom + 4,
+        outer - side * 2, tieY + 20,
+      ]).fill(cur).stroke({ width: 2.4, color: INK });
+      for (let k = 1; k <= 3; k++) {
+        const fx = outer + (inner - outer) * (k / 4);
+        fg.moveTo(fx, rodY + 8).quadraticCurveTo(fx + side * 6, wy + wh * 0.3, pinch + side * (4 + k * 3), tieY - 6).stroke({ width: 1.6, color: INK, alpha: 0.4 });
+      }
+      fg.roundRect(pinch - 12, tieY - 6, 24, 12, 5).fill(warmIndoor('#C9A05E', night, 0.08)).stroke({ width: 2, color: INK });
+    }
+  }
+}
+
+/** Arched opening into a hallway, with a coat hook and runner peeking through. */
+function drawHallDoorway(bg: Sketch, fg: Sketch, x: number, w: number, top: number, floorTop: number, trim: string, night: boolean): void {
+  const r = w / 2;
+  const cx = x + r;
+  const spring = top + r;
+  const arch = (inset: number): number[] => {
+    const pts: number[] = [x + inset, floorTop];
+    pts.push(x + inset, spring);
+    for (let i = 1; i < 16; i++) {
+      const a = Math.PI + (i / 16) * Math.PI;
+      pts.push(cx + Math.cos(a) * (r - inset), spring + Math.sin(a) * (r - inset));
+    }
+    pts.push(x + w - inset, spring, x + w - inset, floorTop);
+    return pts;
+  };
+  const hall = warmIndoor('#D8C9AA', night, 0.18);
+  const hallFloor = warmIndoor('#A98560', night, 0.2);
+  bg.poly(arch(0)).fill(hall);
+  // Hall floor in perspective & runner
+  const fy = floorTop - 64;
+  bg.poly([x, floorTop, x + w, floorTop, x + w - 40, fy, x + 40, fy]).fill(hallFloor);
+  bg.moveTo(x + 40, fy).lineTo(x + w - 40, fy).stroke({ width: 2.2, color: INK, alpha: 0.6 });
+  bg.poly([cx - 46, floorTop, cx + 46, floorTop, cx + 24, fy + 4, cx - 24, fy + 4]).fill(warmIndoor('#C3594A', night, 0.18));
+  for (let k = 0; k < 3; k++) {
+    const yy = floorTop - 14 - k * 16;
+    const half = 40 - k * 6;
+    bg.moveTo(cx - half, yy).lineTo(cx + half, yy).stroke({ width: 1.6, color: '#F6E7C8', alpha: 0.7 });
+  }
+  // Hall back wall: a small framed sketch and a coat on a hook
+  bg.rect(cx - 30, spring - 34, 60, 46).fill(warmIndoor('#F4EBD9', night, 0.14)).stroke({ width: 2.2, color: INK });
+  bg.moveTo(cx - 20, spring).quadraticCurveTo(cx - 4, spring - 22, cx + 8, spring - 6).quadraticCurveTo(cx + 14, spring - 16, cx + 22, spring + 2).stroke({ width: 1.8, color: INK, alpha: 0.7 });
+  bg.circle(x + w - 46, spring + 70, 5).fill(INK);
+  bg.poly([x + w - 46, spring + 72, x + w - 22, spring + 96, x + w - 18, spring + 200, x + w - 76, spring + 200, x + w - 70, spring + 96])
+    .fill(warmIndoor('#6F8F6A', night, 0.16))
+    .stroke({ width: 2.2, color: INK });
+  hatchBand(bg, x + 8, x + w - 8, floorTop - 70, 60, 0.07, 11);
+  // Casing
+  const casing = warmIndoor(trim, night, 0.06);
+  const outer = arch(-18);
+  const inner = arch(0);
+  const ring: number[] = [];
+  for (let i = 0; i < outer.length; i += 2) ring.push(outer[i], outer[i + 1]);
+  for (let i = inner.length - 2; i >= 0; i -= 2) ring.push(inner[i], inner[i + 1]);
+  fg.poly(ring).fill(casing);
+  fg.poly(outer, false).stroke({ width: 2.8, color: INK });
+  fg.poly(inner, false).stroke({ width: 2.6, color: INK });
+  fg.poly(arch(-9), false).stroke({ width: 1.3, color: INK, alpha: 0.35 });
+}
+
+function drawFramedSketch(s: Sketch, x: number, y: number, w: number, h: number, frame: string, mat: string, accent: string, night: boolean): void {
+  s.rect(x, y, w, h).fill(warmIndoor(frame, night, 0.08)).stroke({ width: 2.6, color: INK });
+  s.rect(x + 10, y + 10, w - 20, h - 20).fill(warmIndoor(mat, night, 0.06)).stroke({ width: 1.6, color: INK, alpha: 0.6 });
+  s.ellipse(x + w / 2, y + h * 0.55, w * 0.22, h * 0.2).fill({ color: accent, alpha: 0.85 });
+  s.moveTo(x + 16, y + h - 20).bezierCurveTo(x + w * 0.35, y + h * 0.55, x + w * 0.6, y + h * 0.75, x + w - 16, y + h * 0.45).stroke({ width: 1.8, color: INK, alpha: 0.6 });
+  s.moveTo(x + w / 2 - 14, y - 2).lineTo(x + w / 2, y - 18).lineTo(x + w / 2 + 14, y - 2).stroke({ width: 1.6, color: INK, alpha: 0.7 });
+}
+
+function drawLivingRoom(bg: Sketch, fg: Sketch, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.living;
-  const wallFill = warmIndoor(pal.wall, night, 0.06);
-  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
-  const trimFill = warmIndoor(pal.trim, night, 0.06);
-
-  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
-  bg.rect(0, 0, 1920, 22).fill(wallAlt);
-
-  // Subtle electrical outlet near patio door
-  bg.roundRect(262, floorTop - 56, 22, 30, 4).fill('#F5F0E3');
-  bg.roundRect(262, floorTop - 56, 22, 30, 4).stroke({ width: 1.8, color: INK, alpha: 0.55 });
-
-  // Herringbone dark-walnut & honey wood floor
-  drawHerringboneFloor(bg, floorTop, pal.floor, pal.floorAlt, '#9C8268', night);
-
-  // Crisp baseboard trim drawn over the top edge of the floor
-  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
-  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
-
-  // Left floor-to-ceiling sliding glass patio door/window (x: 14..220)
-  const [wx, wy, ww, wh] = WINDOWS.living!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true, season);
-
-  // Sliding glass door frame & reflections in fg
-  fg.rect(0, 0, wx, floorTop + 14).fill(trimFill);
-  fg.rect(wx - 10, 0, ww + 26, 20).fill(trimFill);
-  fg.rect(wx - 10, 0, ww + 26, 20).stroke({ width: 2.8, color: INK });
-  fg.rect(wx + ww, 0, 16, floorTop + 14).fill(trimFill);
-  fg.rect(wx + ww, 0, 16, floorTop + 14).stroke({ width: 2.8, color: INK });
-  fg.rect(wx, wy, ww, wh).stroke({ width: 3.2, color: INK });
-  // Vertical sliding divider bar & horizontal transom
-  fg.rect(wx + ww * 0.52, wy, 10, wh).fill('#FBF7EC');
-  fg.rect(wx + ww * 0.52, wy, 10, wh).stroke({ width: 2.4, color: INK });
-  fg.rect(wx, wy + wh * 0.3, ww, 8).fill('#FBF7EC');
-  fg.rect(wx, wy + wh * 0.3, ww, 8).stroke({ width: 2.2, color: INK });
-  // Diagonal glass reflection streaks
-  fg.poly([wx + 18, wy + wh - 20, wx + 66, wy + 22, wx + 86, wy + 22, wx + 38, wy + wh - 20]).fill({
-    color: '#FFFFFF',
-    alpha: night ? 0.07 : 0.2,
+  bg.rect(0, 0, 1920, floorTop).fill(warmIndoor(pal.wall, night, 0.06));
+  brushWash(bg, 0, 1920, 20, floorTop - 150, warmIndoor(pal.wallShade, night, 0.08), 101);
+  drawWallpaper(bg, 0, 1920, 30, floorTop - 160, 'sprig', warmIndoor('#9FB585', night, 0.1), warmIndoor('#6E865A', night, 0.1), 102);
+  drawWainscot(bg, floorTop, 150, '#C9D3AE', night, 103);
+  drawCornice(bg, pal.trim, night);
+  drawBoardFloor(bg, floorTop, pal.floor, pal.floorAlt, night, 104);
+  drawBaseboard(bg, floorTop, pal.trim, night);
+  drawWindow(bg, fg, WINDOWS.living!, floorTop, night, season, {
+    frame: '#F3EBDA',
+    panesX: 2,
+    panesY: 3,
+    curtain: '#E3A58F',
+    showFence: true,
+    sky: pal.sky,
   });
-  // Wood threshold step at patio base
-  fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).fill(warmIndoor('#C9AA82', night, 0.1));
-  fg.roundRect(0, floorTop - 4, wx + ww + 20, 20, 4).stroke({ width: 2.8, color: INK });
-
-  // Right spiral staircase
-  drawSpiralStaircase(bg, fg, night);
+  drawHallDoorway(bg, fg, 1660, 214, 96, floorTop, pal.trim, night);
 }
 
-function drawBedroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
+function drawBedroom(bg: Sketch, fg: Sketch, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.bedroom;
-  const wallFill = warmIndoor(pal.wall, night, 0.06);
-  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
-  const trimFill = warmIndoor(pal.trim, night, 0.06);
-
-  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
-  bg.rect(0, 0, 1920, 22).fill(wallAlt);
-
-  // Classic recessed wall paneling moldings (IMG_2702)
-  for (let px = 310; px < 1840; px += 310) {
-    bg.roundRect(px, 44, 270, floorTop - 96, 4).fill({ color: wallAlt, alpha: 0.42 });
-    bg.roundRect(px, 44, 270, floorTop - 96, 4).stroke({ width: 2, color: INK, alpha: 0.22 });
-    bg.roundRect(px + 14, 58, 242, floorTop - 124, 3).stroke({ width: 1.5, color: '#FFFDF8', alpha: 0.65 });
-  }
-
-  // Herringbone medium-warm wood parquet floor
-  drawHerringboneFloor(bg, floorTop, pal.floor, pal.floorAlt, '#9E8266', night);
-
-  // Crisp baseboard trim drawn over the top edge of the floor
-  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
-  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
-
-  // Left tall French window with louvered wooden shutters & sheer curtains (x: 52..230)
-  const [wx, wy, ww, wh] = WINDOWS.bedroom!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, true, season);
-
-  // Window frame & muntins
-  fg.rect(wx, wy, ww, wh).stroke({ width: 3.2, color: INK });
-  fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill('#FBF7EC');
-  fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.4, color: INK });
-  for (const ry of [0.33, 0.66]) {
-    fg.rect(wx, wy + wh * ry - 3, ww, 6).fill('#FBF7EC');
-    fg.rect(wx, wy + wh * ry - 3, ww, 6).stroke({ width: 2, color: INK });
-  }
-
-  // Wooden louvered shutters on both sides
-  const shutterCol = warmIndoor('#9B7857', night, 0.12);
-  for (const sx of [wx - 44, wx + ww + 2]) {
-    fg.roundRect(sx, wy - 4, 42, wh + 8, 4).fill(shutterCol);
-    fg.roundRect(sx, wy - 4, 42, wh + 8, 4).stroke({ width: 2.6, color: INK });
-    for (let ly = wy + 16; ly < wy + wh - 10; ly += 16) {
-      fg.moveTo(sx + 6, ly).lineTo(sx + 36, ly).stroke({ width: 2, color: INK, alpha: 0.55 });
-    }
-  }
-
-  // Sheer floor-length white curtains & rod
-  fg.roundRect(wx - 58, wy - 14, ww + 116, 8, 4).fill('#8A6748');
-  fg.roundRect(wx - 58, wy - 14, ww + 116, 8, 4).stroke({ width: 2.4, color: INK });
-  const sheerFill = warmIndoor('#FFFDF8', night, 0.05);
-  fg.poly([wx - 50, wy - 6, wx + 18, wy - 6, wx + 8, floorTop + 10, wx - 48, floorTop + 10]).fill({
-    color: sheerFill,
-    alpha: 0.72,
-  });
-  fg.poly([wx - 50, wy - 6, wx + 18, wy - 6, wx + 8, floorTop + 10, wx - 48, floorTop + 10]).stroke({
-    width: 2.2,
-    color: INK,
-    alpha: 0.65,
-  });
-  fg.poly([wx + ww - 18, wy - 6, wx + ww + 50, wy - 6, wx + ww + 48, floorTop + 10, wx + ww - 8, floorTop + 10]).fill({
-    color: sheerFill,
-    alpha: 0.72,
-  });
-  fg.poly([wx + ww - 18, wy - 6, wx + ww + 50, wy - 6, wx + ww + 48, floorTop + 10, wx + ww - 8, floorTop + 10]).stroke({
-    width: 2.2,
-    color: INK,
-    alpha: 0.65,
+  bg.rect(0, 0, 1920, floorTop).fill(warmIndoor(pal.wall, night, 0.06));
+  brushWash(bg, 0, 1920, 20, floorTop - 20, warmIndoor(pal.wallShade, night, 0.08), 201);
+  drawWallpaper(bg, 0, 1920, 30, floorTop - 30, 'stars', warmIndoor('#E7C46A', night, 0.08), warmIndoor('#8E9CC0', night, 0.1), 202);
+  drawCornice(bg, pal.trim, night);
+  // Picture rail
+  bg.moveTo(0, 96).lineTo(1920, 96).stroke({ width: 2.4, color: INK, alpha: 0.75 });
+  bg.moveTo(0, 102).lineTo(1920, 102).stroke({ width: 1.3, color: INK, alpha: 0.3 });
+  drawBoardFloor(bg, floorTop, pal.floor, pal.floorAlt, night, 204);
+  drawBaseboard(bg, floorTop, pal.trim, night);
+  drawWindow(bg, fg, WINDOWS.bedroom!, floorTop, night, season, {
+    frame: '#EFE6D4',
+    panesX: 2,
+    panesY: 2,
+    curtain: '#9DB0D3',
+    showFence: true,
+    sky: pal.sky,
   });
 }
 
-function drawNursery(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
+function drawNursery(bg: Sketch, fg: Sketch, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.nursery;
-  const wallFill = warmIndoor(pal.wall, night, 0.06);
-  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
-  const trimFill = warmIndoor(pal.trim, night, 0.06);
-
-  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
-  bg.rect(0, 0, 1920, 22).fill(wallAlt);
-  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
-  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
-
-  // Nursery crescent moon & star wall decals (IMG_2703)
-  const decalGold = '#E9C65B';
-  bg.circle(960, 128, 26).fill(decalGold);
-  bg.circle(972, 120, 22).fill(wallFill);
-  for (const [sx, sy, sr] of [
-    [840, 96, 10],
-    [890, 150, 7],
-    [1045, 92, 9],
-    [1105, 142, 11],
-    [1160, 86, 7],
-  ]) {
-    bg.poly([sx, sy - sr, sx + sr * 0.3, sy - sr * 0.3, sx + sr, sy, sx + sr * 0.3, sy + sr * 0.3, sx, sy + sr, sx - sr * 0.3, sy + sr * 0.3, sx - sr, sy, sx - sr * 0.3, sy - sr * 0.3]).fill(decalGold);
-  }
-
-  // Two cozy framed pastel nursery gallery prints on back wall
-  for (const [fx, accent] of [
-    [1310, '#E8A6B0'],
-    [1465, '#9EC4A7'],
-  ] as [number, string][]) {
-    bg.roundRect(fx, 86, 112, 136, 6).fill('#D5B895');
-    bg.roundRect(fx, 86, 112, 136, 6).stroke({ width: 2.8, color: INK });
-    bg.rect(fx + 12, 98, 88, 112).fill('#FFFDF8');
-    bg.circle(fx + 56, 152, 24).fill(accent);
-    bg.circle(fx + 56, 152, 24).stroke({ width: 2, color: INK, alpha: 0.45 });
-  }
-
-  // Wide horizontal honey-oak floorboards
-  drawHorizontalPlankFloor(bg, floorTop, pal.floor, pal.floorAlt, 58, night);
-
-  // Left brown-framed casement window looking onto treetops (x: 54..232)
-  const [wx, wy, ww, wh] = WINDOWS.nursery!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
-
-  const woodFrame = warmIndoor('#9C734E', night, 0.1);
-  fg.roundRect(wx - 12, wy - 12, ww + 24, wh + 24, 5).stroke({ width: 12, color: woodFrame });
-  fg.roundRect(wx - 18, wy - 18, ww + 36, wh + 36, 6).stroke({ width: 3, color: INK });
-  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
-  fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill(woodFrame);
-  fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.2, color: INK });
-  fg.rect(wx, wy + wh * 0.52, ww, 8).fill(woodFrame);
-  fg.rect(wx, wy + wh * 0.52, ww, 8).stroke({ width: 2.2, color: INK });
-  fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).fill(warmIndoor('#B88E65', night, 0.08));
-  fg.roundRect(wx - 22, wy + wh + 6, ww + 44, 14, 4).stroke({ width: 2.8, color: INK });
+  bg.rect(0, 0, 1920, floorTop).fill(warmIndoor(pal.wall, night, 0.06));
+  brushWash(bg, 0, 1920, 20, floorTop - 20, warmIndoor(pal.wallShade, night, 0.08), 301);
+  drawWallpaper(bg, 0, 1920, 30, floorTop - 140, 'clouds', warmIndoor('#FFFFFF', night, 0.06), warmIndoor('#C99A9A', night, 0.1), 302);
+  drawWainscot(bg, floorTop, 120, '#E9CFC6', night, 303);
+  drawCornice(bg, pal.trim, night);
+  drawFramedSketch(bg, 1310, 96, 112, 136, '#D5B895', '#FFFDF8', '#E8A6B0', night);
+  drawFramedSketch(bg, 1465, 110, 112, 120, '#D5B895', '#FFFDF8', '#9EC4A7', night);
+  drawBoardFloor(bg, floorTop, pal.floor, pal.floorAlt, night, 304);
+  drawBaseboard(bg, floorTop, pal.trim, night);
+  drawWindow(bg, fg, WINDOWS.nursery!, floorTop, night, season, {
+    frame: '#B98E66',
+    panesX: 2,
+    panesY: 2,
+    curtain: '#F2D27E',
+    sky: pal.sky,
+  });
 }
 
-function drawBathroom(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
+function drawBathroom(bg: Sketch, fg: Sketch, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.bathroom;
-  const tileWall = warmIndoor(pal.wall, night, 0.06);
-  const grout = warmIndoor(pal.wallShade, night, 0.08);
-
-  // Back wall square ceramic tiles
-  bg.rect(0, 0, 1920, floorTop).fill(tileWall);
-  const cornerX = 220;
-  for (let x = cornerX; x < 1920; x += 48) {
-    bg.moveTo(x, 0).lineTo(x, floorTop).stroke({ width: 1.8, color: grout });
-  }
-  for (let y = 44; y < floorTop; y += 44) {
-    bg.moveTo(cornerX, y).lineTo(1920, y).stroke({ width: 1.8, color: grout });
-  }
-
-  // Angled left-wall perspective corner (x: 0..220)
-  bg.poly([0, 0, cornerX, 0, cornerX, floorTop, 0, floorTop + 56]).fill(warmIndoor('#ECE5D3', night, 0.08));
-  for (let y = 44; y < floorTop; y += 44) {
-    bg.moveTo(0, y + 36).lineTo(cornerX, y).stroke({ width: 1.8, color: grout });
-  }
-  for (const vx of [55, 110, 165]) {
-    bg.moveTo(vx, 0).lineTo(vx, floorTop + ((cornerX - vx) / cornerX) * 56).stroke({ width: 1.8, color: grout });
-  }
-  bg.moveTo(cornerX, 0).lineTo(cornerX, floorTop).stroke({ width: 2.8, color: INK, alpha: 0.4 });
-
-  // Sky-blue perspective square floor tiles (matching tile_bathroom_blue_floor_sample.png & IMG_2704)
-  const blueA = warmIndoor(pal.floor, night, 0.12);
-  const blueB = warmIndoor('#8BBAD3', night, 0.12);
-  const blueGrout = warmIndoor(pal.floorAlt, night, 0.14);
-  bg.rect(0, floorTop, 1920, 884 - floorTop).fill(blueA);
-  bg.poly([0, floorTop + 56, cornerX, floorTop, 1920, floorTop, 1920, 884, 0, 884]).fill(blueA);
-
-  const tileRows = 8;
-  const rowH = (884 - floorTop) / tileRows;
-  for (let r = 0; r < tileRows; r++) {
-    const ty = floorTop + r * rowH;
-    if (r % 2 === 0) {
-      bg.rect(0, ty, 1920, rowH).fill({ color: blueB, alpha: 0.32 });
-    }
-    bg.moveTo(0, ty).lineTo(1920, ty).stroke({ width: 2, color: blueGrout });
-  }
-  for (let x = -80; x < 2040; x += 72) {
-    const slant = (x - 960) * 0.14;
-    bg.moveTo(x, floorTop).lineTo(x + slant, 884).stroke({ width: 2, color: blueGrout });
-  }
-  bg.rect(0, floorTop - 10, 1920, 10).fill(warmIndoor(pal.trim, night, 0.08));
-  bg.moveTo(0, floorTop).lineTo(1920, floorTop).stroke({ width: 2.6, color: INK, alpha: 0.55 });
-
-  // Upper-right wide dark-framed garden window (x: 1130..1810, y: 0..148)
-  const [wx, wy, ww, wh] = WINDOWS.bathroom!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
-  const frameCol = warmIndoor('#4E4944', night, 0.14);
-  fg.rect(wx - 8, wy, ww + 16, wh + 10).stroke({ width: 10, color: frameCol });
-  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
-  for (const mx of [wx + ww * 0.33, wx + ww * 0.67]) {
-    fg.rect(mx - 4, wy, 8, wh).fill(frameCol);
-    fg.rect(mx - 4, wy, 8, wh).stroke({ width: 2, color: INK });
-  }
-  fg.roundRect(wx - 14, wy + wh, ww + 28, 12, 3).fill('#D8D0BE');
-  fg.roundRect(wx - 14, wy + wh, ww + 28, 12, 3).stroke({ width: 2.6, color: INK });
+  bg.rect(0, 0, 1920, floorTop).fill(warmIndoor(pal.wall, night, 0.06));
+  brushWash(bg, 0, 1920, 20, 230, warmIndoor(pal.wallShade, night, 0.08), 401);
+  drawCornice(bg, pal.trim, night);
+  drawWallTiles(bg, 0, 1920, 236, floorTop - 20, '#F7F5EC', '#B7CFC8', night, 56, 44);
+  bg.rect(0, 228, 1920, 12).fill(warmIndoor('#8FBFB4', night, 0.08));
+  bg.moveTo(0, 228).lineTo(1920, 228).stroke({ width: 2.4, color: INK });
+  bg.moveTo(0, 240).lineTo(1920, 240).stroke({ width: 2.4, color: INK });
+  drawTileFloor(bg, floorTop, '#F2EFE6', pal.floor, '#9DB8BE', night, true, 90);
+  drawBaseboard(bg, floorTop, '#8FBFB4', night, 20);
+  drawWindow(bg, fg, WINDOWS.bathroom!, floorTop, night, season, {
+    frame: '#F4F1E8',
+    panesX: 3,
+    panesY: 1,
+    sky: pal.sky,
+  });
 }
 
-function drawStudio(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
+function drawStudio(bg: Sketch, fg: Sketch, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.studio;
-  const wallFill = warmIndoor(pal.wall, night, 0.06);
-  const trimFill = warmIndoor(pal.trim, night, 0.06);
-
-  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
-  bg.rect(0, floorTop - 22, 1920, 22).fill(trimFill);
-  bg.rect(0, floorTop - 22, 1920, 22).stroke({ width: 3, color: INK });
-
-  // Draped warm string-light garland on upper-left wall (IMG_2705)
-  bg.moveTo(310, 16).bezierCurveTo(440, 110, 610, 110, 740, 16).stroke({ width: 3, color: INK, alpha: 0.7 });
+  bg.rect(0, 0, 1920, floorTop).fill(warmIndoor(pal.wall, night, 0.06));
+  brushWash(bg, 0, 1920, 20, floorTop - 20, warmIndoor(pal.wallShade, night, 0.08), 501, 0.09);
+  drawWallpaper(bg, 300, 1920, 40, floorTop - 40, 'splatter', warmIndoor('#E7C46A', night, 0.08), warmIndoor('#7FA37A', night, 0.1), 502);
+  drawCornice(bg, pal.trim, night);
+  // String lights looping across the upper wall
+  bg.moveTo(330, 34).bezierCurveTo(470, 120, 640, 120, 780, 34).stroke({ width: 2.2, color: INK, alpha: 0.75 });
   for (let i = 0; i < 7; i++) {
     const t = (i + 0.5) / 7;
-    const bx = 310 + t * 430;
-    const by = 16 + Math.sin(t * Math.PI) * 70;
-    bg.circle(bx, by + 7, 13).fill({ color: '#FCE79C', alpha: night ? 0.38 : 0.22 });
-    bg.circle(bx, by + 7, 5.5).fill('#FFF6C4');
-    bg.circle(bx, by + 7, 5.5).stroke({ width: 1.8, color: INK });
+    const bx = 330 + t * 450;
+    const by = 34 + Math.sin(t * Math.PI) * 66;
+    bg.circle(bx, by + 10, 14).fill({ color: '#FCE79C', alpha: night ? 0.38 : 0.2 });
+    bg.ellipse(bx, by + 10, 5, 7).fill('#FFF2B8').stroke({ width: 1.8, color: INK });
   }
-
-  // Wide horizontal pale-oak studio planks
-  drawHorizontalPlankFloor(bg, floorTop, pal.floor, pal.floorAlt, 56, night);
-
-  // Left floor-to-ceiling glass studio window wall (x: 10..262)
-  const [wx, wy, ww, wh] = WINDOWS.studio!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
-  if (!night && season !== 'winter') {
-    bg.circle(wx + 70, wy + wh * 0.44, 34).fill(season === 'autumn' ? '#D8844A' : '#E59A5C');
-    bg.circle(wx + 125, wy + wh * 0.5, 28).fill(season === 'autumn' ? '#E3A84F' : '#85AD6B');
-  }
-  const mullion = warmIndoor('#5E4938', night, 0.14);
-  fg.rect(0, 0, wx, floorTop + 10).fill(mullion);
-  fg.rect(wx + ww, 0, 14, floorTop + 10).fill(mullion);
-  fg.rect(wx + ww, 0, 14, floorTop + 10).stroke({ width: 2.6, color: INK });
-  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
-  fg.rect(wx + ww * 0.5, wy, 9, wh).fill(mullion);
-  fg.rect(wx, wy + wh * 0.45, ww, 8).fill(mullion);
-  fg.poly([wx + 24, wy + wh - 18, wx + 82, wy + 24, wx + 102, wy + 24, wx + 44, wy + wh - 18]).fill({
-    color: '#FFFFFF',
-    alpha: night ? 0.06 : 0.18,
+  drawBoardFloor(bg, floorTop, pal.floor, pal.floorAlt, night, 504);
+  drawBaseboard(bg, floorTop, pal.trim, night);
+  drawWindow(bg, fg, WINDOWS.studio!, floorTop, night, season, {
+    frame: '#5E4938',
+    panesX: 3,
+    panesY: 4,
+    sky: pal.sky,
   });
-  fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).fill(warmIndoor('#9A7B5B', night, 0.1));
-  fg.roundRect(0, floorTop - 6, wx + ww + 20, 18, 4).stroke({ width: 2.6, color: INK });
 }
 
-function drawKitchen(bg: Graphics, fg: Graphics, floorTop: number, night: boolean, season: Season): void {
+function drawKitchen(bg: Sketch, fg: Sketch, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES.kitchen;
-  const wallFill = warmIndoor(pal.wall, night, 0.06);
-  const wallAlt = warmIndoor(pal.wallShade, night, 0.07);
-  const trimFill = warmIndoor(pal.trim, night, 0.06);
-
-  bg.rect(0, 0, 1920, floorTop).fill(wallFill);
-  bg.rect(0, 0, 1920, 20).fill(wallAlt);
-
-  // Subtle cream subway tile backsplash along lower wall (y: 318..floorTop)
-  bg.rect(0, 318, 1920, floorTop - 318).fill(wallAlt);
-  for (let y = 342; y < floorTop; y += 26) {
-    bg.moveTo(0, y).lineTo(1920, y).stroke({ width: 1.5, color: '#D8D0BE', alpha: 0.65 });
-  }
-  bg.moveTo(0, 318).lineTo(1920, 318).stroke({ width: 2.2, color: INK, alpha: 0.35 });
-
-  // Ceramic tiled cream kitchen floor (y: floorTop..884)
-  const tileFill = warmIndoor(pal.floor, night, 0.09);
-  const groutCol = warmIndoor('#CFC6B4', night, 0.11);
-  bg.rect(0, floorTop, 1920, 884 - floorTop).fill(tileFill);
-  for (let y = floorTop + 56; y < 884; y += 56) {
-    bg.moveTo(0, y).lineTo(1920, y).stroke({ width: 1.8, color: groutCol });
-  }
-  for (let x = 60; x < 1920; x += 96) {
-    bg.moveTo(x, floorTop).lineTo(x + (x - 960) * 0.08, 884).stroke({ width: 1.8, color: groutCol });
-  }
-
-  // Clean baseboard molding separating wall backsplash and tiled floor
-  bg.rect(0, floorTop - 20, 1920, 20).fill(trimFill);
-  bg.rect(0, floorTop - 20, 1920, 20).stroke({ width: 3, color: INK });
-  bg.rect(0, floorTop, 1920, 14).fill({ color: '#2B2521', alpha: 0.1 });
-
-  // Upper-left wide kitchen casement window (x: 92..530)
-  const [wx, wy, ww, wh] = WINDOWS.kitchen!;
-  drawGardenView(bg, wx, wy, ww, wh, night, pal.sky, false, season);
-  const winWood = warmIndoor('#C8A782', night, 0.1);
-  fg.rect(wx - 10, wy, ww + 20, wh + 10).stroke({ width: 12, color: winWood });
-  fg.rect(wx, wy, ww, wh).stroke({ width: 3, color: INK });
-  fg.rect(wx + ww / 2 - 4, wy, 8, wh).fill(winWood);
-  fg.rect(wx + ww / 2 - 4, wy, 8, wh).stroke({ width: 2.2, color: INK });
-  fg.roundRect(wx - 18, wy + wh, ww + 36, 14, 4).fill(winWood);
-  fg.roundRect(wx - 18, wy + wh, ww + 36, 14, 4).stroke({ width: 2.8, color: INK });
+  bg.rect(0, 0, 1920, floorTop).fill(warmIndoor(pal.wall, night, 0.06));
+  brushWash(bg, 0, 1920, 20, 300, warmIndoor(pal.wallShade, night, 0.08), 601);
+  drawWallpaper(bg, 560, 1920, 30, 296, 'stripe', warmIndoor('#F7EED2', night, 0.06), warmIndoor('#D8A86A', night, 0.1), 602);
+  drawCornice(bg, pal.trim, night);
+  drawWallTiles(bg, 0, 1920, 306, floorTop - 20, '#FBF6EA', '#D9CBB0', night, 44, 24, true);
+  drawTileFloor(bg, floorTop, '#F1E6CD', '#D98F6B', '#B9A585', night, true, 100);
+  drawBaseboard(bg, floorTop, pal.trim, night, 20);
+  drawWindow(bg, fg, WINDOWS.kitchen!, floorTop, night, season, {
+    frame: '#F2EADA',
+    panesX: 3,
+    panesY: 2,
+    cafe: '#E9B9A6',
+    sky: pal.sky,
+  });
 }
 
-function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: number, night: boolean, season: Season): void {
+/** Painted lawn: two loose washes and scattered hand-flicked grass ticks. */
+function grassTexture(s: Sketch, x0: number, x1: number, y0: number, y1: number, base: string, seed: number): void {
+  const dark = mixHex(base, '#1E3A1E', 0.38);
+  const light = mixHex(base, '#FFF6C8', 0.32);
+  brushWash(s, x0, x1, y0, y1, dark, seed, 0.13);
+  brushWash(s, x0, x1, y0 + 20, y1, light, seed + 1, 0.11);
+  const rnd = jitterRng(seed + 2);
+  const n = Math.round(((x1 - x0) * (y1 - y0)) / 5200);
+  for (let i = 0; i < n; i++) {
+    const gx = x0 + Math.abs(rnd()) * (x1 - x0);
+    const gy = y0 + 14 + Math.abs(rnd()) * (y1 - y0 - 14);
+    const k = 0.8 + Math.abs(rnd()) * 0.6;
+    const tick = i % 3 === 0 ? light : dark;
+    s.moveTo(gx - 6 * k, gy - 10 * k).lineTo(gx, gy).lineTo(gx + 5 * k, gy - 12 * k).stroke({ width: 2, color: tick, alpha: 0.75 });
+  }
+}
+
+/** Weathered boards: grain squiggles and a dry-brush pass over a deck or siding plane. */
+function boardTexture(s: Sketch, y0: number, y1: number, rowH: number, base: string, seed: number): void {
+  brushWash(s, 0, 1920, y0, y1, mixHex(base, '#FFFFFF', 0.4), seed, 0.08);
+  const rnd = jitterRng(seed + 3);
+  for (let y = y0 + rowH * 0.45; y < y1; y += rowH) {
+    for (let x = Math.abs(rnd()) * 120; x < 1920; x += 160 + Math.abs(rnd()) * 160) {
+      const l = 60 + Math.abs(rnd()) * 90;
+      s.moveTo(x, y + rnd() * 4).bezierCurveTo(x + l * 0.3, y - 3, x + l * 0.7, y + 3, x + l, y + rnd() * 3).stroke({ width: 1.4, color: INK, alpha: 0.16 });
+    }
+  }
+}
+
+function drawOutdoorRoom(bg: Sketch, fg: Sketch, roomId: RoomId, floorTop: number, night: boolean, season: Season): void {
   const pal = ROOM_PALETTES[roomId];
   const daySky =
     season === 'autumn' ? mixHex(pal.sky, '#EFE2CC', 0.25) : season === 'winter' ? '#D6E2EC' : pal.sky;
@@ -880,7 +890,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   }
 
   if (roomId === 'porch') {
-    // Porch: top grey siding -> elevated grey-taupe wooden plank deck -> dark-slate terrace + stepping stones -> backyard lawn (IMG_2700)
+    // Porch: top grey siding -> elevated grey-taupe wooden plank deck -> dark-slate terrace + stepping stones -> backyard lawn
     const siding = night ? dim(pal.wall, 0.7) : pal.wall;
     const deck = night ? dim(pal.wallShade, 0.68) : pal.wallShade;
     const deckLine = night ? '#5A534E' : '#7D746D';
@@ -893,6 +903,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
           : pal.floor;
 
     fg.rect(0, 0, 1920, 108).fill(siding);
+    boardTexture(fg, 0, 98, 26, siding, 711);
     for (let sy = 26; sy < 108; sy += 26) {
       fg.moveTo(0, sy).lineTo(1920, sy).stroke({ width: 2, color: INK, alpha: 0.35 });
     }
@@ -901,6 +912,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
 
     // Elevated wooden deck (y: 110..382)
     fg.rect(0, 110, 1920, 272).fill(deck);
+    boardTexture(fg, 110, 366, 38, deck, 712);
     for (let y = 148; y < 382; y += 38) {
       fg.moveTo(0, y).lineTo(1920, y).stroke({ width: 2.2, color: deckLine });
     }
@@ -913,9 +925,10 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
 
     // Lower backyard lawn (y: 388..884)
     fg.rect(0, 388, 1920, 496).fill(lawn);
+    grassTexture(fg, 0, 1920, 404, 884, lawn, 713);
     fg.rect(0, 388, 1920, 16).fill({ color: '#2B2521', alpha: 0.14 });
 
-    // Wide dark-slate terrace stone platform in front of deck between footings (IMG_2700)
+    // Wide dark-slate terrace stone platform in front of deck between footings
     const slate = night ? '#52575B' : '#7C8388';
     const slateEdge = night ? '#414549' : '#656B70';
     fg.roundRect(388, 390, 1114, 96, 8).fill(slate);
@@ -963,7 +976,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   }
 
   if (roomId === 'garden') {
-    // Garden: top bushes + white picket fence with central gate -> sunlit olive lawn -> bottom foliage (IMG_2698 & IMG_2701)
+    // Garden: top bushes + white picket fence with central gate -> sunlit olive lawn -> bottom foliage
     const bushDark = night
       ? '#15472D'
       : season === 'autumn'
@@ -1001,6 +1014,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
 
     // Main sunlit olive-green grass lawn (y: 184..884)
     fg.rect(0, 184, 1920, 700).fill(lawn);
+    grassTexture(fg, 0, 1920, 190, 884, lawn, 721);
     for (const [px, py, rx, ry] of [
       [340, 420, 260, 110],
       [1480, 460, 290, 120],
@@ -1046,7 +1060,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
     return;
   }
 
-  // Farm: top picket fence + red-roofed coop + hay-trough shed + diagonal fence + foreground winding river (IMG_2707)
+  // Farm: top picket fence + red-roofed coop + hay-trough shed + diagonal fence + foreground winding river
   const bushDark = night
     ? '#15472D'
     : season === 'autumn'
@@ -1078,6 +1092,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
     }
   }
   fg.rect(0, 166, 1920, 718).fill(meadow);
+  grassTexture(fg, 0, 1920, 172, 884, meadow, 731);
   fg.ellipse(1440, 420, 340, 175).fill({ color: meadowAlt, alpha: 0.45 });
 
   // Top white picket fence
@@ -1218,7 +1233,7 @@ function drawOutdoorRoom(bg: Graphics, fg: Graphics, roomId: RoomId, floorTop: n
   }
 }
 
-function paintRoom(bg: Graphics, fg: Graphics, roomId: RoomId, night: boolean, season: Season): void {
+function paintRoom(bg: Sketch, fg: Sketch, roomId: RoomId, night: boolean, season: Season): void {
   const room = ROOMS[roomId];
   const floorTop = room.floorTop;
   bg.clear();
@@ -1446,7 +1461,8 @@ export class StageRenderer {
     const { roomId, night } = this.view;
     const season = seasonOf(now());
     if (this.paintedRoom !== roomId || this.paintedNight !== night || this.paintedSeason !== season) {
-      paintRoom(this.bgDraw, this.fgDraw, roomId, night, season);
+      // Both layers share one paper-warp seed so window frames stay registered with their views.
+      paintRoom(new Sketch(this.bgDraw, 11), new Sketch(this.fgDraw, 11), roomId, night, season);
       if (this.app) {
         const frame = new Rectangle(0, 0, 1920, 884);
         this.bgTex?.destroy(true);
@@ -1663,7 +1679,7 @@ export class StageRenderer {
       const ready = !!plot.cropId && !!plot.readyAt && plot.readyAt <= nowMs;
       const crop = plot.cropId ? CROPS_BY_ID[plot.cropId] : undefined;
 
-      // Ground patch (inspired by tile_farm_soil_plot_sample.png & IMG_2707)
+      // Ground patch
       g.roundRect(-78, -46, 156, 92, 14).fill({ color: '#2B2521', alpha: 0.14 });
       if (!plot.unlocked) {
         g.roundRect(-78, -50, 156, 92, 14).fill(view.night ? '#465A38' : '#7D9949');
@@ -1751,9 +1767,7 @@ export class StageRenderer {
       if (!def) continue;
       let node = this.itemNodes.get(placed.uid);
       const art = itemArt(def);
-      const rawSprite = def.sprite ?? ITEM_SPRITE_FALLBACK[def.id];
-      const spriteUrl = rawSprite ? normalizePackUrl(rawSprite) : null;
-      const pngTex = spriteUrl ? requestImageTexture(spriteUrl, this.onRefresh) : null;
+      const pngTex = def.sprite ? requestImageTexture(def.sprite, this.onRefresh) : null;
       const svgTex = pngTex ? null : requestTexture(`item:${def.id}`, art.body, art.w, art.h, this.onRefresh);
       const texture = pngTex ?? svgTex;
       const usesPng = !!pngTex;
@@ -2234,7 +2248,7 @@ export class StageRenderer {
       const pose: 'idle' | 'walk' | 'sleep' = pet.state === 'sleep' ? 'sleep' : pet.state === 'walk' ? 'walk' : 'idle';
       // Always render standing rig for walk/idle (since legs animate live!), and sleeping curled rig for sleep
       const svgPose: 'idle' | 'sleep' = pose === 'sleep' ? 'sleep' : 'idle';
-      const pngUrl = animalPngFor(pet.species, pet.coat, pose) ?? undefined;
+      const pngUrl: string | undefined = undefined;
       const key = `petRig:${pet.species}:${pet.coat}:${svgPose}`;
       const parts = animalRigParts({ species: pet.species, coat: pet.coat, pose: svgPose });
       const targetSize = pet.species === 'bird' ? 86 : 138;
@@ -2268,7 +2282,7 @@ export class StageRenderer {
     for (const visitor of visitors) {
       const def = VISITORS_BY_ID[visitor.visitorId];
       if (!def) continue;
-      const pngUrl = animalPngFor(def.species, def.coat, 'idle') ?? undefined;
+      const pngUrl: string | undefined = undefined;
       const key = `visitorRig:${def.species}:${def.coat}`;
       const parts = animalRigParts({ species: def.species, coat: def.coat, pose: 'idle' });
       const existing = this.visitorNodes.get(visitor.id);
@@ -2342,7 +2356,7 @@ export class StageRenderer {
       ];
       for (const spec of producerSpecs) {
         const ready = (state.farm.producers[spec.id]?.readyAt ?? Infinity) <= nowMs;
-        const pngUrl = spec.usePng ? (animalPngFor(spec.species, spec.coat, 'idle') ?? undefined) : undefined;
+        const pngUrl: string | undefined = undefined;
         const key = `farmRig:${spec.id}`;
         const parts = animalRigParts({ species: spec.species, coat: spec.coat, pose: 'idle' });
         let node = this.farmNodes.get(spec.id);

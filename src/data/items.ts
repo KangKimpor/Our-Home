@@ -1,4 +1,3 @@
-import { getItemSprite } from '../art/assetPack';
 import type { ItemDef, RoomId } from '../game/types';
 
 type Extra = Partial<
@@ -6,7 +5,6 @@ type Extra = Partial<
 >;
 
 function it(id: string, name: string, room: RoomId, art: string, price: number, width: number, extra: Extra = {}): ItemDef {
-  const packSprite = getItemSprite(id);
   return {
     id,
     name,
@@ -16,7 +14,6 @@ function it(id: string, name: string, room: RoomId, art: string, price: number, 
     width,
     anchor: 'floor',
     palette: 'cream',
-    ...(packSprite ? { sprite: packSprite.url, spriteW: packSprite.w, spriteH: packSprite.h } : {}),
     ...extra,
   };
 }

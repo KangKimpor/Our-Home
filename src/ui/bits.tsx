@@ -1,7 +1,6 @@
 import { useEffect, useId, useMemo, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { animalArt } from '../art/animals';
-import { getItemSprite, ITEM_SPRITE_MAP as PACK_ITEM_SPRITE_MAP } from '../art/assetPack';
 import { characterArt, type CharacterArtOptions } from '../art/characters';
 import { itemArt } from '../art/items';
 import { momentSceneArt } from '../art/scenes';
@@ -25,20 +24,9 @@ function dataUrl(key: string, make: () => string): string {
   return url;
 }
 
-const PACK_BASE = '/asset-pack-v1.1/';
-
-/** Transparent PNG sprites (manifest transparent_background: true) mapped by item ID. */
-export const ITEM_SPRITE_MAP: Record<string, string> = Object.fromEntries(
-  Object.entries(PACK_ITEM_SPRITE_MAP).map(([id, mapping]) => [id, mapping.url]),
-);
-
+/** Optional bitmap override for an item (none ship today; all items are hand-inked SVG). */
 export function resolveItemSprite(item: ItemDef): string | undefined {
-  const custom = (item as ItemDef & { sprite?: string }).sprite;
-  if (custom) {
-    if (custom.startsWith('/') || custom.startsWith('data:') || custom.startsWith('http')) return custom;
-    return `${PACK_BASE}${custom.replace(/^\.?\//, '')}`;
-  }
-  return getItemSprite(item.id)?.url;
+  return item.sprite;
 }
 
 export function itemArtUrl(item: ItemDef): string {

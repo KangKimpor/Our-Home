@@ -1,16 +1,11 @@
-/** Storybook scene illustrations (420×300) and Moment photo-card lookup. */
+/** Storybook scene illustrations (420×300) for the Moments album. */
 
-import { getMomentPhotoCardUrl } from './assetPack';
 import { animalArt } from './animals';
 import { characterArt, babyArt } from './characters';
 import { INK, c, el, line, p, r, svgDoc } from './svg';
 
 export const SCENE_W = 420;
 export const SCENE_H = 300;
-
-export function momentPhotoUrl(momentId: string): string | null {
-  return getMomentPhotoCardUrl(momentId);
-}
 
 function animalGroup(
   species: string,
@@ -413,3 +408,83 @@ export function momentSceneArt(momentId: string): { w: number; h: number; body: 
 }
 
 export { babyArt };
+
+/** Hand-inked backdrop for the title screen diorama: sprig wallpaper, window, drapes and boards. */
+export function titleBackdropArt(): { w: number; h: number; body: string } {
+  const W = 600;
+  const H = 620;
+  const floorY = 372;
+  let b = '';
+  b += r(-12, -12, W + 24, floorY + 12, '#E4E8D2', 0, 'none', 0);
+  // Sprig wallpaper
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 6; col++) {
+      const x = 30 + col * 104 + (row % 2 ? 52 : 0) + ((row * 7 + col * 13) % 9) - 4;
+      const y = 62 + row * 64 + ((row * 5 + col * 3) % 7);
+      if (x > 170 && x < 430 && y < 300) continue;
+      b += p(`M ${x} ${y + 12} Q ${x + 4} ${y} ${x + 2} ${y - 12}`, 'none', '#6E865A', 1.5);
+      b += el(x - 5, y + 2, 6, 3, '#9FB585', 'none', 0, -30) + el(x + 7, y - 4, 6, 3, '#9FB585', 'none', 0, 30);
+    }
+  }
+  // Wainscot & chair rail
+  b += r(-12, floorY - 96, W + 24, 96, '#C9D3AE', 0, 'none', 0);
+  for (let x = 30; x < W; x += 60) b += line(x, floorY - 82, x, floorY - 20, INK, 1.8).replace('/>', ' opacity="0.45"/>');
+  b += r(-12, floorY - 104, W + 24, 12, '#DDE5C6', 0, INK, 2.6);
+  // Cornice
+  b += r(-12, -12, W + 24, 30, '#F3EBDA', 0, INK, 2.6);
+  // Window with a garden view
+  const wx = 196;
+  const wy = 64;
+  const ww = 208;
+  const wh = 196;
+  b += `<clipPath id="title-view"><rect x="${wx}" y="${wy}" width="${ww}" height="${wh}"/></clipPath><g clip-path="url(#title-view)">`;
+  b += r(wx - 4, wy - 4, ww + 8, wh + 8, '#CFE6EC', 0, 'none', 0);
+  b += c(wx + 150, wy + 46, 18, '#F4D06F', INK, 2.2);
+  b += el(wx + 62, wy + 50, 30, 11, '#FFFDF8', INK, 2) + el(wx + 84, wy + 44, 18, 10, '#FFFDF8', 'none', 0);
+  b += el(wx + 50, wy + wh + 30, 120, 74, '#8CAE5B', INK, 2.4);
+  b += el(wx + 180, wy + wh + 44, 120, 74, '#6F9A50', INK, 2.4);
+  b += '</g>';
+  b += r(wx - 14, wy - 14, ww + 28, 14, '#F3EBDA', 0, INK, 2.6);
+  b += r(wx - 14, wy, 14, wh, '#F3EBDA', 0, INK, 2.6) + r(wx + ww, wy, 14, wh, '#F3EBDA', 0, INK, 2.6);
+  b += r(wx + ww / 2 - 4, wy, 8, wh, '#F3EBDA', 0, INK, 2) + r(wx, wy + wh / 2 - 4, ww, 8, '#F3EBDA', 0, INK, 2);
+  b += r(wx, wy, ww, wh, 'none', 0, INK, 2.6);
+  b += line(wx + 18, wy + 70, wx + 42, wy + 38, '#FFFFFF', 3).replace('/>', ' opacity="0.6"/>');
+  b += r(wx - 28, wy + wh, ww + 56, 16, '#F3EBDA', 0, INK, 2.6);
+  // Drapes on a rod
+  b += line(wx - 72, wy - 30, wx + ww + 72, wy - 30, INK, 4);
+  b += p(`M ${wx - 66} ${wy - 28} L ${wx + 16} ${wy - 28} Q ${wx + 4} ${wy + 90} ${wx - 22} ${wy + 132} Q ${wx - 16} ${wy + 210} ${wx - 6} ${wy + 268} L ${wx - 70} ${wy + 272} Q ${wx - 74} ${wy + 140} ${wx - 66} ${wy - 28} Z`, '#E3A58F', INK, 2.4);
+  b += p(`M ${wx + ww + 66} ${wy - 28} L ${wx + ww - 16} ${wy - 28} Q ${wx + ww - 4} ${wy + 90} ${wx + ww + 22} ${wy + 132} Q ${wx + ww + 16} ${wy + 210} ${wx + ww + 6} ${wy + 268} L ${wx + ww + 70} ${wy + 272} Q ${wx + ww + 74} ${wy + 140} ${wx + ww + 66} ${wy - 28} Z`, '#E3A58F', INK, 2.4);
+  for (const s of [-1, 1]) {
+    const bx = s < 0 ? wx - 30 : wx + ww + 30;
+    b += p(`M ${bx - 14 * s} ${wy - 20} Q ${bx} ${wy + 60} ${bx - 4 * s} ${wy + 126}`, 'none', INK, 1.5).replace('/>', ' opacity="0.4"/>');
+    b += r(bx - 13, wy + 126, 26, 12, '#C9A05E', 5, INK, 2);
+  }
+  // Floor boards
+  b += r(-12, floorY, W + 24, H - floorY + 12, '#C49668', 0, 'none', 0);
+  let y = floorY;
+  let row = 0;
+  while (y < H) {
+    const h = Math.min(62, 30 + row * 8);
+    let x = -((row * 97) % 140);
+    let k = 0;
+    while (x < W) {
+      const len = 150 + ((row * 53 + k * 71) % 130);
+      if ((row + k) % 3 === 0) b += `<rect x="${x}" y="${y}" width="${len}" height="${h}" fill="#A97C50" opacity="0.35"/>`;
+      b += p(`M ${x + 14} ${y + h * 0.42} q ${len * 0.3} -3 ${len * 0.62} 1`, 'none', INK, 1.3).replace('/>', ' opacity="0.16"/>');
+      if (x + len > 0 && x + len < W) b += line(x + len, y + 2, x + len, y + h - 2, INK, 2).replace('/>', ' opacity="0.5"/>');
+      x += len;
+      k++;
+    }
+    if (row > 0) b += line(-12, y, W + 12, y, INK, 2).replace('/>', ' opacity="0.55"/>');
+    y += h;
+    row++;
+  }
+  // Baseboard & hatched contact shadow
+  b += r(-12, floorY - 18, W + 24, 20, '#F3EBDA', 0, INK, 2.6);
+  let hatch = '';
+  for (let x = -6; x < W; x += 9) hatch += `M ${x} ${floorY + 14} L ${x + 10} ${floorY + 3} `;
+  b += `<path d="${hatch}" stroke="${INK}" stroke-width="1.2" stroke-linecap="round" opacity="0.2" fill="none"/>`;
+  // Sunbeam across the boards
+  b += `<path d="M ${wx + 10} ${floorY + 4} L ${wx + ww - 10} ${floorY + 4} L ${wx + ww + 90} ${H} L ${wx - 60} ${H} Z" fill="#FFF6D6" opacity="0.22"/>`;
+  return { w: W, h: H, body: b };
+}

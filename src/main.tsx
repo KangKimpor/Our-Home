@@ -1,10 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
-import '@fontsource/fredoka/400.css';
-import '@fontsource/fredoka/600.css';
-import '@fontsource/nunito/400.css';
-import '@fontsource/nunito/600.css';
-import '@fontsource/nunito/700.css';
+import '@fontsource/patrick-hand/latin-400.css';
+import '@fontsource/gaegu/latin-400.css';
+import '@fontsource/gaegu/latin-700.css';
 import './i18n';
 import './styles.css';
 import App from './App';

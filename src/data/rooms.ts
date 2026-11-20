@@ -193,12 +193,12 @@ export const ROOM_PALETTES: Record<
   RoomId,
   { wall: string; wallShade: string; floor: string; floorAlt: string; trim: string; sky: string }
 > = {
-  living: { wall: '#FBF7EC', wallShade: '#EFE9D8', floor: '#8D745C', floorAlt: '#77604A', trim: '#E3DAC5', sky: '#C8E2EA' },
-  bedroom: { wall: '#FBF7EC', wallShade: '#EFE9DA', floor: '#8E7358', floorAlt: '#786048', trim: '#E8DFCE', sky: '#CFE6EC' },
-  kitchen: { wall: '#FBF7EC', wallShade: '#ECE6D5', floor: '#E6DFD1', floorAlt: '#8EAAC4', trim: '#D6DEE6', sky: '#CBE4DA' },
-  bathroom: { wall: '#F9F4E6', wallShade: '#DFD5BE', floor: '#9AC8DF', floorAlt: '#7CAEC8', trim: '#E5DEC9', sky: '#BFE0DC' },
-  studio: { wall: '#FBF7EC', wallShade: '#F0E9D8', floor: '#D9C8AA', floorAlt: '#C2AE8E', trim: '#E7DEC9', sky: '#D8EBF2' },
-  nursery: { wall: '#FBF7EC', wallShade: '#F0E6D6', floor: '#D5C09D', floorAlt: '#BEA782', trim: '#EADFCF', sky: '#5C7088' },
+  living: { wall: '#E4E8D2', wallShade: '#D3DBBE', floor: '#C49668', floorAlt: '#A97C50', trim: '#F3EBDA', sky: '#C8E2EA' },
+  bedroom: { wall: '#DCE2EE', wallShade: '#C9D1E3', floor: '#9A7353', floorAlt: '#7E5C42', trim: '#F1ECE2', sky: '#CFE6EC' },
+  kitchen: { wall: '#F6E8BF', wallShade: '#EBD9A6', floor: '#F1E6CD', floorAlt: '#D98F6B', trim: '#F2EADA', sky: '#CBE4DA' },
+  bathroom: { wall: '#D3E8DF', wallShade: '#BCD9CD', floor: '#A9CFE0', floorAlt: '#7CAEC8', trim: '#F4F1E8', sky: '#BFE0DC' },
+  studio: { wall: '#F4ECDD', wallShade: '#E6D9C1', floor: '#DCC6A0', floorAlt: '#C4AA80', trim: '#EADFCB', sky: '#D8EBF2' },
+  nursery: { wall: '#F6E0D9', wallShade: '#EBCFC6', floor: '#D9C29C', floorAlt: '#BFA47C', trim: '#FBF4EA', sky: '#5C7088' },
   porch: { wall: '#C8CED4', wallShade: '#A59C94', floor: '#7A9A4E', floorAlt: '#6A8941', trim: '#B6ADA4', sky: '#D3E5E8' },
   garden: { wall: '#1F7A4C', wallShade: '#2D8C5B', floor: '#98B45B', floorAlt: '#88A64E', trim: '#FBF7EC', sky: '#D5E9EE' },
   farm: { wall: '#2D8C5B', wallShade: '#1F7A4C', floor: '#8CA852', floorAlt: '#7C9846', trim: '#FBF7EC', sky: '#CFE5E6' },

@@ -7,12 +7,12 @@ import { ROOMS } from '../data/rooms';
 import { useGameStore, variantSwatches } from '../store/gameStore';
 import { ItemArt } from './bits';
 import {
-  HudCatBowl,
+  HudFeedBowl,
   HudEventBadge,
   HudHeartBadge,
-  HudHouse,
-  HudShoppingCart,
-  HudStorageBox,
+  HudMap,
+  HudTote,
+  HudBasket,
   Icon,
   type IconName,
 } from './icons';
@@ -171,7 +171,7 @@ export function Hud() {
       </div>
 
       <button type="button" className="hud-feed" onClick={() => open('feed')} aria-label={t('hud.feed')} title={t('hud.feed')}>
-        <HudCatBowl size={46} />
+        <HudFeedBowl size={46} />
         <span className="sr-only">{t('hud.feed')}</span>
       </button>
 
@@ -183,7 +183,7 @@ export function Hud() {
           aria-label={t('hud.inventory')}
           title={t('hud.inventory')}
         >
-          <HudStorageBox size={44} />
+          <HudBasket size={44} />
           <span className="sr-only">{t('hud.inventory')}</span>
         </button>
         <button
@@ -193,7 +193,7 @@ export function Hud() {
           aria-label={t('hud.shop')}
           title={t('hud.shop')}
         >
-          <HudShoppingCart size={42} />
+          <HudTote size={42} />
           <span className="sr-only">{t('hud.shop')}</span>
         </button>
         <button
@@ -203,7 +203,7 @@ export function Hud() {
           aria-label={t('hud.map')}
           title={t('hud.map')}
         >
-          <HudHouse size={42} />
+          <HudMap size={42} />
           <span className="sr-only">{t('hud.map')}</span>
         </button>
       </div>

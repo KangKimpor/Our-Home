@@ -5,10 +5,13 @@
 - **Scaling:** Uniform scale-to-fit inside the browser viewport; letterboxed with the active room's ambient wall/backdrop colour (never stretched or cropped).
 - **Safe area:** All interactive HUD controls respect `env(safe-area-inset-*)` and maintain hit targets ≥ `44 × 44` CSS px.
 
-## 2. Linework & Fills
-- **Outline:** Uniform `3 px` stroke at `1920` stage width, ink colour `#2E2A26`, round line joins and round line caps (`stroke-linejoin="round" stroke-linecap="round"`).
-- **Fills:** Flat vector fills with soft shadow/highlight accents; single gentle tone shift between wall and floor planes.
-- **Floor patterns:** Original room-specific floor treatments (wide oak planks in Living Room, soft woven boards in Bedroom, warm checkerboard tile in Kitchen, pebbled stone in Bathroom, cedar decking on Porch, lush grass/stepping stones in Garden & Farm).
+## 2. Linework & Fills — "drawn by hand, not plotted"
+- **Engine:** `src/art/hand.ts` (seeded wobble geometry) feeds both renderers:
+  - SVG art (`src/art/svg.ts` primitives `r/c/el/p/line`): bowed edges, sharp boxes drawn as four strokes that cross at the corners, circles that loop past their start, and a second wider dashed pen pass for pressure.
+  - Room painters (`src/stage/sketch.ts`, a drop-in for Pixi `Graphics`): one shared "paper warp" field bends every point, outlines become tapered ink ribbons whose weight swells and thins.
+- **Finishing filter:** every SVG texture is wrapped in `oh-hand` (ink displacement + pencil tooth + watercolour pooling). The stage and UI surfaces sit under a fine paper-tooth overlay.
+- **Shading:** pencil hatching (contact shadows, baseboards, sills) instead of blurred drop shadows or gradients.
+- **Determinism:** wobble is seeded from shape parameters, so textures are stable between rebuilds and fills stay registered with their outlines.
 
 ## 3. Core Palette Tokens
 | Token | Hex | Usage |
@@ -25,11 +28,10 @@
 | Ink | `#2E2A26` | All linework, primary typography |
 
 ## 4. Typography
-- **Display:** `Fredoka` (OFL) — rounded, friendly headers and counters.
-- **Body:** `Nunito` (OFL) — legible rounded sans-serif for descriptions and controls.
+- **Display:** `Gaegu` (OFL) — hand-lettered headings, counters and labels.
+- **Body:** `Patrick Hand` (OFL) — legible handwriting for descriptions and controls.
+- **UI surfaces:** hand-cut paper (irregular corner radii), solid ink offset shadows, washi tape, sticky notes and string tags.
 
-## 5. Asset Pipeline & Cutout Rules
-- All room architectures, furniture silhouettes, animal species/coats, character parts, and Moment polaroid scenes have crisp procedural SVG generators in `src/art/`.
-- Selected user-provided PNG cutouts from `public/asset-pack-v1.1/` are registered in `src/art/assetPack.ts` **only** when `transparent_background` is `true` in `manifest.json` and visual inspection confirms clean separation without baked-in HUD/crop artifacts.
-- Opaque `reference_fragment` crops, tiles, and Photo Card crops are strictly used as palette/proportion references and never mounted directly over the playable scene.
-- Unrelated external titles, logos, or hardcoded text timestamps are never copied into *Our Home*.
+## 5. Asset Pipeline
+- Every room, item, animal, character, HUD illustration and Moment scene is original procedural art in `src/art/` and `src/stage/`.
+- No third-party or screenshot-derived bitmaps are rendered by the game.
