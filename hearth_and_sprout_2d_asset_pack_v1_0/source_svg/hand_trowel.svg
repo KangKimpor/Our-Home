@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <filter id="hand-ink" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.019" numOctaves="2" seed="279" result="hand"/>
+      <feDisplacementMap in="SourceGraphic" in2="hand" scale="5.6" xChannelSelector="R" yChannelSelector="G" result="h1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="445" result="nib"/>
+      <feDisplacementMap in="h1" in2="nib" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#hand-ink)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Rotate whole hand trowel to a clean 45-degree diagonal for crisp silhouette readability -->
+    <g transform="rotate(-42 512 512)">
+      <!-- Braided oat-cream hanging wrist cord at bottom of handle -->
+      <path d="M512 856 C474 888 468 934 512 946 C556 934 550 888 512 856 Z"
+            fill="none" stroke="#2D1E18" stroke-width="24"/>
+      <path d="M512 856 C474 888 468 934 512 946 C556 934 550 888 512 856 Z"
+            fill="none" stroke="#F8EAD5" stroke-width="11.5"/>
+
+      <!-- Turned ergonomic honey-wood grip handle -->
+      <path d="M462 562 C442 624 436 724 454 812 C462 848 486 868 512 868 C538 868 562 848 570 812 C588 724 582 624 562 562 Z"
+            fill="#EEB45D" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Shaded right half of wooden handle -->
+      <path d="M516 566 L558 566 C578 628 582 726 566 812 C558 846 538 864 512 864 C534 832 544 720 516 566 Z"
+            fill="#CE9044"/>
+      <!-- Warm cream highlight along left side of handle -->
+      <path d="M468 606 C458 668 458 742 470 798" stroke="#F8D592" stroke-width="13.8" fill="none"/>
+      <!-- Subtle wood grain curve -->
+      <path d="M494 636 C488 696 492 746 502 786" stroke="#2D1E18" stroke-width="5.5" fill="none" opacity="0.45"/>
+
+      <!-- Dusty-teal painted end-cap on handle -->
+      <path d="M454 804 C486 818 538 818 570 804 C562 846 538 868 512 868 C486 868 462 846 454 804 Z"
+            fill="#76A099" stroke="#2D1E18" stroke-width="12.6"/>
+      <path d="M522 814 C544 812 558 808 568 804 C560 844 538 864 514 866 C526 848 530 832 522 814 Z"
+            fill="#608882"/>
+      <!-- Brass eyelet hole for cord -->
+      <circle cx="512" cy="838" r="11" fill="#EEB45D" stroke="#2D1E18" stroke-width="6.5"/>
+
+      <!-- Re-stroke wooden handle -->
+      <path d="M462 562 C442 624 436 724 454 812 C462 848 486 868 512 868 C538 868 562 848 570 812 C588 724 582 624 562 562 Z"
+            fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+
+      <!-- Terracotta-copper metal collar ferrule -->
+      <path d="M454 522 C486 510 538 510 570 522 L574 574 C538 588 486 588 450 574 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="12.6"/>
+      <path d="M518 514 C540 514 556 518 568 522 L572 572 C554 578 536 582 518 582 Z"
+            fill="#B76946"/>
+      <path d="M454 522 C486 510 538 510 570 522 L574 574 C538 588 486 588 450 574 Z"
+            fill="none" stroke="#2D1E18" stroke-width="12.6"/>
+      <!-- Rivet dot -->
+      <circle cx="512" cy="548" r="8" fill="#F8EAD5" stroke="#2D1E18" stroke-width="5.5"/>
+
+      <!-- Curved neck tang connecting ferrule to scoop blade -->
+      <path d="M484 440 L540 440 L548 518 C524 526 500 526 476 518 Z"
+            fill="#608882" stroke="#2D1E18" stroke-width="12.6"/>
+
+      <!-- Matte dusty-teal curved digging scoop blade -->
+      <path d="M512 82 C572 152 634 268 628 384 C624 446 584 484 512 484 C440 484 400 446 396 384 C390 268 452 152 512 82 Z"
+            fill="#76A099" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Right-side concave inner shadow on scoop -->
+      <path d="M512 90 C568 158 626 270 622 384 C618 442 580 478 512 478 C550 432 562 344 512 90 Z"
+            fill="#608882"/>
+      <!-- Inner concave scoop rim lip (lighter oat-tinted teal highlight on left) -->
+      <path d="M424 388 C422 290 462 192 504 128 C478 212 458 296 462 384 C464 422 482 444 504 456 C452 454 426 428 424 388 Z"
+            fill="#94BDB6" opacity="0.22"/>
+      <!-- Clean crisp oat-cream specular glint on scoop shoulder -->
+      <path d="M432 340 C436 286 452 232 474 188" stroke="#F8EAD5" stroke-width="11.5" fill="none" opacity="0.22"/>
+      <!-- Center hand-drawn bevel spine & measurement ticks on scoop -->
+      <path d="M512 146 L512 442" stroke="#2D1E18" stroke-width="7.5" fill="none"/>
+      <path d="M494 248 L530 248 M488 308 L536 308 M494 368 L530 368" stroke="#2D1E18" stroke-width="6" fill="none" opacity="0.65"/>
+
+      <!-- Re-stroke scoop blade silhouette cleanly -->
+      <path d="M512 82 C572 152 634 268 628 384 C624 446 584 484 512 484 C440 484 400 446 396 384 C390 268 452 152 512 82 Z"
+            fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    </g>
+  </g>
+</svg>

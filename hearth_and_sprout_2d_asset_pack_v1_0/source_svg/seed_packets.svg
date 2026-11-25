@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <filter id="hand-ink" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.019" numOctaves="2" seed="313" result="hand"/>
+      <feDisplacementMap in="SourceGraphic" in2="hand" scale="5.6" xChannelSelector="R" yChannelSelector="G" result="h1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="467" result="nib"/>
+      <feDisplacementMap in="h1" in2="nib" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#hand-ink)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Back angled seed packet (muted sage with dusty-teal band & abstract 3-leaf emblem) -->
+    <g transform="rotate(14 600 500)">
+      <path d="M402 186 L768 186 C780 186 788 196 788 208 L788 760 C788 776 776 788 760 788 L410 788 C394 788 382 776 382 760 L382 208 C382 196 390 186 402 186 Z"
+            fill="#96B098" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Right side soft shadow -->
+      <path d="M726 190 L770 190 C780 190 784 198 784 208 L784 758 C784 774 774 784 758 784 L718 784 Z"
+            fill="#7B967D"/>
+      <!-- Top crimped seal band in dusty teal -->
+      <path d="M382 208 C382 196 390 186 402 186 L768 186 C780 186 788 196 788 208 L788 258 L382 258 Z"
+            fill="#76A099" stroke="#2D1E18" stroke-width="12.6"/>
+      <!-- Crimp vertical dashes on top seal -->
+      <path d="M424 198 L424 246 M464 198 L464 246 M504 198 L504 246 M544 198 L544 246 M584 198 L584 246 M624 198 L624 246 M664 198 L664 246 M704 198 L704 246 M744 198 L744 246"
+            stroke="#2D1E18" stroke-width="5" opacity="0.5"/>
+      <!-- Inner oat-cream rounded emblem frame -->
+      <rect x="434" y="302" width="302" height="394" rx="28" fill="#F8EAD5" stroke="#2D1E18" stroke-width="9"/>
+      <!-- Abstract 3-leaf botanical sprout symbol (NO text!) -->
+      <path d="M585 604 L585 456" stroke="#2D1E18" stroke-width="12.6"/>
+      <path d="M585 524 C526 516 492 472 510 432 C554 434 588 470 585 524 Z"
+            fill="#667D60" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M585 504 C644 494 680 448 660 408 C616 410 582 448 585 504 Z"
+            fill="#96B098" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M585 458 C554 414 558 362 585 338 C612 362 616 414 585 458 Z"
+            fill="#76A099" stroke="#2D1E18" stroke-width="9"/>
+      <!-- Minimal abstract decorative dots underneath emblem -->
+      <circle cx="536" cy="648" r="9" fill="#EEB45D" stroke="#2D1E18" stroke-width="5"/>
+      <circle cx="585" cy="648" r="11" fill="#DC8A63" stroke="#2D1E18" stroke-width="5"/>
+      <circle cx="634" cy="648" r="9" fill="#EEB45D" stroke="#2D1E18" stroke-width="5"/>
+      <!-- Re-stroke outer packet -->
+      <path d="M402 186 L768 186 C780 186 788 196 788 208 L788 760 C788 776 776 788 760 788 L410 788 C394 788 382 776 382 760 L382 208 C382 196 390 186 402 186 Z"
+            fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    </g>
+
+    <!-- Front upright seed packet (oat cream with terracotta scalloped top flap & abstract honey/plum blossom emblem) -->
+    <g transform="rotate(-7 390 540)">
+      <path d="M196 226 L572 226 C586 226 594 236 594 248 L594 824 C594 842 580 854 562 854 L206 854 C188 854 174 842 174 824 L174 248 C174 236 182 226 196 226 Z"
+            fill="#F8EAD5" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Warm right-side & bottom cel shading -->
+      <path d="M524 232 L572 232 C584 232 590 240 590 250 L590 822 C590 838 578 850 562 850 L514 850 Z"
+            fill="#E4D0B0"/>
+      <path d="M178 784 L590 784 L590 824 C590 838 578 850 562 850 L206 850 C190 850 178 838 178 824 Z"
+            fill="#E4D0B0"/>
+      <!-- Upper-left light highlight strip -->
+      <path d="M202 318 L202 746" stroke="#FDF6E9" stroke-width="13.8" fill="none"/>
+
+      <!-- Terracotta scalloped top flap -->
+      <path d="M174 248 C174 236 182 226 196 226 L572 226 C586 226 594 236 594 248 L594 316 C572 332 544 332 524 316 C504 332 474 332 454 316 C434 332 404 332 384 316 C364 332 334 332 314 316 C294 332 264 332 244 316 C224 332 194 332 174 316 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="12.6"/>
+      <path d="M196 244 L568 244" stroke="#EAA481" stroke-width="8" fill="none"/>
+      <!-- Decorative honey circular seal dot on flap -->
+      <circle cx="384" cy="274" r="18" fill="#EEB45D" stroke="#2D1E18" stroke-width="7"/>
+
+      <!-- Inner geometric medallion frame (dashed border, NO text!) -->
+      <rect x="224" y="366" width="320" height="432" rx="30" fill="#FDF6E9" stroke="#2D1E18" stroke-width="8.5"/>
+      <rect x="242" y="384" width="284" height="396" rx="22" fill="none" stroke="#EEB45D" stroke-width="5.5" stroke-dasharray="14 10"/>
+
+      <!-- Abstract botanical sun-and-flower geometric emblem -->
+      <circle cx="384" cy="542" r="102" fill="#96B098" opacity="0.28" stroke="#2D1E18" stroke-width="7"/>
+      <!-- Stylized 6-petal plum & honey botanical blossom -->
+      <g transform="translate(384,542)">
+        <ellipse cx="0" cy="-54" rx="24" ry="38" fill="#946A75" stroke="#2D1E18" stroke-width="8.5"/>
+        <ellipse cx="0" cy="54" rx="24" ry="38" fill="#946A75" stroke="#2D1E18" stroke-width="8.5"/>
+        <ellipse cx="-48" cy="-27" rx="24" ry="38" transform="rotate(-60 -48 -27)" fill="#DC8A63" stroke="#2D1E18" stroke-width="8.5"/>
+        <ellipse cx="48" cy="27" rx="24" ry="38" transform="rotate(-60 48 27)" fill="#DC8A63" stroke="#2D1E18" stroke-width="8.5"/>
+        <ellipse cx="48" cy="-27" rx="24" ry="38" transform="rotate(60 48 -27)" fill="#DC8A63" stroke="#2D1E18" stroke-width="8.5"/>
+        <ellipse cx="-48" cy="27" rx="24" ry="38" transform="rotate(60 -48 27)" fill="#DC8A63" stroke="#2D1E18" stroke-width="8.5"/>
+        <!-- Honey sun center -->
+        <circle cx="0" cy="0" r="34" fill="#EEB45D" stroke="#2D1E18" stroke-width="8.5"/>
+        <circle cx="-8" cy="-8" r="9" fill="#FDF6E9"/>
+      </g>
+      <!-- Two abstract little sage leaves below flower -->
+      <path d="M384 656 C348 648 320 666 322 694 C350 700 378 686 384 656 Z" fill="#96B098" stroke="#2D1E18" stroke-width="7.5"/>
+      <path d="M384 656 C420 648 448 666 446 694 C418 700 390 686 384 656 Z" fill="#667D60" stroke="#2D1E18" stroke-width="7.5"/>
+      <!-- Bottom abstract geometric ornament band (dots & diamond, NO letters) -->
+      <path d="M384 724 L400 740 L384 756 L368 740 Z" fill="#76A099" stroke="#2D1E18" stroke-width="6.5"/>
+      <circle cx="328" cy="740" r="9" fill="#DC8A63" stroke="#2D1E18" stroke-width="5.5"/>
+      <circle cx="440" cy="740" r="9" fill="#DC8A63" stroke="#2D1E18" stroke-width="5.5"/>
+
+      <!-- Re-stroke front packet cleanly -->
+      <path d="M196 226 L572 226 C586 226 594 236 594 248 L594 824 C594 842 580 854 562 854 L206 854 C188 854 174 842 174 824 L174 248 C174 236 182 226 196 226 Z"
+            fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    </g>
+  </g>
+</svg>

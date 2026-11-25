@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <filter id="hand-ink" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.019" numOctaves="2" seed="245" result="hand"/>
+      <feDisplacementMap in="SourceGraphic" in2="hand" scale="5.6" xChannelSelector="R" yChannelSelector="G" result="h1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="423" result="nib"/>
+      <feDisplacementMap in="h1" in2="nib" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <clipPath id="arch-inner">
+      <path d="M294 742 L294 378 C294 240 392 162 512 162 C632 162 730 240 730 378 L730 742 Z"/>
+    </clipPath>
+  </defs>
+  <g filter="url(#hand-ink)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Diagonal wooden lattice bars inside arch -->
+    <g clip-path="url(#arch-inner)">
+      <!-- Left-to-right rising slats -->
+      <path d="M250 420 L540 130 M250 545 L665 130 M250 670 L760 160 M280 765 L765 280 M405 765 L765 405 M530 765 L765 530"
+            stroke="#2D1E18" stroke-width="28" fill="none"/>
+      <path d="M250 420 L540 130 M250 545 L665 130 M250 670 L760 160 M280 765 L765 280 M405 765 L765 405 M530 765 L765 530"
+            stroke="#D89A4B" stroke-width="13.8" fill="none"/>
+      <!-- Right-to-left rising slats -->
+      <path d="M484 130 L774 420 M359 130 L774 545 M264 160 L774 670 M259 280 L744 765 M259 405 L619 765 M259 530 L494 765"
+            stroke="#2D1E18" stroke-width="28" fill="none"/>
+      <path d="M484 130 L774 420 M359 130 L774 545 M264 160 L774 670 M259 280 L744 765 M259 405 L619 765 M259 530 L494 765"
+            stroke="#EEB45D" stroke-width="13.8" fill="none"/>
+    </g>
+
+    <!-- Main arched wooden frame (honey oak with 3D right depth edge) -->
+    <path d="M258 752 L258 378 C258 214 372 126 512 126 C652 126 766 214 766 378 L766 752 L722 752 L722 378 C722 244 628 172 512 172 C396 172 302 244 302 378 L302 752 Z"
+          fill="#EEB45D" stroke="#2D1E18" stroke-width="13.8"/>
+    <!-- Right shaded side of arch frame -->
+    <path d="M512 126 C652 126 766 214 766 378 L766 752 L738 752 L738 378 C738 232 638 148 512 148 Z"
+          fill="#CE9044"/>
+    <!-- Re-stroke outer arch -->
+    <path d="M258 752 L258 378 C258 214 372 126 512 126 C652 126 766 214 766 378 L766 752 L722 752 L722 378 C722 244 628 172 512 172 C396 172 302 244 302 378 L302 752 Z"
+          fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    <!-- Highlight on upper-left arch rim -->
+    <path d="M276 368 C280 236 374 152 486 144" stroke="#F8D592" stroke-width="9" fill="none"/>
+
+    <!-- Decorative dusty-teal top finial knob -->
+    <path d="M492 128 C490 100 500 84 512 84 C524 84 534 100 532 128 Z"
+          fill="#76A099" stroke="#2D1E18" stroke-width="11.5"/>
+
+    <!-- Freestanding compact wooden planter box base -->
+    <path d="M214 726 L810 726 L786 882 L238 882 Z"
+          fill="#EEB45D" stroke="#2D1E18" stroke-width="13.8"/>
+    <path d="M620 726 L810 726 L786 882 L610 882 Z" fill="#CE9044"/>
+    <!-- Planter box horizontal slat line & rim -->
+    <path d="M226 806 L798 806" stroke="#2D1E18" stroke-width="9" fill="none"/>
+    <path d="M214 726 L810 726 L786 882 L238 882 Z" fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    <!-- Top rim ledge on planter box -->
+    <path d="M198 706 L826 706 L826 742 L198 742 Z"
+          fill="#F5CE86" stroke="#2D1E18" stroke-width="12.6"/>
+    <path d="M635 706 L826 706 L826 742 L635 742 Z" fill="#D89A4B"/>
+    <path d="M198 706 L826 706 L826 742 L198 742 Z" fill="none" stroke="#2D1E18" stroke-width="12.6"/>
+    <!-- Dusty-teal corner bracket accents on planter box -->
+    <path d="M218 742 L254 742 L262 882 L238 882 Z" fill="#76A099" stroke="#2D1E18" stroke-width="9"/>
+    <path d="M770 742 L806 742 L786 882 L762 882 Z" fill="#608882" stroke="#2D1E18" stroke-width="9"/>
+    <!-- Short sturdy base feet -->
+    <path d="M254 882 L318 882 L312 912 L260 912 Z" fill="#A66E32" stroke="#2D1E18" stroke-width="11.5"/>
+    <path d="M706 882 L770 882 L764 912 L712 912 Z" fill="#A66E32" stroke="#2D1E18" stroke-width="11.5"/>
+
+    <!-- Lush foliage at planter top rim -->
+    <g>
+      <path d="M236 706 C230 666 268 640 314 654 C332 622 390 618 424 650 C456 632 508 642 522 674 C554 646 614 648 640 676 C672 644 736 644 762 678 C786 678 796 692 790 706 Z"
+            fill="#667D60" stroke="#2D1E18" stroke-width="11.5"/>
+      <path d="M276 706 C284 676 322 664 358 678 C382 654 434 658 456 688 C492 672 538 680 558 706 Z"
+            fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    </g>
+
+    <!-- Climbing organic leafy vines sweeping up the left, across the top arch, and cascading down the right -->
+    <path d="M300 688 C258 584 246 472 280 354 C312 242 406 154 532 152 C652 150 742 224 756 346 C766 436 734 522 694 584"
+          fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    <path d="M300 688 C258 584 246 472 280 354 C312 242 406 154 532 152 C652 150 742 224 756 346 C766 436 734 522 694 584"
+          fill="none" stroke="#667D60" stroke-width="6"/>
+
+    <!-- Layered hand-drawn leaves along vine -->
+    <!-- Left climbing leaves -->
+    <path d="M276 626 C228 616 206 582 222 558 C256 558 282 586 286 620 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M294 590 C338 574 366 544 354 516 C320 520 292 548 286 584 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M262 522 C214 504 196 468 216 444 C248 448 274 478 276 516 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M284 468 C330 450 356 416 344 390 C312 396 286 426 278 462 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M268 400 C222 378 212 338 236 318 C268 326 288 358 284 394 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M312 318 C358 312 394 286 390 256 C356 254 322 276 306 310 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+    <!-- Top arch leaves -->
+    <path d="M352 246 C324 202 334 162 366 156 C394 178 394 218 370 248 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M430 182 C422 134 446 102 476 108 C492 138 476 174 444 192 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M518 170 C540 124 580 106 604 124 C602 158 572 184 532 184 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M618 192 C652 158 696 154 714 180 C698 212 660 224 622 208 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+    <!-- Right cascading leaves -->
+    <path d="M726 254 C774 242 812 258 814 288 C786 308 746 300 720 272 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M748 336 C794 342 824 372 812 400 C778 406 746 382 738 346 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M722 396 C676 392 642 414 646 444 C676 456 712 440 730 408 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M742 476 C784 494 804 530 784 554 C752 552 728 524 730 486 Z" fill="#96B098" stroke="#2D1E18" stroke-width="8"/>
+    <path d="M694 558 C652 566 626 594 638 620 C670 622 698 598 704 566 Z" fill="#667D60" stroke="#2D1E18" stroke-width="8"/>
+
+    <!-- Cheerful cottage blossom clusters (terracotta, oat cream, soft plum) -->
+    <!-- Blossom 1: Terracotta (left mid) -->
+    <g transform="translate(274,474)">
+      <circle cx="-18" cy="-10" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="18" cy="-10" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="-22" r="17" fill="#EAA481" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="-14" cy="14" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="14" cy="14" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="0" r="12" fill="#EEB45D" stroke="#2D1E18" stroke-width="7"/>
+    </g>
+    <!-- Blossom 2: Oat cream (upper left arch) -->
+    <g transform="translate(342,272)">
+      <circle cx="-19" cy="-8" r="18" fill="#F8EAD5" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="19" cy="-8" r="18" fill="#F8EAD5" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="-22" r="18" fill="#FDF6E9" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="-14" cy="15" r="18" fill="#F8EAD5" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="14" cy="15" r="18" fill="#F8EAD5" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="0" r="12" fill="#DC8A63" stroke="#2D1E18" stroke-width="7"/>
+    </g>
+    <!-- Blossom 3: Plum (top-right arch) -->
+    <g transform="translate(612,184)">
+      <circle cx="-17" cy="-8" r="16" fill="#946A75" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="17" cy="-8" r="16" fill="#946A75" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="-20" r="16" fill="#AC838D" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="-12" cy="13" r="16" fill="#946A75" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="12" cy="13" r="16" fill="#946A75" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="0" r="11" fill="#F8EAD5" stroke="#2D1E18" stroke-width="7"/>
+    </g>
+    <!-- Blossom 4: Terracotta (right upper) -->
+    <g transform="translate(744,324)">
+      <circle cx="-18" cy="-8" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="18" cy="-8" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="-21" r="17" fill="#EAA481" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="-13" cy="14" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="13" cy="14" r="17" fill="#DC8A63" stroke="#2D1E18" stroke-width="8"/>
+      <circle cx="0" cy="0" r="11" fill="#EEB45D" stroke="#2D1E18" stroke-width="7"/>
+    </g>
+    <!-- Blossom 5: Oat cream (right lower) -->
+    <g transform="translate(724,496)">
+      <circle cx="-15" cy="-7" r="14" fill="#F8EAD5" stroke="#2D1E18" stroke-width="7.5"/>
+      <circle cx="15" cy="-7" r="14" fill="#F8EAD5" stroke="#2D1E18" stroke-width="7.5"/>
+      <circle cx="0" cy="-18" r="14" fill="#FDF6E9" stroke="#2D1E18" stroke-width="7.5"/>
+      <circle cx="-11" cy="12" r="14" fill="#F8EAD5" stroke="#2D1E18" stroke-width="7.5"/>
+      <circle cx="11" cy="12" r="14" fill="#F8EAD5" stroke="#2D1E18" stroke-width="7.5"/>
+      <circle cx="0" cy="0" r="10" fill="#EEB45D" stroke="#2D1E18" stroke-width="6.5"/>
+    </g>
+    <!-- Blossom 6: Plum (bottom left bush) -->
+    <g transform="translate(362,670)">
+      <circle cx="-14" cy="-6" r="13" fill="#946A75" stroke="#2D1E18" stroke-width="7"/>
+      <circle cx="14" cy="-6" r="13" fill="#946A75" stroke="#2D1E18" stroke-width="7"/>
+      <circle cx="0" cy="-16" r="13" fill="#AC838D" stroke="#2D1E18" stroke-width="7"/>
+      <circle cx="-10" cy="11" r="13" fill="#946A75" stroke="#2D1E18" stroke-width="7"/>
+      <circle cx="10" cy="11" r="13" fill="#946A75" stroke="#2D1E18" stroke-width="7"/>
+      <circle cx="0" cy="0" r="9" fill="#F8EAD5" stroke="#2D1E18" stroke-width="6"/>
+    </g>
+    <!-- Small terracotta buds -->
+    <circle cx="486" cy="158" r="14" fill="#DC8A63" stroke="#2D1E18" stroke-width="7.5"/>
+    <circle cx="294" cy="364" r="13" fill="#946A75" stroke="#2D1E18" stroke-width="7"/>
+    <circle cx="662" cy="672" r="14" fill="#F8EAD5" stroke="#2D1E18" stroke-width="7.5"/>
+  </g>
+</svg>

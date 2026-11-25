@@ -1,104 +1,79 @@
-import { useEffect } from 'react';
-import { dayPhase, now } from './config/time';
-import { applyLanguage } from './i18n';
-import { playMusic, setMusicVolume, setSfxVolume } from './audio/engine';
-import { cloudConfigured, uploadCloudSave } from './save/cloud';
-import { initAutosave, setSaveRevision } from './save/autosave';
-import { useGameStore } from './store/gameStore';
-import { Hud } from './ui/Hud';
-import { OverlayHost } from './ui/OverlayHost';
-import { StageView } from './ui/StageView';
-import { RotateOverlay, Toasts, MomentFlash } from './ui/Toasts';
-import { TitleScreen } from './ui/TitleScreen';
+import { useCallback, useState } from 'react';
+import {
+  clearLayout,
+  DEFAULT_LAYOUT,
+  ITEMS,
+  loadLayout,
+  saveLayout,
+  type ItemDef,
+  type Layout,
+  type Pos,
+  ROOM,
+} from './game/layout';
+import { Furniture } from './ui/Furniture';
+import { Pet } from './ui/Pet';
+import { Stage } from './ui/Stage';
 
-export default function App() {
-  const screen = useGameStore((s) => s.screen);
-  const loaded = useGameStore((s) => s.loaded);
-  const settings = useGameStore((s) => s.state.settings);
-  const overlay = useGameStore((s) => s.overlay);
-  const lastSeenAt = useGameStore((s) => s.state.lastSeenAt);
-  const boot = useGameStore((s) => s.boot);
+const storage = typeof window !== 'undefined' ? window.localStorage : undefined;
 
-  useEffect(() => {
-    void boot();
-  }, [boot]);
+export function App() {
+  const [layout, setLayout] = useState<Layout>(() => loadLayout(storage));
+  const [lampOn, setLampOn] = useState(true);
+  const [showHint, setShowHint] = useState(true);
 
-  // A gentle one-second heartbeat keeps pets, visitors, crops and bubbles alive.
-  useEffect(() => {
-    if (!loaded) return;
-    const id = window.setInterval(() => useGameStore.getState().tick(), 1000);
-    return () => window.clearInterval(id);
-  }, [loaded]);
+  const onMove = useCallback((id: string, pos: Pos) => {
+    setShowHint(false);
+    setLayout((l) => ({ ...l, [id]: pos }));
+  }, []);
 
-  // Autosave watches gameplay state only, not UI state such as open panels.
-  useEffect(() => {
-    if (!loaded) return;
-    const store = useGameStore.getState();
-    setSaveRevision(store.saveRevision);
-    const stop = initAutosave({
-      getState: () => useGameStore.getState().state,
-      getDeviceId: () => useGameStore.getState().deviceId,
-      subscribe: (listener) =>
-        useGameStore.subscribe((next, previous) => {
-          if (next.state !== previous.state) listener();
-        }),
-      onStatus: (status) => useGameStore.getState().setSaveStatus(status),
-      onSaved: (envelope) => {
-        useGameStore.getState().setSaveRevision(envelope.revision);
-        if (cloudConfigured()) {
-          void uploadCloudSave(envelope).catch(() => undefined);
-        }
-      },
+  const onDrop = useCallback(() => {
+    setLayout((l) => {
+      saveLayout(storage, l);
+      return l;
     });
-    return stop;
-  }, [loaded]);
+  }, []);
 
-  useEffect(() => {
-    applyLanguage(settings.lang);
-  }, [settings.lang]);
+  const onTap = useCallback((def: ItemDef) => {
+    setShowHint(false);
+    if (def.tap === 'lamp') setLampOn((on) => !on);
+  }, []);
 
-  useEffect(() => {
-    setMusicVolume(settings.music);
-    setSfxVolume(settings.sfx);
-  }, [settings.music, settings.sfx]);
-
-  useEffect(() => {
-    document.documentElement.dataset.textSize = settings.textSize;
-  }, [settings.textSize]);
-
-  useEffect(() => {
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-    if (overlay) {
-      document.body.classList.add('has-overlay');
-    } else {
-      document.body.classList.remove('has-overlay');
-    }
-    return () => document.body.classList.remove('has-overlay');
-  }, [overlay]);
-
-  // The clock in the room decides the music. `lastSeenAt` refreshes each tick.
-  const night = dayPhase(now()) === 'night';
-  useEffect(() => {
-    if (screen !== 'game' || !loaded) return;
-    playMusic(night ? 'night' : 'day');
-  }, [screen, loaded, night, lastSeenAt]);
+  const reset = () => {
+    clearLayout(storage);
+    setLayout({ ...DEFAULT_LAYOUT });
+  };
 
   return (
-    <div className={screen === 'game' ? 'app app-game' : 'app app-title'}>
-      {screen === 'title' ? (
-        <TitleScreen />
-      ) : (
-        <div className="stage-shell">
-          <div className="stage-frame">
-            <StageView night={night} />
-            <Hud />
-            <OverlayHost />
-            <MomentFlash />
-          </div>
+    <Stage>
+      {(scale) => (
+        <div className={`room${lampOn ? '' : ' is-dim'}`}>
+          <img className="room-bg" src={ROOM.background} alt="" draggable={false} />
+          {ITEMS.map((def) => (
+            <Furniture
+              key={def.id}
+              def={def}
+              pos={layout[def.id]}
+              scale={scale}
+              lampOn={lampOn}
+              onMove={onMove}
+              onDrop={onDrop}
+              onTap={onTap}
+            />
+          ))}
+          <Pet />
+          <div className="room-dim" />
+
+          <header className="hud">
+            <span className="hud-title">Living room</span>
+            <button type="button" className="hud-button" onClick={reset}>
+              Reset room
+            </button>
+          </header>
+          <p className={`hint${showHint ? '' : ' is-hidden'}`}>
+            Drag furniture to rearrange · tap things to play
+          </p>
         </div>
       )}
-      <Toasts />
-      <RotateOverlay />
-    </div>
+    </Stage>
   );
 }

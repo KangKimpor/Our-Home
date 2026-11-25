@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <filter id="hand-ink" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.019" numOctaves="2" seed="347" result="hand"/>
+      <feDisplacementMap in="SourceGraphic" in2="hand" scale="5.6" xChannelSelector="R" yChannelSelector="G" result="h1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="489" result="nib"/>
+      <feDisplacementMap in="h1" in2="nib" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#hand-ink)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cute stubby tail peeking on back right -->
+    <path d="M776 626 C814 622 842 642 838 662 C826 678 794 680 762 672 Z"
+          fill="#7B967D" stroke="#2D1E18" stroke-width="12.6"/>
+
+    <!-- Back-right sturdy tortoise leg -->
+    <path d="M674 636 L724 636 C748 672 752 728 738 756 C722 778 674 780 652 762 C638 746 644 684 654 646 Z"
+          fill="#7B967D" stroke="#2D1E18" stroke-width="12.6"/>
+    <!-- Toenails -->
+    <path d="M670 766 C672 752 686 750 690 766 M698 768 C702 754 716 752 718 766"
+          fill="#F8EAD5" stroke="#2D1E18" stroke-width="6.5"/>
+
+    <!-- Back-left far leg (subtle depth) -->
+    <path d="M352 640 L414 642 C416 692 410 738 394 756 C376 772 332 768 320 750 C312 732 326 678 338 646 Z"
+          fill="#667D60" stroke="#2D1E18" stroke-width="12.6"/>
+
+    <!-- Soft oat-cream underbelly (plastron) -->
+    <path d="M324 626 C420 676 644 682 752 634 C746 686 644 716 530 714 C414 712 336 680 324 626 Z"
+          fill="#E8D5B7" stroke="#2D1E18" stroke-width="12.6"/>
+
+    <!-- Front-left sturdy tortoise leg -->
+    <path d="M366 618 C398 616 446 634 452 666 C458 708 450 764 432 786 C412 806 362 806 342 784 C326 762 336 686 352 634 Z"
+          fill="#96B098" stroke="#2D1E18" stroke-width="13.8"/>
+    <path d="M412 636 C432 654 446 696 442 754 C436 780 422 794 402 798 C416 760 416 692 400 644 Z"
+          fill="#7B967D"/>
+    <path d="M366 618 C398 616 446 634 452 666 C458 708 450 764 432 786 C412 806 362 806 342 784 C326 762 336 686 352 634 Z"
+          fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    <!-- Cute cream toenails -->
+    <path d="M352 790 C354 774 370 772 374 790 M382 794 C386 778 402 776 404 794 M410 788 C414 774 426 774 428 788"
+          fill="#F8EAD5" stroke="#2D1E18" stroke-width="6.5"/>
+
+    <!-- Front-right sturdy leg -->
+    <path d="M582 652 C618 648 666 662 674 696 C682 738 674 786 654 804 C632 820 582 820 564 800 C548 778 558 706 570 666 Z"
+          fill="#96B098" stroke="#2D1E18" stroke-width="13.8"/>
+    <path d="M632 666 C654 686 666 728 662 778 C656 798 642 810 622 814 C636 776 634 714 618 672 Z"
+          fill="#7B967D"/>
+    <path d="M582 652 C618 648 666 662 674 696 C682 738 674 786 654 804 C632 820 582 820 564 800 C548 778 558 706 570 666 Z"
+          fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    <path d="M574 804 C576 788 592 786 596 804 M604 808 C608 792 624 790 626 808 M632 802 C636 788 648 788 650 802"
+          fill="#F8EAD5" stroke="#2D1E18" stroke-width="6.5"/>
+
+    <!-- Plump friendly tortoise neck & gentle smiling head -->
+    <path d="M362 560 C322 544 282 508 264 468 C242 424 198 424 176 462 C152 504 166 566 218 594 C264 618 320 628 364 630 Z"
+          fill="#96B098" stroke="#2D1E18" stroke-width="13.8"/>
+    <!-- Gentle cheek/jaw shading -->
+    <path d="M188 558 C222 592 288 618 358 622 L358 588 C306 588 242 574 188 558 Z"
+          fill="#7B967D"/>
+    <!-- Re-stroke head -->
+    <path d="M362 560 C322 544 282 508 264 468 C242 424 198 424 176 462 C152 504 166 566 218 594 C264 618 320 628 364 630 Z"
+          fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    <!-- Sweet upper-head highlight -->
+    
+    <!-- Rosy terracotta cheek dot -->
+    <ellipse cx="232" cy="542" rx="18" ry="11" fill="#DC8A63" opacity="0.55"/>
+    <!-- Warm dark umber button eyes -->
+    <circle cx="198" cy="508" r="13" fill="#2D1E18"/>
+    
+    <circle cx="256" cy="502" r="11" fill="#2D1E18"/>
+    
+    <!-- Contented cozy little smile -->
+    <path d="M180 544 C194 560 218 560 232 548" fill="none" stroke="#2D1E18" stroke-width="7.5"/>
+
+    <!-- Tiny cute two-leaf moss sprout peeking from shell ridge -->
+    <g>
+      <path d="M518 310 C512 270 520 238 534 216" fill="none" stroke="#2D1E18" stroke-width="12.6"/>
+      <path d="M518 310 C512 270 520 238 534 216" fill="none" stroke="#667D60" stroke-width="5"/>
+      <path d="M518 258 C472 246 446 212 460 184 C494 184 522 214 524 252 Z"
+            fill="#96B098" stroke="#2D1E18" stroke-width="10.9"/>
+      <path d="M524 242 C558 210 604 202 622 228 C606 262 564 274 526 254 Z"
+            fill="#667D60" stroke="#2D1E18" stroke-width="10.9"/>
+      <path d="M476 202 L508 238 M598 228 L546 244" stroke="#2D1E18" stroke-width="5" fill="none"/>
+    </g>
+
+    <!-- Plump domed terracotta & honey patchwork shell -->
+    <path d="M312 606 C306 436 404 294 556 294 C710 294 806 426 798 594 C766 644 654 666 550 666 C444 666 344 646 312 606 Z"
+          fill="#DC8A63" stroke="#2D1E18" stroke-width="13.8"/>
+
+    <!-- Geometric cottage patchwork scutes (honey ochre + warm terracotta) -->
+    <!-- Top central hexagon-ish honey scute -->
+    <path d="M478 364 L574 352 L636 414 L600 492 L494 496 L444 434 Z"
+          fill="#EEB45D" stroke="#2D1E18" stroke-width="9"/>
+    <path d="M484 374 L554 366 L502 418 Z" fill="#F8D592" opacity="0.65"/>
+
+    <!-- Left upper terracotta scute -->
+    <path d="M342 486 L444 434 L494 496 L456 594 L334 576 Z"
+          fill="#DC8A63" stroke="#2D1E18" stroke-width="9"/>
+    <path d="M358 492 L434 452 L404 514 Z" fill="#EAA481" opacity="0.6"/>
+
+    <!-- Right upper honey/terracotta scutes -->
+    <path d="M636 414 L736 406 L776 502 L714 584 L600 492 Z"
+          fill="#C47551" stroke="#2D1E18" stroke-width="9"/>
+    <!-- Center-bottom honey scute -->
+    <path d="M494 496 L600 492 L674 586 L552 608 L456 594 Z"
+          fill="#EEB45D" stroke="#2D1E18" stroke-width="9"/>
+    <path d="M562 496 L600 492 L668 582 L584 598 Z" fill="#CE9044" opacity="0.55"/>
+
+    <!-- Upper crest ridge seams -->
+    <path d="M478 364 L446 316 M574 352 L606 306 M636 414 L708 358 M444 434 L380 384"
+          stroke="#2D1E18" stroke-width="9" fill="none"/>
+
+    <!-- Oat-cream scalloped lower shell rim scutes -->
+    <path d="M306 592 C352 632 452 652 556 652 C662 652 762 630 802 586 C810 618 784 648 738 666 C672 686 608 692 548 692 C458 692 362 674 318 642 C300 628 296 608 306 592 Z"
+          fill="#F8EAD5" stroke="#2D1E18" stroke-width="12.6"/>
+    <!-- Shading on right half of oat-cream rim -->
+    <path d="M584 652 C676 648 764 624 800 588 C806 616 782 644 738 662 C682 682 628 688 584 690 Z"
+          fill="#E4D0B0"/>
+    <!-- Rim scute divider ticks -->
+    <path d="M372 622 L364 664 M454 644 L450 686 M548 652 L548 692 M640 644 L646 684 M726 622 L738 662"
+          stroke="#2D1E18" stroke-width="8" fill="none"/>
+    <!-- Re-stroke oat-cream rim cleanly -->
+    <path d="M306 592 C352 632 452 652 556 652 C662 652 762 630 802 586 C810 618 784 648 738 666 C672 686 608 692 548 692 C458 692 362 674 318 642 C300 628 296 608 306 592 Z"
+          fill="none" stroke="#2D1E18" stroke-width="12.6"/>
+
+    <!-- Re-stroke outer dome cleanly -->
+    <path d="M312 606 C306 436 404 294 556 294 C710 294 806 426 798 594"
+          fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+  </g>
+</svg>

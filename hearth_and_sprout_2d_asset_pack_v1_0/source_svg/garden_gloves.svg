@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <filter id="hand-ink" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.019" numOctaves="2" seed="262" result="hand"/>
+      <feDisplacementMap in="SourceGraphic" in2="hand" scale="5.6" xChannelSelector="R" yChannelSelector="G" result="h1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="434" result="nib"/>
+      <feDisplacementMap in="h1" in2="nib" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#hand-ink)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Back right-side gardening glove (angled gently right) -->
+    <g transform="translate(88,-16) rotate(18 540 520)">
+      <!-- Main oat-cream canvas glove silhouette -->
+      <path d="M390 618 L382 478 C382 456 364 434 342 420 C316 404 294 378 308 352 C322 328 358 338 386 366 L414 396 L416 254 C416 224 468 222 470 256 L474 344 L484 218 C488 188 542 190 542 224 L540 342 L558 232 C564 202 614 210 610 244 L598 362 L620 282 C628 254 676 266 666 300 L632 452 C622 508 616 566 614 618 Z"
+            fill="#EBD9BC" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Terracotta suede fingertip & thumb caps -->
+      <path d="M308 352 C322 328 354 336 382 362 L352 394 C324 378 300 366 308 352 Z"
+            fill="#C47551" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M416 254 C416 224 468 222 470 256 L472 292 L416 292 Z"
+            fill="#C47551" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M484 218 C488 188 542 190 542 224 L540 264 L480 262 Z"
+            fill="#C47551" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M558 232 C564 202 614 210 610 244 L604 282 L550 276 Z"
+            fill="#C47551" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M620 282 C628 254 676 266 666 300 L654 336 L608 324 Z"
+            fill="#C47551" stroke="#2D1E18" stroke-width="9"/>
+
+      <!-- Chunky ribbed sage knit cuff with honey stripe -->
+      <path d="M376 606 L628 606 C642 606 648 620 644 636 L632 758 C628 776 614 786 594 786 L408 786 C388 786 374 776 370 758 L358 636 C356 620 364 606 376 606 Z"
+            fill="#7B967D" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Honey knit accent band -->
+      <path d="M366 654 L638 654 L634 692 L370 692 Z" fill="#D89A4B" stroke="#2D1E18" stroke-width="8"/>
+      <!-- Vertical ribbed knit lines -->
+      <path d="M412 612 L418 780 M462 612 L466 780 M512 612 L512 780 M562 612 L558 780 M608 612 L600 780"
+            stroke="#2D1E18" stroke-width="6.5" opacity="0.65"/>
+    </g>
+
+    <!-- Front left-side gardening glove (angled gently left, crisp foreground hero) -->
+    <g transform="translate(-88,24) rotate(-14 480 540)">
+      <!-- Main oat-cream canvas glove silhouette -->
+      <path d="M342 628 L334 480 C328 432 324 378 308 318 C298 282 346 270 356 302 L380 374 L374 246 C372 210 426 206 430 240 L444 352 L450 220 C452 184 508 184 510 220 L512 346 L528 242 C534 210 584 218 580 252 L572 384 L604 358 C632 334 668 344 676 372 C682 396 656 426 628 446 C606 462 590 486 588 518 L586 628 Z"
+            fill="#F8EAD5" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Warm right-side & palm cel shadow -->
+      <path d="M524 388 C552 404 584 446 582 518 L582 622 L514 622 C528 548 530 456 524 388 Z"
+            fill="#E4D0B0"/>
+      <!-- Terracotta suede fingertip & thumb reinforcements -->
+      <path d="M308 318 C298 282 346 270 356 302 L366 336 L318 348 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M374 246 C372 210 426 206 430 240 L434 282 L376 286 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M450 220 C452 184 508 184 510 220 L510 264 L448 264 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M528 242 C534 210 584 218 580 252 L574 294 L520 286 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="9"/>
+      <path d="M604 358 C632 334 668 344 676 372 C680 388 668 408 650 424 L612 396 Z"
+            fill="#DC8A63" stroke="#2D1E18" stroke-width="9"/>
+      <!-- Terracotta palm reinforcement patch across knuckles -->
+      <path d="M338 454 C406 432 516 434 584 468 L584 516 C512 486 410 484 340 502 Z"
+            fill="#DC8A63" opacity="0.28"/>
+      <!-- Tiny embroidered moss-green leaf motif on back of glove -->
+      <g transform="translate(460,510)">
+        <path d="M0 32 L0 -26" stroke="#2D1E18" stroke-width="6.5"/>
+        <path d="M0 8 C-28 4 -40 -16 -28 -30 C-10 -28 2 -12 0 8 Z" fill="#96B098" stroke="#2D1E18" stroke-width="6.5"/>
+        <path d="M0 -4 C28 -8 40 -28 28 -42 C10 -40 -2 -24 0 -4 Z" fill="#667D60" stroke="#2D1E18" stroke-width="6.5"/>
+      </g>
+      <!-- Upper-left light cloth highlight -->
+      <path d="M358 430 C358 484 360 544 364 586" stroke="#FDF6E9" stroke-width="12.6" fill="none"/>
+
+      <!-- Re-stroke front glove hand cleanly -->
+      <path d="M342 628 L334 480 C328 432 324 378 308 318 C298 282 346 270 356 302 L380 374 L374 246 C372 210 426 206 430 240 L444 352 L450 220 C452 184 508 184 510 220 L512 346 L528 242 C534 210 584 218 580 252 L572 384 L604 358 C632 334 668 344 676 372 C682 396 656 426 628 446 C606 462 590 486 588 518 L586 628 Z"
+            fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+
+      <!-- Chunky ribbed sage knit wrist cuff -->
+      <path d="M332 616 L596 616 C610 616 618 630 614 646 L600 778 C596 798 582 808 562 808 L366 808 C346 808 332 798 328 778 L314 646 C310 630 318 616 332 616 Z"
+            fill="#96B098" stroke="#2D1E18" stroke-width="13.8"/>
+      <!-- Right side cuff shading -->
+      <path d="M530 620 L596 620 C606 620 612 630 610 644 L596 776 C592 794 580 804 562 804 L520 804 Z"
+            fill="#7B967D"/>
+      <!-- Honey stitched wrist stripe -->
+      <path d="M322 668 L606 668 L602 710 L326 710 Z" fill="#EEB45D" stroke="#2D1E18" stroke-width="8.5"/>
+      <path d="M334 689 L594 689" stroke="#2D1E18" stroke-width="5" stroke-dasharray="14 12" opacity="0.55"/>
+      <!-- Ribbed knit lines -->
+      <path d="M372 622 L380 802 M424 622 L428 802 M474 622 L474 802 M524 622 L520 802 M570 622 L560 802"
+            stroke="#2D1E18" stroke-width="6.5" opacity="0.65"/>
+      <!-- Re-stroke cuff cleanly -->
+      <path d="M332 616 L596 616 C610 616 618 630 614 646 L600 778 C596 798 582 808 562 808 L366 808 C346 808 332 798 328 778 L314 646 C310 630 318 616 332 616 Z"
+            fill="none" stroke="#2D1E18" stroke-width="13.8"/>
+    </g>
+  </g>
+</svg>

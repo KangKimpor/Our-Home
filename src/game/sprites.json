@@ -1,0 +1,50 @@
+{
+  "cottage_lounge_sofa": {
+    "w": 448,
+    "h": 287
+  },
+  "low_oak_coffee_table": {
+    "w": 448,
+    "h": 343
+  },
+  "braided_oval_rug": {
+    "w": 448,
+    "h": 229
+  },
+  "arched_display_bookshelf": {
+    "w": 361,
+    "h": 448
+  },
+  "standing_globe_floor_lamp": {
+    "w": 266,
+    "h": 448
+  },
+  "wall_pinboard_trio": {
+    "w": 448,
+    "h": 433
+  },
+  "seed_drawer_cabinet": {
+    "w": 434,
+    "h": 448
+  },
+  "tea_trolley": {
+    "w": 400,
+    "h": 448
+  },
+  "wall_clock": {
+    "w": 377,
+    "h": 448
+  },
+  "patchwork_floor_cushion": {
+    "w": 448,
+    "h": 353
+  },
+  "potted_calamondin_tree": {
+    "w": 297,
+    "h": 448
+  },
+  "mossback_hedgehog": {
+    "w": 392,
+    "h": 448
+  }
+}
