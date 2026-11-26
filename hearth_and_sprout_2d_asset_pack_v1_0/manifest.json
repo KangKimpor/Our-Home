@@ -1,7 +1,7 @@
 {
   "pack_name": "Hearth & Sprout \u2014 Original Home, Living Room & Garden 2D Game Asset Pack",
-  "version": "5.0.0",
-  "style_pass": "new_design_anchor_harmonized_v5_0",
+  "version": "6.0.0",
+  "style_pass": "hand_drawn_sofa_benchmark_unified_v6_0",
   "creation_date": "2026-11-25",
   "clean_room_status": "original_from_scratch_no_third_party_reference_assets_included",
   "total_sprites": 27,
@@ -18,23 +18,21 @@
   "qa_report": "QA_REPORT.md",
   "readme": "README.md",
   "palette": {
-    "ink": "#2D1E18",
-    "oat_cream": "#F8EAD5",
-    "honey_oak": "#EEB45D",
-    "honey_shade": "#CE9044",
-    "wood_grain": "#9F6B35",
-    "terracotta": "#DC8A63",
-    "dusty_teal": "#76A099",
-    "sage": "#96B098",
-    "moss": "#667D60",
-    "plum": "#946A75"
+    "ink": "#2C221E",
+    "oat_cream": "#F3E7CE",
+    "sage": "#8FA88A",
+    "moss": "#64785B",
+    "terracotta": "#C87F62",
+    "honey": "#D8AA5F",
+    "dusty_teal": "#6F9E9B",
+    "plum": "#856B78"
   },
   "rights_and_provenance_summary": {
     "human_authorship_claimed": false,
     "copyright_ownership_verified": false,
     "exclusivity_guaranteed": false,
     "license_status": "unverified",
-    "notes": "4 design anchor assets (living_room_backdrop, cottage_lounge_sofa, low_oak_coffee_table, braided_oval_rug) were refined by the user in ChatGPT from our original Hearth & Sprout designs and integrated cleanly; 12 core sprites were created with Antigravity's built-in AI image-generator tool and harmonized to the new anchor palette & #2D1E18 ink; 12 sprites were authored as original hand-drawn SVGs by the AI agent, harmonized to the exact sampled anchor palette, and rendered via Playwright/Chromium (image-generator quota remained in HTTP 429 cooldown). Zero third-party screenshots, reference crops, or unverified v1.1 assets were included."
+    "notes": "All 27 sprites in v6.0 are unified to match the approved revised cottage_lounge_sofa.png (Asset #2): 3 approved living-room design anchors (cottage_lounge_sofa, low_oak_coffee_table, braided_oval_rug) + 1 living_room_backdrop, 1 user-retained original pinboard design (wall_pinboard_trio with editable SVG source), and 23 sprites redrawn/refined with Antigravity's image-generator referencing both cottage_lounge_sofa.png and each original design, then alpha-extracted, edge-decontaminated, and normalized to 512x512 transparent RGBA PNG in Python."
   },
   "assets": [
     {
@@ -50,7 +48,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5014,
+        "transparent_pixel_ratio": 0.4975,
         "padding_px": {
           "top": 32,
           "right": 85,
@@ -61,15 +59,15 @@
       "scale_tier": "large",
       "recommended_world_scale": 1.0,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 235637,
-      "sha256": "e5c2b596291472cb57e1a21f1b50607d42bbb77b9bbe99e40ee5ddba28e4ba1a"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 245865,
+      "sha256": "8b51949609f1e97a1136338e67788e70954793ff58df9ba22afb8cfee34ecc96"
     },
     {
       "id": "seed_drawer_cabinet",
@@ -84,7 +82,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4225,
+        "transparent_pixel_ratio": 0.4149,
         "padding_px": {
           "top": 32,
           "right": 39,
@@ -95,15 +93,15 @@
       "scale_tier": "large",
       "recommended_world_scale": 0.9,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 251998,
-      "sha256": "1a7a8dc2aa5a8cade3c8b51e30865e4f0370b1066fc36881f092dd33f1dcae89"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 254253,
+      "sha256": "564ba98966c37b6ee2b5c1bbd22acd9744b1683026fcc0bbff363f2c4cc276f1"
     },
     {
       "id": "small_reading_lamp",
@@ -118,7 +116,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6739,
+        "transparent_pixel_ratio": 0.6682,
         "padding_px": {
           "top": 32,
           "right": 105,
@@ -129,15 +127,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.6,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 146233,
-      "sha256": "378abb4572901d213dd39c7383d39d55e1ae6e759350411d3c00cac2d1927393"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 129435,
+      "sha256": "03c1d741cf6edea6bab93911a9f66a8ba10f5459cac2825aeae055a970a35c16"
     },
     {
       "id": "tea_trolley",
@@ -152,7 +150,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6517,
+        "transparent_pixel_ratio": 0.6389,
         "padding_px": {
           "top": 32,
           "right": 56,
@@ -163,15 +161,15 @@
       "scale_tier": "large",
       "recommended_world_scale": 0.95,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 222912,
-      "sha256": "dd836bc8f3c9da0396cde6f97792f88b6e95da9d6d2fca5e9506f614b740ee47"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 226111,
+      "sha256": "7d516fc62a38ff1472f07b13d4be12880ab951ef861d5a28917ed6b73d89e46f"
     },
     {
       "id": "wall_clock",
@@ -186,7 +184,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5787,
+        "transparent_pixel_ratio": 0.5722,
         "padding_px": {
           "top": 32,
           "right": 68,
@@ -197,15 +195,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.65,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 188729,
-      "sha256": "380d269fb43e6a9b906ec3e0fd248efda6559265d78553a42ecca0ff65b89724"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 189275,
+      "sha256": "a1da4361ae885b4b45773d7a9db4c750dfb85afc59ff9b00b62440b24b338d5e"
     },
     {
       "id": "patchwork_floor_cushion",
@@ -220,7 +218,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5031,
+        "transparent_pixel_ratio": 0.4973,
         "padding_px": {
           "top": 79,
           "right": 32,
@@ -231,15 +229,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.72,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 214287,
-      "sha256": "447b18e15d108fe155c37e8b2fcfd7291878dd1824a83c93a9effa938eb9ccfe"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 218150,
+      "sha256": "97569eb9d22784a4ff638ccce87c0304b87ff9b095f0815118400a309d4f262e"
     },
     {
       "id": "rounded_watering_can",
@@ -254,7 +252,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6919,
+        "transparent_pixel_ratio": 0.685,
         "padding_px": {
           "top": 109,
           "right": 32,
@@ -265,15 +263,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.6,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 135447,
-      "sha256": "d0e4588021a61b88fd9fd9f163ed57f68c7b204620afaf4c12c14d5055c4a864"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 111784,
+      "sha256": "a1d104dc66c6c9afff1d8d5c817da49d28b1a675682d3e1d64a7f67059eec6d2"
     },
     {
       "id": "greenhouse_lantern",
@@ -288,7 +286,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6205,
+        "transparent_pixel_ratio": 0.6136,
         "padding_px": {
           "top": 32,
           "right": 101,
@@ -299,15 +297,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.62,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 216013,
-      "sha256": "aa92774541e97c7279b52d05a995869ae363ecbf4bc91e5fcfde7b836a40e504"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 206265,
+      "sha256": "4ebdbf9a92327bab864ab306c8622e3936dd0591ae39226c9990807df1fb29fe"
     },
     {
       "id": "two_wheeled_herb_cart",
@@ -322,9 +320,9 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5783,
+        "transparent_pixel_ratio": 0.5665,
         "padding_px": {
-          "top": 39,
+          "top": 38,
           "right": 32,
           "bottom": 39,
           "left": 32
@@ -333,15 +331,15 @@
       "scale_tier": "large",
       "recommended_world_scale": 1.0,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 277161,
-      "sha256": "1ebbda5d69274bb658d99b22dd1fc914d978a96965df9a5b9c2ac3559d2d5db5"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 291444,
+      "sha256": "246d0667b546d5cc2961a7d886e19ac8f50f141b6d447583d03c6f25d443265f"
     },
     {
       "id": "flowering_trellis",
@@ -356,26 +354,26 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6181,
+        "transparent_pixel_ratio": 0.6071,
         "padding_px": {
           "top": 32,
           "right": 85,
           "bottom": 32,
-          "left": 84
+          "left": 85
         }
       },
       "scale_tier": "large",
       "recommended_world_scale": 1.05,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/flowering_trellis.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 195122,
-      "sha256": "2f5c48d228b12cec5adf4736d0028bbeb1368ccb8ea86403c1ec459973fdb452"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 251464,
+      "sha256": "79bf1f6941a1c2503270054094dcb1bc41b93682984fdf6b6c99e09ce1c9b44b"
     },
     {
       "id": "potted_calamondin_tree",
@@ -390,26 +388,26 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.7178,
+        "transparent_pixel_ratio": 0.7112,
         "padding_px": {
           "top": 32,
           "right": 108,
           "bottom": 32,
-          "left": 107
+          "left": 108
         }
       },
       "scale_tier": "large",
       "recommended_world_scale": 0.95,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 172087,
-      "sha256": "d7906ab088e80c778ec2ebc5e1f14004ecba6a7207e2049945ce54ca2a645404"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 177951,
+      "sha256": "72a4ac3ecca2604d873145b1a9ea84ee7294c3f3ae4703b9896cf3f44c998d74"
     },
     {
       "id": "curved_orchard_stool",
@@ -424,7 +422,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5544,
+        "transparent_pixel_ratio": 0.5469,
         "padding_px": {
           "top": 47,
           "right": 32,
@@ -435,15 +433,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.7,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/curved_orchard_stool.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 140131,
-      "sha256": "4a7726119c3e34aa6056fb838f4e77f961c49a7fda829136d36c3f93d9a22bd9"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 229989,
+      "sha256": "24d5a2a21a259e943cdee5c293a53c4cfe5c548f067248b5b1acae920f7f3edd"
     },
     {
       "id": "raised_herb_bed",
@@ -458,26 +456,26 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5941,
+        "transparent_pixel_ratio": 0.5844,
         "padding_px": {
-          "top": 55,
+          "top": 54,
           "right": 32,
-          "bottom": 55,
+          "bottom": 54,
           "left": 32
         }
       },
       "scale_tier": "large",
       "recommended_world_scale": 1.0,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/raised_herb_bed.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 176159,
-      "sha256": "773aa983eda25d942a684e1260e0597dfa59bf7d058fd9cd7944e6197a26ccc1"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 242109,
+      "sha256": "acccd3352d1cdc5657c6b35d3cf61e56ec23438955e7f64b5894e5f67db18803"
     },
     {
       "id": "mossback_hedgehog",
@@ -492,10 +490,10 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4532,
+        "transparent_pixel_ratio": 0.4468,
         "padding_px": {
           "top": 32,
-          "right": 60,
+          "right": 61,
           "bottom": 32,
           "left": 60
         }
@@ -503,15 +501,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.65,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 238458,
-      "sha256": "3165eae4b157499930f6b5938b13728f514551fe4bd4fd51c650386524d4c236"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 220112,
+      "sha256": "02f4581ee26a3e4137220d27a78d8bfd322a73a107f4149136e7d9a8e868f52c"
     },
     {
       "id": "terracotta_tortoise",
@@ -526,26 +524,26 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6041,
+        "transparent_pixel_ratio": 0.6013,
         "padding_px": {
-          "top": 46,
+          "top": 47,
           "right": 32,
-          "bottom": 47,
+          "bottom": 48,
           "left": 32
         }
       },
       "scale_tier": "medium",
       "recommended_world_scale": 0.65,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/terracotta_tortoise.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 134274,
-      "sha256": "261b90b4ae0fdb520d0c3e43619ffe95c48e9e6228240c6a84489fda03dfbb7d"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 169916,
+      "sha256": "37862bee59f03432cd018481a3e0e31a37edab1079f60e6f5afb9a15db32321b"
     },
     {
       "id": "sunhat_garden_frog",
@@ -560,7 +558,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5393,
+        "transparent_pixel_ratio": 0.5335,
         "padding_px": {
           "top": 32,
           "right": 72,
@@ -571,15 +569,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.62,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/sunhat_garden_frog.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 141370,
-      "sha256": "a0a570426bafdbf3c5f55aae11aa45f19f67723afbc5330330b2a47bf9663f47"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 173613,
+      "sha256": "84ea71dd990037b5dbcde9306f183b3f88c68131cc14f1266c64fbb492a3c2bd"
     },
     {
       "id": "seed_packets",
@@ -594,10 +592,10 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.431,
+        "transparent_pixel_ratio": 0.4242,
         "padding_px": {
           "top": 32,
-          "right": 37,
+          "right": 36,
           "bottom": 32,
           "left": 36
         }
@@ -605,15 +603,15 @@
       "scale_tier": "small",
       "recommended_world_scale": 0.45,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/seed_packets.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 183678,
-      "sha256": "7a5419838431810cad516715d29cab1eaa5c009bd2bc13ad14b7584e519f87ac"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 222104,
+      "sha256": "75467cb245c224fd49e358ad80f83bb200d197983aa12a9af0c5f57b07d6a214"
     },
     {
       "id": "garden_gloves",
@@ -628,7 +626,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5125,
+        "transparent_pixel_ratio": 0.507,
         "padding_px": {
           "top": 32,
           "right": 36,
@@ -639,15 +637,15 @@
       "scale_tier": "small",
       "recommended_world_scale": 0.48,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/garden_gloves.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 159181,
-      "sha256": "cb04aa3e741ad69439142c44f7eedfb70a6bff80e71e83e1bb7b0a4ecb4d5f91"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 216830,
+      "sha256": "5a56058fef01b4209b115f8de9d98ce51d1e6329e45a5702ad7774096cb58760"
     },
     {
       "id": "hand_trowel",
@@ -662,26 +660,26 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.7766,
+        "transparent_pixel_ratio": 0.7705,
         "padding_px": {
           "top": 32,
           "right": 53,
           "bottom": 32,
-          "left": 53
+          "left": 52
         }
       },
       "scale_tier": "small",
       "recommended_world_scale": 0.46,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/hand_trowel.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 82285,
-      "sha256": "71196e475132125be6fab6dfb08cc8078c2b190f02ea60d3cf245950ae44873d"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 116707,
+      "sha256": "f517cf70b2f93a2f49db7975bdd472d87d67b4ebbcec7ae2db7184b3b463975b"
     },
     {
       "id": "ceramic_plant_marker",
@@ -696,26 +694,26 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.7844,
+        "transparent_pixel_ratio": 0.7812,
         "padding_px": {
           "top": 32,
           "right": 134,
           "bottom": 32,
-          "left": 133
+          "left": 134
         }
       },
       "scale_tier": "small",
       "recommended_world_scale": 0.45,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/ceramic_plant_marker.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 85692,
-      "sha256": "904bf408a114751bb452b6f8351c95b5ba7efd44972f168a577a5494451ce5e5"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 109250,
+      "sha256": "ec591ebe9dde7a63f48d476dce0cf8165c649ecbe4cbd45dd553558a71d12f9f"
     },
     {
       "id": "tiny_bird_bath",
@@ -730,7 +728,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5914,
+        "transparent_pixel_ratio": 0.5847,
         "padding_px": {
           "top": 32,
           "right": 57,
@@ -741,15 +739,15 @@
       "scale_tier": "medium",
       "recommended_world_scale": 0.65,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity image-generator (AI image generation) + Python (OpenCV/Pillow) alpha-matting & v5.0 anchor palette/ink harmonization",
-      "source": "ai_generated_raster_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "AI-generated raster artwork harmonized in Python to the v5.0 sunlit anchor palette and #2D1E18 cocoa-espresso ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are unverified pending user review of the AI platform's terms of service.",
-      "file_size_bytes": 203773,
-      "sha256": "6f7951e7bfbf634d5a400f47a49a84da7cc4e909584bd7a08e1df70eccbb2a55"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 202520,
+      "sha256": "a66b8d6623f99c97b615dd2fc266d3817a36272c058139d5f7eda1052c332081"
     },
     {
       "id": "cottage_lounge_sofa",
@@ -866,10 +864,10 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4476,
+        "transparent_pixel_ratio": 0.4414,
         "padding_px": {
           "top": 32,
-          "right": 76,
+          "right": 75,
           "bottom": 32,
           "left": 75
         }
@@ -877,15 +875,15 @@
       "scale_tier": "large",
       "recommended_world_scale": 1.05,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/arched_display_bookshelf.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 170305,
-      "sha256": "032eb228a394835ecf97944b5b9885526307f5f45949286653c1991af01e4790"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 242580,
+      "sha256": "d0718ca5f264a5af9a5c7d0d27b86d0c3438396771f5d711067f58e3d4616055"
     },
     {
       "id": "standing_globe_floor_lamp",
@@ -900,10 +898,10 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.8758,
+        "transparent_pixel_ratio": 0.8737,
         "padding_px": {
           "top": 32,
-          "right": 123,
+          "right": 124,
           "bottom": 32,
           "left": 123
         }
@@ -911,15 +909,15 @@
       "scale_tier": "large",
       "recommended_world_scale": 0.95,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
-      "tool": "Antigravity AI agent (hand-sketched organic SVG) + Playwright/Chromium transparent rasterization + v5.0 anchor palette & ink harmonization",
-      "source": "ai_agent_authored_svg_anchor_harmonized_v5",
+      "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
+      "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
       "ai_generated": true,
-      "editable_source_file": "source_svg/standing_globe_floor_lamp.svg",
+      "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 57776,
-      "sha256": "fc1ebd94f32d53fa7fed3eb752834c17d31e1c230aee1d8e2fc18e809b467655"
+      "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
+      "file_size_bytes": 75212,
+      "sha256": "5bbaf1c5b801110d8c5736f6b269754299eab57df52f9fcdc6572e54886b30db"
     },
     {
       "id": "wall_pinboard_trio",
@@ -992,7 +990,7 @@
     {
       "id": "living_room_showcase",
       "filename": "previews/living_room_showcase.png",
-      "description": "Non-destructive assembled v5.0 living room showcase compositing the new Cozy Storybook Living Room backdrop with 15 original anchor-harmonized Hearth & Sprout sprites.",
+      "description": "Non-destructive assembled v6.0 living room showcase compositing the Cozy Storybook Living Room backdrop with the unified hand-drawn Hearth & Sprout sprites.",
       "dimensions": {
         "width": 1600,
         "height": 900
@@ -1002,143 +1000,11 @@
       "ai_generated": true,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "file_size_bytes": 1650760,
-      "sha256": "7188e5143f642b2014d4208e1994bf072051182f6b21e3cb7a7f5e01a4d6bf6c"
+      "file_size_bytes": 1680402,
+      "sha256": "f50864cc66ec986ed2e982fcf8b23637d8e4ee0714c0bdce63e3c97d21f50b18"
     }
   ],
   "editable_source_files": [
-    {
-      "filename": "source_svg/arched_display_bookshelf.svg",
-      "linked_asset_id": "arched_display_bookshelf",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 44764,
-      "sha256": "2ee733348bb5107372b9002b29f3391a6f2460da2e5470430ab105d135607f06"
-    },
-    {
-      "filename": "source_svg/ceramic_plant_marker.svg",
-      "linked_asset_id": "ceramic_plant_marker",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 4748,
-      "sha256": "8f2bd6cfb55cbaad7ef1f52e76d54e31634b34ca2a3b6f7de017818de0dcde1b"
-    },
-    {
-      "filename": "source_svg/curved_orchard_stool.svg",
-      "linked_asset_id": "curved_orchard_stool",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 5760,
-      "sha256": "e053e1cd1ea7c64317cf17bc2a708e315762bfaf857018b2070773b41491b2b3"
-    },
-    {
-      "filename": "source_svg/flowering_trellis.svg",
-      "linked_asset_id": "flowering_trellis",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 11482,
-      "sha256": "cf638606b1c834580fd902ed41565d4efde09524a48cf254a00917e57c4f8fea"
-    },
-    {
-      "filename": "source_svg/garden_gloves.svg",
-      "linked_asset_id": "garden_gloves",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 6660,
-      "sha256": "74f82e0b2f8db33dd038512e09a60692b0bfbfcc6fb9310b96f9efffb85ff24a"
-    },
-    {
-      "filename": "source_svg/hand_trowel.svg",
-      "linked_asset_id": "hand_trowel",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 4968,
-      "sha256": "613f9ff0c8e788048d2fde4dc307e4c8182e6e04f2cd5db7c13468e85c95f80a"
-    },
-    {
-      "filename": "source_svg/raised_herb_bed.svg",
-      "linked_asset_id": "raised_herb_bed",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 12160,
-      "sha256": "be20c2de4454b7d8e5bfbf4fa457d8220ba664ddbd29a0984d3932a804bfeb27"
-    },
-    {
-      "filename": "source_svg/seed_packets.svg",
-      "linked_asset_id": "seed_packets",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 7115,
-      "sha256": "274b87809948199d3025cb84443b2164eb5de6b2232fa5a1e966c27e67a1c21b"
-    },
-    {
-      "filename": "source_svg/standing_globe_floor_lamp.svg",
-      "linked_asset_id": "standing_globe_floor_lamp",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 6098,
-      "sha256": "79eb4b0f04ee3a3fa51c13a4a30382ee315ba59c8d1c1a60a1bd0204ff52c28e"
-    },
-    {
-      "filename": "source_svg/sunhat_garden_frog.svg",
-      "linked_asset_id": "sunhat_garden_frog",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 7562,
-      "sha256": "e85726739b197596c5fc90f038711c8ce7b33e6700d6a614fdd40a1c3aed76f2"
-    },
-    {
-      "filename": "source_svg/terracotta_tortoise.svg",
-      "linked_asset_id": "terracotta_tortoise",
-      "format": "SVG",
-      "viewBox": "0 0 1024 1024",
-      "creator": "Antigravity AI Assistant (AI-agent-authored hand-drawn vector source harmonized to v5 anchor palette)",
-      "ai_generated": true,
-      "creation_date": "2026-11-25",
-      "license_status": "unverified",
-      "file_size_bytes": 7634,
-      "sha256": "47e580069e57776b351f2ce7ecc23ba9dda0c4f335d16dcdca1a0bc20a72c821"
-    },
     {
       "filename": "source_svg/wall_pinboard_trio.svg",
       "linked_asset_id": "wall_pinboard_trio",
