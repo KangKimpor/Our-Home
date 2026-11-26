@@ -1,6 +1,6 @@
 /* Palette from the Hearth & Sprout style guide. */
 :root {
-  --ink: #493a35;
+  --ink: #312210;
   --oat: #f3e7ce;
   --oat-light: #faf3e3;
   --oat-shadow: #dfcfaf;
@@ -400,44 +400,87 @@ body,
 .hud-title,
 .hud-button,
 .hint {
-  font-size: clamp(14px, 1.9vw, 18px);
-  font-weight: 700;
+  position: relative;
+  z-index: 0;
+  font-size: clamp(14px, 1.85vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.01em;
   line-height: 1.15;
-  background: var(--oat-light);
-  border: 2.5px solid var(--ink);
-  border-radius: 999px;
-  box-shadow: 0 3px 0 var(--ink);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  filter: drop-shadow(0 3px 0 rgb(49 34 16 / 0.22));
+}
+.hud-title::before,
+.hud-button::before,
+.hint::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-style: solid;
+  border-color: transparent;
+  pointer-events: none;
+}
+.hud-icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+  margin-top: -1px;
 }
 .hud-title {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0 16px;
+  gap: 7px;
+  min-height: 46px;
+  padding: 6px 20px 9px 17px;
   white-space: nowrap;
+}
+.hud-title::before {
+  border-width: 11px 13px 14px 13px;
+  border-image-source: url('./assets/ui/plaque_title.png');
+  border-image-slice: 26 28 32 28 fill;
+  border-image-width: 11px 13px 14px 13px;
+  border-image-repeat: stretch;
 }
 .hud-button {
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  gap: 7px;
+  min-height: 46px;
   min-width: 44px;
-  padding: 0 16px;
-  color: var(--ink);
+  padding: 5px 21px 9px 19px;
   font-family: inherit;
   white-space: nowrap;
   cursor: pointer;
   transition:
     transform 120ms ease,
-    box-shadow 120ms ease,
-    background-color 120ms ease;
+    filter 140ms ease;
 }
-.hud-button--secondary {
-  background: var(--oat);
+.hud-button::before {
+  border-width: 10px 26px 13px 26px;
+  border-image-source: url('./assets/ui/plaque_button.png');
+  border-image-slice: 24 62 30 62 fill;
+  border-image-width: 10px 26px 13px 26px;
+  border-image-repeat: stretch;
+}
+.hud-button--secondary::before {
+  border-image-source: url('./assets/ui/plaque_secondary.png');
+}
+.hud-button:hover {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 4px 0 rgb(49 34 16 / 0.24)) brightness(1.03);
 }
 .hud-button:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--ink);
+  transform: translateY(2px) scale(0.985);
+  filter: drop-shadow(0 1px 0 rgb(49 34 16 / 0.24)) brightness(0.98);
+}
+.hud-button:focus-visible {
+  outline: 3px solid var(--honey);
+  outline-offset: 2px;
+  border-radius: 999px;
 }
 
 .hint {
@@ -447,11 +490,19 @@ body,
   translate: -50% 0;
   max-width: calc(100vw - max(24px, env(safe-area-inset-left) + env(safe-area-inset-right)));
   margin: 0;
-  padding: 10px 18px;
-  font-size: clamp(13px, 1.7vw, 16px);
+  padding: 11px 22px 14px;
+  font-size: clamp(13px, 1.65vw, 16px);
+  font-weight: 700;
   text-align: center;
   pointer-events: none;
   transition: opacity 600ms ease;
+}
+.hint::before {
+  border-width: 12px 14px 15px 14px;
+  border-image-source: url('./assets/ui/plaque_note.png');
+  border-image-slice: 28 30 34 30 fill;
+  border-image-width: 12px 14px 15px 14px;
+  border-image-repeat: round stretch;
 }
 .hint.is-hidden {
   opacity: 0;
@@ -461,13 +512,24 @@ body,
   .hud {
     gap: 8px;
   }
-  .hud-title,
-  .hud-button {
-    padding: 0 13px;
+  .hud-title {
+    min-height: 44px;
+    padding: 5px 16px 8px 14px;
     font-size: 14px;
+    gap: 6px;
+  }
+  .hud-button {
+    min-height: 44px;
+    padding: 5px 17px 8px 15px;
+    font-size: 14px;
+    gap: 5px;
+  }
+  .hud-button::before {
+    border-width: 9px 22px 12px 22px;
+    border-image-width: 9px 22px 12px 22px;
   }
   .hint {
-    padding: 8px 14px;
+    padding: 9px 18px 12px;
     font-size: 13px;
   }
 }
@@ -481,7 +543,7 @@ body,
   }
   .hint {
     bottom: max(8px, env(safe-area-inset-bottom));
-    padding: 7px 14px;
+    padding: 8px 16px 11px;
     font-size: 13px;
   }
 }
@@ -506,13 +568,27 @@ body,
 }
 
 .version-card {
+  position: relative;
+  z-index: 0;
   width: min(460px, 100%);
-  padding: 28px 30px;
+  padding: 36px 38px 40px;
   text-align: center;
-  background: var(--oat-light);
-  border: 3px solid var(--ink);
-  border-radius: 24px;
-  box-shadow: 0 6px 0 var(--ink);
+  background: transparent;
+  filter: drop-shadow(0 6px 0 rgb(49 34 16 / 0.35));
+}
+.version-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 22px 24px 28px 24px;
+  border-image-source: url('./assets/ui/plaque_title.png');
+  border-image-slice: 26 28 32 28 fill;
+  border-image-width: 22px 24px 28px 24px;
+  border-image-repeat: stretch;
+  pointer-events: none;
 }
 
 .version-title {
@@ -544,27 +620,43 @@ body,
 }
 
 .version-button {
-  padding: 10px 24px;
+  position: relative;
+  z-index: 0;
+  min-height: 48px;
+  padding: 9px 28px 13px;
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 800;
   font-family: inherit;
   color: var(--ink);
-  background: var(--honey-light);
-  border: 3px solid var(--ink);
-  border-radius: 999px;
-  box-shadow: 0 4px 0 var(--ink);
+  background: transparent;
+  border: 0;
   cursor: pointer;
+  filter: drop-shadow(0 3px 0 rgb(49 34 16 / 0.24));
   transition:
     transform 120ms ease,
-    box-shadow 120ms ease,
-    background-color 120ms ease;
+    filter 140ms ease;
+}
+.version-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 11px 28px 14px 28px;
+  border-image-source: url('./assets/ui/plaque_button.png');
+  border-image-slice: 24 62 30 62 fill;
+  border-image-width: 11px 28px 14px 28px;
+  border-image-repeat: stretch;
+  pointer-events: none;
 }
 
 .version-button:hover {
-  background: var(--honey);
+  transform: translateY(-1px);
+  filter: drop-shadow(0 4px 0 rgb(49 34 16 / 0.28)) brightness(1.03);
 }
 
 .version-button:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 var(--ink);
+  transform: translateY(2px) scale(0.985);
+  filter: drop-shadow(0 1px 0 rgb(49 34 16 / 0.24)) brightness(0.98);
 }
