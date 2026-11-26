@@ -24,6 +24,8 @@ export function App() {
   const [lampOn, setLampOn] = useState(true);
   const [showHint, setShowHint] = useState(true);
 
+  const hideHint = useCallback(() => setShowHint(false), []);
+
   const onMove = useCallback((id: string, pos: Pos) => {
     setShowHint(false);
     setLayout((l) => ({ ...l, [id]: pos }));
@@ -47,8 +49,37 @@ export function App() {
   };
 
   return (
-    <Stage>
-      {(scale) => (
+    <Stage
+      onCameraMove={hideHint}
+      overlay={(stage) => (
+        <>
+          <header className="hud">
+            <span className="hud-title">Living room</span>
+            <div className="hud-actions">
+              {stage.canToggleMode && (
+                <button
+                  type="button"
+                  className="hud-button hud-button--secondary"
+                  onClick={stage.toggleMode}
+                  aria-label={stage.mode === 'fill' ? 'Fit whole room' : 'Fill screen'}
+                >
+                  {stage.mode === 'fill' ? 'Fit room' : 'Fill view'}
+                </button>
+              )}
+              <button type="button" className="hud-button" onClick={reset}>
+                Reset room
+              </button>
+            </div>
+          </header>
+          <p className={`hint${showHint ? '' : ' is-hidden'}`}>
+            {stage.canPan
+              ? 'Swipe background to pan · drag & tap to play'
+              : 'Drag furniture or characters · tap things to play'}
+          </p>
+        </>
+      )}
+    >
+      {(stage) => (
         <div className={`room${lampOn ? '' : ' is-dim'}`}>
           <img className="room-bg" src={versionedAssetUrl(ROOM.background)} alt="" draggable={false} />
           {ITEMS.map((def) => (
@@ -56,7 +87,7 @@ export function App() {
               key={def.id}
               def={def}
               pos={layout[def.id]}
-              scale={scale}
+              stage={stage}
               lampOn={lampOn}
               onMove={onMove}
               onDrop={onDrop}
@@ -65,19 +96,9 @@ export function App() {
           ))}
           <Pet />
           {CHARACTERS.map((def) => (
-            <Character key={def.id} def={def} scale={scale} onInteract={() => setShowHint(false)} />
+            <Character key={def.id} def={def} stage={stage} onInteract={hideHint} />
           ))}
           <div className="room-dim" />
-
-          <header className="hud">
-            <span className="hud-title">Living room</span>
-            <button type="button" className="hud-button" onClick={reset}>
-              Reset room
-            </button>
-          </header>
-          <p className={`hint${showHint ? '' : ' is-hidden'}`}>
-            Drag furniture or characters · tap things to play
-          </p>
         </div>
       )}
     </Stage>

@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { clampPosition, depthOf, itemSize, type ItemDef, type Pos } from '../game/layout';
 import { versionedAssetUrl } from '../game/version';
+import type { StageContext } from './Stage';
 
-const TAP_SLOP = 6; // screen px a press may wander and still count as a tap
+const MOUSE_TAP_SLOP = 6;
+const TOUCH_TAP_SLOP = 10;
 
 const BOUNCE: Keyframe[] = [
   { transform: 'scale(1, 1)' },
@@ -22,36 +24,82 @@ const SWING: Keyframe[] = [
 interface Props {
   def: ItemDef;
   pos: Pos;
-  scale: number;
+  stage: StageContext;
   lampOn: boolean;
   onMove: (id: string, pos: Pos) => void;
   onDrop: (id: string) => void;
   onTap: (def: ItemDef) => void;
 }
 
-export function Furniture({ def, pos, scale, lampOn, onMove, onDrop, onTap }: Props) {
+export function Furniture({ def, pos, stage, lampOn, onMove, onDrop, onTap }: Props) {
   const { w, h } = itemSize(def);
   const artRef = useRef<HTMLDivElement>(null);
-  const drag = useRef<{ id: number; sx: number; sy: number; start: Pos; moved: boolean } | null>(null);
+  const drag = useRef<{
+    id: number;
+    sx: number;
+    sy: number;
+    lastClientX: number;
+    lastClientY: number;
+    offsetX: number;
+    offsetY: number;
+    slop: number;
+    moved: boolean;
+  } | null>(null);
   const [dragging, setDragging] = useState(false);
 
+  // Smoothly auto-pan the camera when dragging an item near screen edges on portrait phones/iPad.
+  useEffect(() => {
+    if (!dragging || !stage.canPan) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const d = drag.current;
+      if (d?.moved) {
+        const dt = Math.min(0.1, (now - last) / 1000);
+        last = now;
+        stage.autoPanAt(d.lastClientX, dt);
+        const pt = stage.clientToRoom(d.lastClientX, d.lastClientY);
+        onMove(def.id, clampPosition(def, { x: pt.x + d.offsetX, y: pt.y + d.offsetY }));
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [def, dragging, onMove, stage]);
+
   const onPointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (drag.current) return; // ignore secondary touch fingers
+    e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
-    drag.current = { id: e.pointerId, sx: e.clientX, sy: e.clientY, start: pos, moved: false };
+    const pt = stage.clientToRoom(e.clientX, e.clientY);
+    drag.current = {
+      id: e.pointerId,
+      sx: e.clientX,
+      sy: e.clientY,
+      lastClientX: e.clientX,
+      lastClientY: e.clientY,
+      offsetX: pos.x - pt.x,
+      offsetY: pos.y - pt.y,
+      slop: e.pointerType === 'touch' ? TOUCH_TAP_SLOP : MOUSE_TAP_SLOP,
+      moved: false,
+    };
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
+    d.lastClientX = e.clientX;
+    d.lastClientY = e.clientY;
     const dx = e.clientX - d.sx;
     const dy = e.clientY - d.sy;
-    if (!d.moved && Math.hypot(dx, dy) < TAP_SLOP) return;
+    if (!d.moved && Math.hypot(dx, dy) < d.slop) return;
     if (!d.moved) {
       d.moved = true;
       setDragging(true);
     }
-    onMove(def.id, clampPosition(def, { x: d.start.x + dx / scale, y: d.start.y + dy / scale }));
+    const pt = stage.clientToRoom(e.clientX, e.clientY);
+    onMove(def.id, clampPosition(def, { x: pt.x + d.offsetX, y: pt.y + d.offsetY }));
   };
 
   const endPress = (e: React.PointerEvent, cancelled: boolean) => {

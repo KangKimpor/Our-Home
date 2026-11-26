@@ -23,9 +23,13 @@ body,
 #root {
   margin: 0;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
+  overscroll-behavior: none;
   background: var(--letterbox);
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
   user-select: none;
   touch-action: none;
 }
@@ -33,7 +37,18 @@ body,
 .viewport {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+.viewport.can-pan {
+  cursor: grab;
+}
+.viewport.is-panning {
+  cursor: grabbing;
 }
 
 .stage {
@@ -41,6 +56,7 @@ body,
   left: 50%;
   top: 50%;
   transform-origin: center;
+  will-change: transform;
 }
 
 .room {
@@ -317,60 +333,117 @@ body,
   }
 }
 
-/* HUD */
+/* Viewport-space HUD (never shrunk by stage scale; respects iPhone/iPad safe areas) */
+.hud-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  pointer-events: none;
+}
+
 .hud {
   position: absolute;
-  z-index: 6000;
-  top: 24px;
-  left: 28px;
-  right: 28px;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   pointer-events: none;
+}
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .hud-title,
 .hud-button,
 .hint {
-  font-size: 26px;
+  font-size: clamp(14px, 1.9vw, 18px);
   font-weight: 700;
+  line-height: 1.15;
   background: var(--oat-light);
-  border: 3px solid var(--ink);
+  border: 2.5px solid var(--ink);
   border-radius: 999px;
-  box-shadow: 0 4px 0 var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
 }
 .hud-title {
-  padding: 8px 22px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  white-space: nowrap;
 }
 .hud-button {
   pointer-events: auto;
-  padding: 8px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
   color: var(--ink);
   font-family: inherit;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     transform 120ms ease,
-    box-shadow 120ms ease;
+    box-shadow 120ms ease,
+    background-color 120ms ease;
+}
+.hud-button--secondary {
+  background: var(--oat);
 }
 .hud-button:active {
-  transform: translateY(3px);
+  transform: translateY(2px);
   box-shadow: 0 1px 0 var(--ink);
 }
 
 .hint {
   position: absolute;
-  z-index: 6000;
   left: 50%;
-  bottom: 28px;
+  bottom: max(14px, env(safe-area-inset-bottom));
   translate: -50% 0;
+  max-width: calc(100vw - max(24px, env(safe-area-inset-left) + env(safe-area-inset-right)));
   margin: 0;
-  padding: 10px 26px;
-  font-size: 24px;
+  padding: 10px 18px;
+  font-size: clamp(13px, 1.7vw, 16px);
+  text-align: center;
   pointer-events: none;
   transition: opacity 600ms ease;
 }
 .hint.is-hidden {
   opacity: 0;
+}
+
+@media (max-width: 480px) {
+  .hud {
+    gap: 8px;
+  }
+  .hud-title,
+  .hud-button {
+    padding: 0 13px;
+    font-size: 14px;
+  }
+  .hint {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+/* Compact height on landscape phones (iPhone 15 / 17 Pro Max landscape) */
+@media (max-height: 460px) {
+  .hud {
+    top: max(8px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+  }
+  .hint {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    padding: 7px 14px;
+    font-size: 13px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -19,8 +19,8 @@ export function Pet() {
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
-    let shownMode = '';
-    let shownFacing = 0;
+    let shownMode = state.current.mode;
+    let shownFacing = state.current.facing;
 
     const frame = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000); // clamp after tab switches
@@ -51,12 +51,17 @@ export function Pet() {
       className="pet"
       data-testid="pet"
       style={{ width: w, height: h }}
-      onPointerDown={() => {
+      onPointerDown={(e) => {
+        e.stopPropagation();
         state.current = petTapped(state.current);
       }}
     >
       <div className="contact-shadow" />
-      <div ref={flipRef} className="pet-flip">
+      <div
+        ref={flipRef}
+        className="pet-flip"
+        style={{ transform: `scaleX(${state.current.facing === 1 ? -1 : 1})` }}
+      >
         <div ref={animRef} className="pet-anim" data-mode="idle">
           <img src={versionedAssetUrl(`/sprites/${SPRITE}.png`)} alt="Hedgehog" draggable={false} />
         </div>
