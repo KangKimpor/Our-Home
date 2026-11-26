@@ -490,12 +490,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4306,
+        "transparent_pixel_ratio": 0.4398,
         "padding_px": {
           "top": 32,
-          "right": 41,
+          "right": 37,
           "bottom": 32,
-          "left": 40
+          "left": 37
         }
       },
       "scale_tier": "medium",
@@ -508,8 +508,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 230032,
-      "sha256": "187fd6747dca0154ac98023d1c733417d32daf00b24232be177548fb1763523a"
+      "file_size_bytes": 267505,
+      "sha256": "b8cd127338d2b12069983f3e35e179b8e5d77342ad108fe725ca39f6b117459d"
     },
     {
       "id": "terracotta_tortoise",
@@ -966,7 +966,7 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.7539,
+        "transparent_pixel_ratio": 0.7557,
         "padding_px": {
           "top": 32,
           "right": 156,
@@ -984,8 +984,8 @@
       "creation_date": "2026-11-26",
       "license_status": "unverified",
       "usage_terms_notes": "Generated from user-supplied character reference photo in the embedded Our Home hand-drawn cottage gouache style.",
-      "file_size_bytes": 130290,
-      "sha256": "3a3c2e239e218e36601f42a461fb91b9728f5b5151b9e5a671a5782f0a2177b9"
+      "file_size_bytes": 125946,
+      "sha256": "67c0e1a42956aae454300b5df8d67155de920ed0bdd79810c3f86839c515458d"
     },
     {
       "id": "resident_him",
