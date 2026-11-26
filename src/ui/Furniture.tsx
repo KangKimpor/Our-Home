@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { clampPosition, depthOf, itemSize, type ItemDef, type Pos } from '../game/layout';
+import { versionedAssetUrl } from '../game/version';
 
 const TAP_SLOP = 6; // screen px a press may wander and still count as a tap
 
@@ -93,7 +94,7 @@ export function Furniture({ def, pos, scale, lampOn, onMove, onDrop, onTap }: Pr
         />
       )}
       <div ref={artRef} className={`item-art item-art--${def.tap}`}>
-        <img src={`/sprites/${def.sprite}.png`} alt="" draggable={false} />
+        <img src={versionedAssetUrl(`/sprites/${def.sprite}.png`)} alt="" draggable={false} />
       </div>
     </div>
   );

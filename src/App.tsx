@@ -10,6 +10,7 @@ import {
   type Pos,
   ROOM,
 } from './game/layout';
+import { versionedAssetUrl } from './game/version';
 import { Furniture } from './ui/Furniture';
 import { Pet } from './ui/Pet';
 import { Stage } from './ui/Stage';
@@ -47,7 +48,7 @@ export function App() {
     <Stage>
       {(scale) => (
         <div className={`room${lampOn ? '' : ' is-dim'}`}>
-          <img className="room-bg" src={ROOM.background} alt="" draggable={false} />
+          <img className="room-bg" src={versionedAssetUrl(ROOM.background)} alt="" draggable={false} />
           {ITEMS.map((def) => (
             <Furniture
               key={def.id}

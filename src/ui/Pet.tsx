@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { depthOf, itemSize } from '../game/layout';
 import { createPet, PET, petTapped, stepPet, type PetState } from '../game/pet';
+import { versionedAssetUrl } from '../game/version';
 
 const SPRITE = 'mossback_hedgehog' as const;
 
@@ -57,7 +58,7 @@ export function Pet() {
       <div className="contact-shadow" />
       <div ref={flipRef} className="pet-flip">
         <div ref={animRef} className="pet-anim" data-mode="idle">
-          <img src={`/sprites/${SPRITE}.png`} alt="Hedgehog" draggable={false} />
+          <img src={versionedAssetUrl(`/sprites/${SPRITE}.png`)} alt="Hedgehog" draggable={false} />
         </div>
       </div>
     </div>
