@@ -21,7 +21,7 @@ export interface StageContext {
   /** True when Fill vs Fit produces noticeably different views (e.g., portrait phones/iPad). */
   canToggleMode: boolean;
   toggleMode: () => void;
-  /** Converts viewport client coordinates into logical 1600x900 room coordinates. */
+  /** Converts viewport client coordinates into logical 1950x900 room coordinates. */
   clientToRoom: (clientX: number, clientY: number) => { x: number; y: number };
   /** Gently auto-pans the camera while dragging an item near the screen edges. */
   autoPanAt: (clientX: number, dt: number) => void;
@@ -42,7 +42,7 @@ interface Props {
 }
 
 /**
- * Scales the fixed 1600x900 room for desktop, iPhone, and iPad:
+ * Scales the fixed 1950x900 (19.5:9) room for mobile, iPad, and desktop:
  * - Landscape & desktop default to fitting the whole room.
  * - Portrait phones & iPad default to full-height cozy pan mode (with one-tap Fit toggle).
  * - Supports 1-finger backdrop pan and 2-finger pinch-to-zoom.

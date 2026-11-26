@@ -1299,9 +1299,9 @@
       "id": "living_room_backdrop",
       "filename": "backgrounds/living_room_backdrop.png",
       "category": "room_background",
-      "description": "1600x900 1-point-perspective hand-drawn cottage living room shell (user-supplied ChatGPT anchor refinement 'Cozy Storybook Living Room.png' resized cleanly to 1600x900).",
+      "description": "1950x900 (19.5:9 mobile-fit) 1-point-perspective hand-drawn cottage living room shell seamlessly widened from the Cozy Storybook Living Room anchor while preserving every architectural detail.",
       "dimensions": {
-        "width": 1600,
+        "width": 1950,
         "height": 900
       },
       "room_geometry": {
@@ -1322,8 +1322,8 @@
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "file_size_bytes": 1580184,
-      "sha256": "01f38fb9956f842424adc5c3f312c7c1196f95c55a389357e2ee68fb7931590d"
+      "file_size_bytes": 1693136,
+      "sha256": "ea96574761bf06b4e4811b3a5e933deca9dc392b581e64e0a19b069ea2559d21"
     }
   ],
   "previews": [

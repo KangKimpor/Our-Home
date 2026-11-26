@@ -10,8 +10,8 @@ All future asset generation **must** reference these committed visual benchmarks
 - **Live Composed Living Room Reference:** [`hearth_and_sprout_2d_asset_pack_v1_0/previews/living_room_showcase.png`](../hearth_and_sprout_2d_asset_pack_v1_0/previews/living_room_showcase.png)
 
 ## 2. Stage & Room Geometry
-- **Logical room size:** `1600 × 900` (`16:9` landscape), defined in [`src/game/layout.ts`](../src/game/layout.ts).
-- **Scaling:** Uniform scale-to-fit inside the viewport, letterboxed cleanly (never stretched or cropped).
+- **Logical room size:** `1950 × 900` (`19.5:9` mobile-fit landscape), defined in [`src/game/layout.ts`](../src/game/layout.ts).
+- **Scaling:** Uniform scale-to-fit inside the viewport (edge-to-edge on modern 19.5:9 mobile landscape screens, with full-height horizontal pan on portrait phones/iPad).
 - **Room alignment landmarks:**
   - Ceiling beam: `y = 0..45` (`ROOM.wallTop = 45`).
   - Wall-to-floor baseboard seam: `y = 540` (`ROOM.wallBottom = 540`, 60% from top).

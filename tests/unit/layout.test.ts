@@ -78,10 +78,10 @@ describe('layout', () => {
   });
 
   it('ignores corrupt or out-of-range saves', () => {
-    expect(loadLayout(memoryStorage({ 'our-home:living-room:v2': '{not json' }))).toEqual(DEFAULT_LAYOUT);
+    expect(loadLayout(memoryStorage({ 'our-home:living-room:v3': '{not json' }))).toEqual(DEFAULT_LAYOUT);
     const loaded = loadLayout(
       memoryStorage({
-        'our-home:living-room:v2': JSON.stringify({ cushion: { x: 'a', y: 1 }, lamp: { x: 5000, y: 5000 } }),
+        'our-home:living-room:v3': JSON.stringify({ cushion: { x: 'a', y: 1 }, lamp: { x: 5000, y: 5000 } }),
       }),
     );
     expect(loaded.cushion).toEqual(DEFAULT_LAYOUT.cushion);

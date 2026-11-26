@@ -54,7 +54,7 @@ describe('camera', () => {
     }
   });
 
-  it('fits the full room cleanly in landscape iPhone, iPad A16, and desktop', () => {
+  it('fits the full room edge-to-edge on landscape iPhones and cleanly on iPad/desktop', () => {
     for (const { vw, vh } of [
       DEVICES.iphone15Landscape,
       DEVICES.iphone17ProMaxLandscape,
@@ -66,6 +66,13 @@ describe('camera', () => {
       expect(ROOM.w * cam.scale).toBeLessThanOrEqual(vw + 0.01);
       expect(ROOM.h * cam.scale).toBeLessThanOrEqual(vh + 0.01);
       expect(canPanCamera(cam, vw, vh)).toBe(false);
+    }
+
+    // Modern 19.5:9 landscape phones fill > 99% of both width and height with zero letterboxing.
+    for (const { vw, vh } of [DEVICES.iphone15Landscape, DEVICES.iphone17ProMaxLandscape]) {
+      const cam = createCamera(vw, vh);
+      expect(ROOM.w * cam.scale).toBeGreaterThan(vw * 0.99);
+      expect(ROOM.h * cam.scale).toBeGreaterThan(vh * 0.99);
     }
   });
 

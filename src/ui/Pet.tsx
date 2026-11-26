@@ -19,8 +19,8 @@ export function Pet() {
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
-    let shownMode = state.current.mode;
-    let shownFacing = state.current.facing;
+    let shownMode = '';
+    let shownFacing = 0;
 
     const frame = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000); // clamp after tab switches

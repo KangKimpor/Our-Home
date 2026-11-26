@@ -63,7 +63,6 @@ body,
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: 6px;
 }
 
 /* Room shell: the painted backdrop, with a plain colour behind it while it loads. */
@@ -602,6 +601,25 @@ body,
   margin: 0 0 14px;
   font-size: 16px;
   line-height: 1.5;
+}
+
+.loader-bar {
+  width: 100%;
+  height: 16px;
+  margin: 0 0 12px;
+  padding: 2px;
+  background: var(--oat);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.loader-bar-fill {
+  height: 100%;
+  min-width: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sage), var(--honey));
+  transition: width 160ms ease-out;
 }
 
 .version-meta {

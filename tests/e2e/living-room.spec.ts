@@ -117,3 +117,46 @@ test('both human characters play their 4-frame walking animations when strolling
       .not.toBe(firstFrame);
   }
 });
+
+test('waits for all assets and walk animations to finish loading before revealing the room', async ({ page }) => {
+  let releaseWalkStrip!: () => void;
+  const walkBlocked = new Promise<void>((resolve) => {
+    releaseWalkStrip = resolve;
+  });
+  let sawWalkRequest = false;
+
+  await page.route('**/sprites/resident_her_walk.png*', async (route) => {
+    sawWalkRequest = true;
+    await walkBlocked;
+    await route.continue();
+  });
+
+  await page.goto('/');
+  await expect.poll(() => sawWalkRequest).toBe(true);
+  await expect(page.getByTestId('asset-preloader')).toHaveAttribute('data-status', 'loading');
+  await expect(page.locator('.room')).toHaveCount(0);
+
+  releaseWalkStrip();
+  await expect(page.locator('.room')).toBeVisible();
+  await expect(page.getByTestId('asset-preloader')).toHaveCount(0);
+
+  // Every visible image in the room is already completely decoded on first paint.
+  const allReady = await page
+    .locator('.room img')
+    .evaluateAll((imgs) => imgs.every((el) => (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0));
+  expect(allReady).toBe(true);
+});
+
+test('blocks game with retry button if an asset fails to load and recovers cleanly', async ({ page }) => {
+  await page.route('**/sprites/resident_him_walk.png*', (route) =>
+    route.fulfill({ status: 500, contentType: 'text/plain', body: 'Temporary error' }),
+  );
+
+  await page.goto('/');
+  await expect(page.getByTestId('asset-preloader')).toHaveAttribute('data-status', 'error');
+  await expect(page.locator('.room')).toHaveCount(0);
+
+  await page.unroute('**/sprites/resident_him_walk.png*');
+  await page.getByRole('button', { name: 'Try again' }).click();
+  await expect(page.locator('.room')).toBeVisible();
+});

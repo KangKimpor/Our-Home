@@ -26,7 +26,7 @@ export const PET = {
 } as const;
 
 export function createPet(): PetState {
-  return { x: 420, y: 815, mode: 'idle', tx: 420, ty: 815, timer: 1.5, facing: 1 };
+  return { x: 545, y: 815, mode: 'idle', tx: 545, ty: 815, timer: 1.5, facing: 1 };
 }
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { isAssetLoaded, loadAndDecodeImage } from '../game/assets';
 import {
   characterPlaced,
   characterTapped,
@@ -39,7 +40,7 @@ export function Character({ def, stage, onInteract }: Props) {
   const animRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const walkReady = useRef(false);
+  const walkReady = useRef(isAssetLoaded(walkUrl));
   const reducedMotion = useRef(false);
   const drag = useRef<{
     id: number;
@@ -57,26 +58,23 @@ export function Character({ def, stage, onInteract }: Props) {
   const [dragging, setDragging] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
 
-  // Preload and decode the walk sprite strip so entering walk mode never flickers.
+  // Ensure the walk sprite strip is decoded (already cached when mounted via AssetPreloader).
   useEffect(() => {
-    let cancelled = false;
+    if (isAssetLoaded(walkUrl)) {
+      walkReady.current = true;
+      return;
+    }
+    const controller = new AbortController();
     walkReady.current = false;
-    const img = new Image();
-    const markReady = () => {
-      if (!cancelled && img.naturalWidth > 0) walkReady.current = true;
-    };
-    img.onload = () => {
-      if (typeof img.decode === 'function') {
-        img.decode().then(markReady, markReady);
-      } else {
-        markReady();
-      }
-    };
-    img.src = walkUrl;
-    if (img.complete && img.naturalWidth > 0) markReady();
-    return () => {
-      cancelled = true;
-    };
+    void loadAndDecodeImage(walkUrl, controller.signal).then(
+      () => {
+        if (!controller.signal.aborted) walkReady.current = true;
+      },
+      () => {
+        // Fallback stroll animation remains active if standalone load fails.
+      },
+    );
+    return () => controller.abort();
   }, [walkUrl]);
 
   // Respect user reduced-motion preference for frame cycling.

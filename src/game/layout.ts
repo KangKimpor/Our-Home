@@ -1,8 +1,8 @@
 import sprites from './sprites.json';
 
-/** Logical room size. The stage is scaled uniformly to fit the window. */
+/** Logical room size (19.5:9 mobile-fit landscape). The stage scales uniformly to fit the viewport. */
 export const ROOM = {
-  w: 1600,
+  w: 1950,
   h: 900,
   /** Where the back wall meets the floor in the backdrop. */
   wallBottom: 540,
@@ -61,17 +61,17 @@ export const ITEMS: ItemDef[] = [
 ];
 
 export const DEFAULT_LAYOUT: Layout = {
-  rug: { x: 685, y: 852 },
-  pinboard: { x: 390, y: 345 },
-  clock: { x: 695, y: 300 },
-  tree: { x: 245, y: 598 },
-  cabinet: { x: 520, y: 580 },
-  bookshelf: { x: 985, y: 578 },
-  sofa: { x: 685, y: 722 },
-  'coffee-table': { x: 690, y: 830 },
-  lamp: { x: 1010, y: 728 },
-  trolley: { x: 1265, y: 722 },
-  cushion: { x: 295, y: 806 },
+  rug: { x: 890, y: 852 },
+  pinboard: { x: 480, y: 345 },
+  clock: { x: 890, y: 300 },
+  tree: { x: 265, y: 598 },
+  cabinet: { x: 605, y: 580 },
+  bookshelf: { x: 1215, y: 578 },
+  sofa: { x: 890, y: 722 },
+  'coffee-table': { x: 895, y: 830 },
+  lamp: { x: 1200, y: 730 },
+  trolley: { x: 1515, y: 722 },
+  cushion: { x: 430, y: 806 },
 };
 
 export function itemSize(def: Pick<ItemDef, 'sprite' | 'height'>): { w: number; h: number } {
@@ -99,7 +99,7 @@ export function depthOf(mount: Mount, y: number): number {
   return 100 + Math.round(y);
 }
 
-const STORAGE_KEY = 'our-home:living-room:v2';
+const STORAGE_KEY = 'our-home:living-room:v3';
 
 interface StorageLike {
   getItem(key: string): string | null;

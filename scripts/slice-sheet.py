@@ -17,7 +17,7 @@ Examples:
     living_room/standing_globe_floor_lamp living_room/braided_oval_rug \\
     living_room/low_oak_coffee_table garden/potted_calamondin_tree
 
-  # Backdrop (16:9 -> exact 1600x900 PNG):
+  # Backdrop (19.5:9 mobile-fit -> exact 1950x900 PNG):
   python scripts/slice-sheet.py --backdrop path/to/backdrop_raw.jpg living_room_backdrop
 
 After running this script, run `npm run sprites` (`node scripts/import-sprites.mjs`)
@@ -324,7 +324,7 @@ def main() -> None:
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--single", action="store_true", help="Single sprite image")
     mode.add_argument("--grid", metavar="CxR", help="Grid layout like 2x2 or 3x2")
-    mode.add_argument("--backdrop", action="store_true", help="16:9 room backdrop -> 1600x900")
+    mode.add_argument("--backdrop", action="store_true", help="19.5:9 room backdrop -> 1950x900")
     ap.add_argument("--no-holes", action="store_true", help="Skip interior pure-white hole removal")
     ap.add_argument("--align-strip", action="store_true", help="Align grid frames with shared scale, grounded feet, and centered head")
     ap.add_argument("--flip-x", action="store_true", help="Horizontally mirror extracted sprite(s) to match native facing")
@@ -334,12 +334,12 @@ def main() -> None:
     args = ap.parse_args()
 
     if args.backdrop:
-        im = Image.open(args.image).convert("RGB").resize((1600, 900), Image.Resampling.LANCZOS)
+        im = Image.open(args.image).convert("RGB").resize((1950, 900), Image.Resampling.LANCZOS)
         dest = PACK_DIR / "backgrounds" / f"{args.targets[0]}.png"
         dest.parent.mkdir(parents=True, exist_ok=True)
         im.save(dest, optimize=True)
         update_manifest()
-        print(f"Saved 1600x900 backdrop -> {dest.relative_to(REPO_ROOT)}")
+        print(f"Saved 1950x900 backdrop -> {dest.relative_to(REPO_ROOT)}")
         return
 
     arr = np.array(Image.open(args.image).convert("RGB"))
