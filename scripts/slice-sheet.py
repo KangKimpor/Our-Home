@@ -209,6 +209,45 @@ def normalize_512(rgba: np.ndarray, min_pad: int = 32) -> Image.Image:
     return Image.fromarray(arr, "RGBA")
 
 
+def normalize_512_aligned_strip(frames: list[np.ndarray], min_pad: int = 32) -> list[Image.Image]:
+    """Normalizes animation frames with a shared scale, grounded feet, and head-centered X."""
+    metrics = []
+    for rgba in frames:
+        ys, xs = np.where(rgba[..., 3] > 8)
+        if len(ys) == 0:
+            raise ValueError("Empty frame after alpha extraction")
+        top, bot, left, right = int(ys.min()), int(ys.max()), int(xs.min()), int(xs.max())
+        cropped = rgba[top:bot + 1, left:right + 1]
+        fh, fw = cropped.shape[:2]
+        head_h = max(1, int(round(fh * 0.35)))
+        _, hxs = np.where(cropped[:head_h, :, 3] > 128)
+        head_cx = float(hxs.mean()) if len(hxs) else fw / 2.0
+        half_w = max(head_cx, fw - head_cx)
+        metrics.append((cropped, fw, fh, head_cx, half_w))
+
+    max_h = max(m[2] for m in metrics)
+    max_half_w = max(m[4] for m in metrics)
+    avail_h = 512 - 2 * min_pad
+    avail_half_w = 256 - min_pad
+    scale = min(avail_h / max_h, avail_half_w / max_half_w)
+    baseline_y = 512 - min_pad
+
+    out_frames: list[Image.Image] = []
+    for cropped, fw, fh, head_cx, _ in metrics:
+        nw = max(1, int(round(fw * scale)))
+        nh = max(1, int(round(fh * scale)))
+        resized = Image.fromarray(cropped, "RGBA").resize((nw, nh), Image.Resampling.LANCZOS)
+        scaled_head_cx = head_cx * scale
+        paste_x = int(round(256 - scaled_head_cx))
+        paste_y = baseline_y - nh
+        canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+        canvas.paste(resized, (paste_x, paste_y))
+        arr = np.array(canvas)
+        arr[arr[..., 3] == 0] = 0
+        out_frames.append(Image.fromarray(arr, "RGBA"))
+    return out_frames
+
+
 def best_split(proj: np.ndarray, target: float, window_frac: float = 0.16) -> int:
     n = len(proj)
     lo = max(0, int(n * (target - window_frac)))
@@ -249,14 +288,17 @@ def update_manifest() -> None:
     mpath.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
-def save_sprite(spec: str, rgba: np.ndarray) -> Image.Image:
+def save_sprite_image(spec: str, norm: Image.Image) -> Image.Image:
     cat, sid = spec.split("/", 1)
-    norm = normalize_512(rgba)
     out = PACK_DIR / "sprites" / cat / f"{sid}.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     norm.save(out, optimize=True)
     print(f"Saved {out.relative_to(REPO_ROOT)}")
     return norm
+
+
+def save_sprite(spec: str, rgba: np.ndarray) -> Image.Image:
+    return save_sprite_image(spec, normalize_512(rgba))
 
 
 def write_checkerboard(sprites: dict[str, Image.Image], out_path: Path) -> None:
@@ -284,6 +326,8 @@ def main() -> None:
     mode.add_argument("--grid", metavar="CxR", help="Grid layout like 2x2 or 3x2")
     mode.add_argument("--backdrop", action="store_true", help="16:9 room backdrop -> 1600x900")
     ap.add_argument("--no-holes", action="store_true", help="Skip interior pure-white hole removal")
+    ap.add_argument("--align-strip", action="store_true", help="Align grid frames with shared scale, grounded feet, and centered head")
+    ap.add_argument("--flip-x", action="store_true", help="Horizontally mirror extracted sprite(s) to match native facing")
     ap.add_argument("--qa", type=Path, help="Optional output path for dark checkerboard QA sheet")
     ap.add_argument("image", type=Path, help="Raw input image")
     ap.add_argument("targets", nargs="+", help="Target(s): <category>/<sprite_id> or <backdrop_id>")
@@ -304,6 +348,8 @@ def main() -> None:
 
     if args.single:
         rgba = extract_rgba_from_cell(arr, allow_interior_holes=not args.no_holes)
+        if args.flip_x:
+            rgba = np.ascontiguousarray(rgba[:, ::-1])
         saved[args.targets[0]] = save_sprite(args.targets[0], rgba)
     else:
         cols, rows = (int(v) for v in args.grid.lower().split("x"))
@@ -312,13 +358,23 @@ def main() -> None:
         nw = ~is_bg_white(arr)
         col_proj = nw.sum(axis=0)
         xs = [0] + [best_split(col_proj, i / cols) for i in range(1, cols)] + [w]
-        for c_i in range(cols):
-            xa, xb = xs[c_i], xs[c_i + 1]
-            row_proj = nw[:, xa:xb].sum(axis=1)
-            ys = [0] + [best_split(row_proj, j / rows) for j in range(1, rows)] + [h]
-            for r_i in range(rows):
+        extracted: list[tuple[str, np.ndarray]] = []
+        for r_i in range(rows):
+            for c_i in range(cols):
+                xa, xb = xs[c_i], xs[c_i + 1]
+                row_proj = nw[:, xa:xb].sum(axis=1)
+                ys = [0] + [best_split(row_proj, j / rows) for j in range(1, rows)] + [h]
                 target = args.targets[r_i * cols + c_i]
                 rgba = extract_rgba_from_cell(arr[ys[r_i]:ys[r_i + 1], xa:xb], allow_interior_holes=not args.no_holes)
+                if args.flip_x:
+                    rgba = np.ascontiguousarray(rgba[:, ::-1])
+                extracted.append((target, rgba))
+        if args.align_strip:
+            aligned = normalize_512_aligned_strip([rgba for _, rgba in extracted])
+            for (target, _), norm in zip(extracted, aligned):
+                saved[target] = save_sprite_image(target, norm)
+        else:
+            for target, rgba in extracted:
                 saved[target] = save_sprite(target, rgba)
 
     update_manifest()

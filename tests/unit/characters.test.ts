@@ -6,13 +6,15 @@ import {
   characterTapped,
   createCharacter,
   stepCharacter,
+  walkFrameOf,
   type CharacterState,
 } from '../../src/game/characters';
+import sprites from '../../src/game/sprites.json';
 
 const fixed = (v: number) => () => v;
 
 describe('characters', () => {
-  it('initializes both resident characters inside the walkable floor bounds', () => {
+  it('initializes both resident characters inside the walkable floor bounds with walk strips', () => {
     expect(CHARACTERS).toHaveLength(2);
     for (const def of CHARACTERS) {
       const s = createCharacter(def);
@@ -21,6 +23,11 @@ describe('characters', () => {
       expect(s.y).toBeGreaterThanOrEqual(CHARACTER_BOUNDS.minY);
       expect(s.y).toBeLessThanOrEqual(CHARACTER_BOUNDS.maxY);
       expect(s.mode).toBe('idle');
+      expect(s.walkPhase).toBe(0);
+      expect(def.walkFrames).toBe(4);
+      const walkMeta = sprites[def.walkSprite] as { w: number; h: number; frames?: number };
+      expect(walkMeta.frames).toBe(def.walkFrames);
+      expect(walkMeta.h).toBe(def.height);
     }
   });
 
@@ -35,6 +42,31 @@ describe('characters', () => {
     expect(s.ty).toBeLessThanOrEqual(CHARACTER_BOUNDS.maxY);
   });
 
+  it('cycles walk frames smoothly while walking and resets phase on arrival', () => {
+    let s: CharacterState = {
+      ...createCharacter(CHARACTERS[0]),
+      mode: 'walk',
+      x: 300,
+      y: 780,
+      tx: 900,
+      ty: 780,
+      walkPhase: 0,
+    };
+    const frameDt = 1 / CHARACTER_BOUNDS.walkFps;
+    const seenFrames = [walkFrameOf(s)];
+    for (let i = 0; i < 4; i++) {
+      s = stepCharacter(s, frameDt);
+      seenFrames.push(walkFrameOf(s));
+    }
+    expect(seenFrames).toEqual([0, 1, 2, 3, 0]);
+
+    // Stepping all the way to the target settles back to idle with walkPhase reset.
+    s = stepCharacter(s, 20);
+    expect(s.mode).toBe('idle');
+    expect(s.walkPhase).toBe(0);
+    expect(walkFrameOf(s)).toBe(0);
+  });
+
   it('pauses happily when tapped and settles back to idle', () => {
     const walking: CharacterState = {
       ...createCharacter(CHARACTERS[1]),
@@ -43,18 +75,21 @@ describe('characters', () => {
       y: 740,
       tx: 1100,
       ty: 760,
+      walkPhase: 2.4,
     };
     let s = characterTapped(walking);
     expect(s.mode).toBe('happy');
+    expect(s.walkPhase).toBe(0);
     s = stepCharacter(s, CHARACTER_BOUNDS.happySeconds);
     expect(s.mode).toBe('idle');
   });
 
   it('clamps dragged placement onto the living room floor', () => {
-    const start = createCharacter(CHARACTERS[0]);
+    const start = { ...createCharacter(CHARACTERS[0]), mode: 'walk' as const, walkPhase: 1.7 };
     const placed = characterPlaced(start, -100, 9999);
     expect(placed.x).toBe(CHARACTER_BOUNDS.minX);
     expect(placed.y).toBe(CHARACTER_BOUNDS.maxY);
     expect(placed.mode).toBe('idle');
+    expect(placed.walkPhase).toBe(0);
   });
 });

@@ -102,8 +102,7 @@ body,
   transform-origin: 50% 0%;
 }
 .item img,
-.pet img,
-.character img {
+.pet img {
   display: block;
   width: 100%;
   height: 100%;
@@ -252,10 +251,31 @@ body,
 .character-anim {
   transform-origin: 50% 100%;
 }
+.character-sprite-frame {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.character-sprite-frame img {
+  display: block;
+  max-width: none;
+  will-change: transform;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.character[data-mode='walk'] .contact-shadow {
+  animation: char-shadow-step 0.4s ease-in-out infinite;
+}
 .character-anim[data-mode='idle'] {
   animation: char-breathe 3s ease-in-out infinite;
 }
-.character-anim[data-mode='walk'] {
+.character-anim[data-mode='walk'][data-walk-strip='1'] {
+  animation: char-walk-bob 0.4s ease-in-out infinite;
+}
+.character-anim[data-mode='walk'][data-walk-strip='0'] {
   animation: char-stroll 0.56s ease-in-out infinite;
 }
 .character-anim[data-mode='happy'] {
@@ -286,6 +306,26 @@ body,
   }
   50% {
     transform: scale(1.01, 0.99);
+  }
+}
+@keyframes char-walk-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes char-shadow-step {
+  0%,
+  100% {
+    transform: scaleX(1.04);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(0.92);
+    opacity: 0.85;
   }
 }
 @keyframes char-stroll {
@@ -449,7 +489,8 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .pet-anim,
   .character-anim,
-  .character-heart {
+  .character-heart,
+  .character .contact-shadow {
     animation: none !important;
   }
 }

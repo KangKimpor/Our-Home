@@ -5,6 +5,7 @@ import {
   clampCharacterPos,
   createCharacter,
   stepCharacter,
+  walkFrameOf,
   type CharacterDef,
   type CharacterState,
 } from '../game/characters';
@@ -22,15 +23,24 @@ interface Props {
 }
 
 /**
- * An interactive resident character that strolls around the room, reacts with
- * a happy hop & floating heart when tapped, and can also be dragged anywhere on the floor.
+ * An interactive resident character that strolls around the room with a 4-frame
+ * hand-drawn walk cycle, reacts with a happy hop & floating heart when tapped,
+ * and can also be dragged anywhere on the floor.
  */
 export function Character({ def, stage, onInteract }: Props) {
   const { w, h } = itemSize({ sprite: def.sprite, height: def.height });
+  const { w: walkW, h: walkH } = itemSize({ sprite: def.walkSprite, height: def.height });
+  const idleUrl = versionedAssetUrl(`/sprites/${def.sprite}.png`);
+  const walkUrl = versionedAssetUrl(`/sprites/${def.walkSprite}.png`);
+
   const state = useRef<CharacterState>(createCharacter(def));
   const rootRef = useRef<HTMLDivElement>(null);
   const flipRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const walkReady = useRef(false);
+  const reducedMotion = useRef(false);
   const drag = useRef<{
     id: number;
     sx: number;
@@ -47,17 +57,56 @@ export function Character({ def, stage, onInteract }: Props) {
   const [dragging, setDragging] = useState(false);
   const [heartKey, setHeartKey] = useState(0);
 
+  // Preload and decode the walk sprite strip so entering walk mode never flickers.
+  useEffect(() => {
+    let cancelled = false;
+    walkReady.current = false;
+    const img = new Image();
+    const markReady = () => {
+      if (!cancelled && img.naturalWidth > 0) walkReady.current = true;
+    };
+    img.onload = () => {
+      if (typeof img.decode === 'function') {
+        img.decode().then(markReady, markReady);
+      } else {
+        markReady();
+      }
+    };
+    img.src = walkUrl;
+    if (img.complete && img.naturalWidth > 0) markReady();
+    return () => {
+      cancelled = true;
+    };
+  }, [walkUrl]);
+
+  // Respect user reduced-motion preference for frame cycling.
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    reducedMotion.current = mq.matches;
+    const onChange = (e: MediaQueryListEvent) => {
+      reducedMotion.current = e.matches;
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
     let shownMode = '';
     let shownFacing = 0;
+    let shownStrip: boolean | null = null;
+    let shownFrame = -1;
 
     const applyDom = (s: CharacterState, isDragging: boolean) => {
       const root = rootRef.current;
       if (root) {
         root.style.transform = `translate3d(${s.x - w / 2}px, ${s.y - h}px, 0)`;
         root.style.zIndex = String(isDragging ? 5000 : depthOf('floor', s.y));
+        if (s.mode !== shownMode) {
+          root.dataset.mode = s.mode;
+        }
       }
       if (s.mode !== shownMode && animRef.current) {
         animRef.current.dataset.mode = shownMode = s.mode;
@@ -66,6 +115,43 @@ export function Character({ def, stage, onInteract }: Props) {
         shownFacing = s.facing;
         const flip = s.facing === def.spriteFacing ? 1 : -1;
         flipRef.current.style.transform = `scaleX(${flip})`;
+      }
+
+      const useStrip = s.mode === 'walk' && walkReady.current && !reducedMotion.current;
+      const frameIdx = useStrip ? walkFrameOf(s, def.walkFrames) : 0;
+
+      if (useStrip !== shownStrip) {
+        shownStrip = useStrip;
+        shownFrame = -1;
+        if (animRef.current) {
+          animRef.current.dataset.walkStrip = useStrip ? '1' : '0';
+        }
+        const frameEl = frameRef.current;
+        if (frameEl) {
+          frameEl.style.width = `${useStrip ? walkW : w}px`;
+          frameEl.style.height = `${useStrip ? walkH : h}px`;
+        }
+        const imgEl = imgRef.current;
+        if (imgEl) {
+          imgEl.src = useStrip ? walkUrl : idleUrl;
+          imgEl.style.width = `${useStrip ? walkW * def.walkFrames : w}px`;
+          imgEl.style.height = `${useStrip ? walkH : h}px`;
+        }
+      }
+
+      if (frameIdx !== shownFrame) {
+        shownFrame = frameIdx;
+        if (animRef.current) {
+          if (useStrip) {
+            animRef.current.dataset.walkFrame = String(frameIdx);
+          } else {
+            delete animRef.current.dataset.walkFrame;
+          }
+        }
+        const imgEl = imgRef.current;
+        if (imgEl) {
+          imgEl.style.transform = useStrip ? `translate3d(${-frameIdx * walkW}px, 0, 0)` : 'translate3d(0, 0, 0)';
+        }
       }
     };
 
@@ -80,17 +166,17 @@ export function Character({ def, stage, onInteract }: Props) {
           stageRef.current.autoPanAt(d.lastClientX, dt);
           const pt = stageRef.current.clientToRoom(d.lastClientX, d.lastClientY);
           const pos = clampCharacterPos(pt.x + d.offsetX, pt.y + d.offsetY);
-          state.current = { ...state.current, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle' };
+          state.current = { ...state.current, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', walkPhase: 0 };
         }
       } else {
-        state.current = stepCharacter(state.current, dt);
+        state.current = stepCharacter(state.current, dt, Math.random, def.walkFrames);
       }
       applyDom(state.current, Boolean(d?.moved));
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [def.spriteFacing, w, h]);
+  }, [def.spriteFacing, def.walkFrames, h, idleUrl, w, walkH, walkUrl, walkW]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
@@ -127,7 +213,7 @@ export function Character({ def, stage, onInteract }: Props) {
     }
     const pt = stage.clientToRoom(e.clientX, e.clientY);
     const pos = clampCharacterPos(pt.x + d.offsetX, pt.y + d.offsetY);
-    state.current = { ...state.current, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle' };
+    state.current = { ...state.current, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', walkPhase: 0 };
   };
 
   const endPress = (e: React.PointerEvent, cancelled: boolean) => {
@@ -149,6 +235,7 @@ export function Character({ def, stage, onInteract }: Props) {
       ref={rootRef}
       className={`character${dragging ? ' is-dragging' : ''}`}
       data-testid={`character-${def.id}`}
+      data-mode="idle"
       style={{ width: w, height: h }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -162,8 +249,10 @@ export function Character({ def, stage, onInteract }: Props) {
         </span>
       )}
       <div ref={flipRef} className="character-flip">
-        <div ref={animRef} className="character-anim" data-mode="idle">
-          <img src={versionedAssetUrl(`/sprites/${def.sprite}.png`)} alt={def.label} draggable={false} />
+        <div ref={animRef} className="character-anim" data-mode="idle" data-walk-strip="0">
+          <div ref={frameRef} className="character-sprite-frame" style={{ width: w, height: h }}>
+            <img ref={imgRef} src={idleUrl} alt={def.label} draggable={false} style={{ width: w, height: h }} />
+          </div>
         </div>
       </div>
     </div>

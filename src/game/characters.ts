@@ -6,6 +6,10 @@ export interface CharacterDef {
   id: 'her' | 'him';
   label: string;
   sprite: SpriteId;
+  /** Horizontal walk-cycle sprite strip (frames arranged left to right). */
+  walkSprite: SpriteId;
+  /** Number of frames in `walkSprite`. */
+  walkFrames: number;
   /** Display height in room pixels; width follows the sprite's aspect ratio. */
   height: number;
   /** Facing direction baked into the sprite image: 1 = right, -1 = left. */
@@ -25,10 +29,14 @@ export interface CharacterState {
   timer: number;
   /** Current facing direction: 1 = facing right, -1 = facing left. */
   facing: 1 | -1;
+  /** Continuous walk-cycle phase in [0, walkFrames); floor(walkPhase) gives the frame index. */
+  walkPhase: number;
 }
 
 export const CHARACTER_BOUNDS = {
   speed: 62, // leisurely stroll speed in room px per second
+  walkFps: 5, // 4-frame cycle = 0.8s (2 cozy steps per cycle)
+  walkFrames: 4,
   minX: 150,
   maxX: ROOM.w - 150,
   minY: 615,
@@ -41,6 +49,8 @@ export const CHARACTERS: readonly CharacterDef[] = [
     id: 'her',
     label: 'Partner (Her)',
     sprite: 'resident_her',
+    walkSprite: 'resident_her_walk',
+    walkFrames: 4,
     height: 275,
     spriteFacing: 1,
     startX: 505,
@@ -52,6 +62,8 @@ export const CHARACTERS: readonly CharacterDef[] = [
     id: 'him',
     label: 'Partner (Him)',
     sprite: 'resident_him',
+    walkSprite: 'resident_him_walk',
+    walkFrames: 4,
     height: 295,
     spriteFacing: -1,
     startX: 1125,
@@ -73,7 +85,14 @@ export function createCharacter(def: CharacterDef): CharacterState {
     ty: def.startY,
     timer: def.initialIdleSeconds,
     facing: def.startFacing,
+    walkPhase: 0,
   };
+}
+
+/** Returns the discrete walk-cycle frame index for a character state. */
+export function walkFrameOf(s: CharacterState, frameCount: number = CHARACTER_BOUNDS.walkFrames): number {
+  if (s.mode !== 'walk' || frameCount <= 1) return 0;
+  return ((Math.floor(s.walkPhase) % frameCount) + frameCount) % frameCount;
 }
 
 export function clampCharacterPos(x: number, y: number): { x: number; y: number } {
@@ -88,16 +107,17 @@ export function stepCharacter(
   s: CharacterState,
   dt: number,
   rand: () => number = Math.random,
+  frameCount: number = CHARACTER_BOUNDS.walkFrames,
 ): CharacterState {
   if (s.mode === 'idle' || s.mode === 'happy') {
     const timer = s.timer - dt;
     if (timer > 0) return { ...s, timer };
-    if (s.mode === 'happy') return { ...s, mode: 'idle', timer: 1.8 + rand() * 2.4 };
+    if (s.mode === 'happy') return { ...s, mode: 'idle', timer: 1.8 + rand() * 2.4, walkPhase: 0 };
     let tx = lerp(CHARACTER_BOUNDS.minX, CHARACTER_BOUNDS.maxX, rand());
     const ty = lerp(CHARACTER_BOUNDS.minY, CHARACTER_BOUNDS.maxY, rand());
     if (Math.abs(tx - s.x) < 160) tx = s.x + (tx >= s.x ? 160 : -160);
     tx = clamp(tx, CHARACTER_BOUNDS.minX, CHARACTER_BOUNDS.maxX);
-    return { ...s, mode: 'walk', tx, ty, timer: 0, facing: tx >= s.x ? 1 : -1 };
+    return { ...s, mode: 'walk', tx, ty, timer: 0, facing: tx >= s.x ? 1 : -1, walkPhase: 0 };
   }
 
   const dx = s.tx - s.x;
@@ -105,18 +125,19 @@ export function stepCharacter(
   const dist = Math.hypot(dx, dy);
   const stepLen = CHARACTER_BOUNDS.speed * dt;
   if (dist <= stepLen) {
-    return { ...s, x: s.tx, y: s.ty, mode: 'idle', timer: 2.8 + rand() * 3.8 };
+    return { ...s, x: s.tx, y: s.ty, mode: 'idle', timer: 2.8 + rand() * 3.8, walkPhase: 0 };
   }
-  return { ...s, x: s.x + (dx / dist) * stepLen, y: s.y + (dy / dist) * stepLen };
+  const walkPhase = (s.walkPhase + dt * CHARACTER_BOUNDS.walkFps) % frameCount;
+  return { ...s, x: s.x + (dx / dist) * stepLen, y: s.y + (dy / dist) * stepLen, walkPhase };
 }
 
 /** Tapping a character makes them pause and bounce happily. */
 export function characterTapped(s: CharacterState): CharacterState {
-  return { ...s, mode: 'happy', timer: CHARACTER_BOUNDS.happySeconds, tx: s.x, ty: s.y };
+  return { ...s, mode: 'happy', timer: CHARACTER_BOUNDS.happySeconds, tx: s.x, ty: s.y, walkPhase: 0 };
 }
 
 /** Placing a character via drag clamps to the floor and pauses them gently in place. */
 export function characterPlaced(s: CharacterState, x: number, y: number): CharacterState {
   const pos = clampCharacterPos(x, y);
-  return { ...s, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', timer: 3.5 };
+  return { ...s, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', timer: 3.5, walkPhase: 0 };
 }

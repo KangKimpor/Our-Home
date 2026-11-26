@@ -42,6 +42,26 @@ const SPRITE_SPECS = {
   resident_him: { height: 295, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
 };
 
+// Multi-frame horizontal animation strips built from aligned 512x512 pack frames.
+// Each strip keeps a shared union frame box so foot baselines and head centers
+// stay rock-steady across frames without per-frame trim jitter.
+const SPRITE_STRIPS = {
+  resident_her_walk: {
+    frames: ['resident_her_walk_1', 'resident_her_walk_2', 'resident_her_walk_3', 'resident_her_walk_4'],
+    height: 275,
+    inkBlend: 0.45,
+    wobble: 2.35,
+    uneven: 1.0,
+  },
+  resident_him_walk: {
+    frames: ['resident_him_walk_1', 'resident_him_walk_2', 'resident_him_walk_3', 'resident_him_walk_4'],
+    height: 295,
+    inkBlend: 0.45,
+    wobble: 2.35,
+    uneven: 1.0,
+  },
+};
+
 // Room backdrops, copied as-is (they are full 1600x900 scenes).
 const BACKGROUNDS = ['living_room_backdrop'];
 
@@ -113,25 +133,7 @@ function sampleRGBA(buf, w, h, fx, fy, dst, dstOffset) {
   dst[dstOffset + 3] = clampByte(a);
 }
 
-async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend, wobble, uneven }) {
-  const seed = seedFromId(id);
-  const trimmedBuf = await sharp(srcPath).trim({ threshold: 1 }).ensureAlpha().png().toBuffer();
-  const meta = await sharp(trimmedBuf).metadata();
-  const roomW = Math.max(1, Math.round((meta.width / meta.height) * roomH));
-
-  // Add a 6px transparent margin at 2x scale so hand-wobble never clips edges.
-  const pad = 6;
-  const innerW = roomW * 2;
-  const innerH = roomH * 2;
-  const workW = innerW + pad * 2;
-  const workH = innerH + pad * 2;
-  const { data } = await sharp(trimmedBuf)
-    .resize(innerW, innerH, { kernel: 'lanczos3' })
-    .extend({ top: pad, bottom: pad, left: pad, right: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
+function applyHandInkedStyle(data, workW, workH, { seed, inkBlend, wobble, uneven }) {
   // 1. Multi-octave hand-drawn contour wobble (bowed curves + tactile pen jitter)
   //    applied identically to fills & outlines so registration stays locked.
   const warped = new Uint8ClampedArray(workW * workH * 4);
@@ -307,6 +309,30 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
     }
   }
 
+  return out;
+}
+
+async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend, wobble, uneven }) {
+  const seed = seedFromId(id);
+  const trimmedBuf = await sharp(srcPath).trim({ threshold: 1 }).ensureAlpha().png().toBuffer();
+  const meta = await sharp(trimmedBuf).metadata();
+  const roomW = Math.max(1, Math.round((meta.width / meta.height) * roomH));
+
+  // Add a 6px transparent margin at 2x scale so hand-wobble never clips edges.
+  const pad = 6;
+  const innerW = roomW * 2;
+  const innerH = roomH * 2;
+  const workW = innerW + pad * 2;
+  const workH = innerH + pad * 2;
+  const { data } = await sharp(trimmedBuf)
+    .resize(innerW, innerH, { kernel: 'lanczos3' })
+    .extend({ top: pad, bottom: pad, left: pad, right: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const out = applyHandInkedStyle(data, workW, workH, { seed, inkBlend, wobble, uneven });
+
   // 4. Trim margin cleanly and match backdrop's exact optical resolution (1376/1600 -> 1600x900).
   const trimmed2x = await sharp(Buffer.from(out.buffer), {
     raw: { width: workW, height: workH, channels: 4 },
@@ -328,6 +354,102 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
   return { w: info.width, h: info.height };
 }
 
+async function harmonizeStrip(id, frameEntries, destPath, { height: roomH, inkBlend, wobble, uneven }) {
+  // Inspect all aligned 512x512 frames to compute a single symmetric union box
+  // centered on the canvas midline so every frame shares exact scale & foot baseline.
+  const rawFrames = [];
+  let minY = Infinity;
+  let maxY = -1;
+  let maxHalfW = 0;
+  let canvasW = 0;
+  let canvasH = 0;
+
+  for (const frame of frameEntries) {
+    const { data, info } = await sharp(frame.src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    canvasW = info.width;
+    canvasH = info.height;
+    const cx = canvasW / 2;
+    for (let y = 0; y < info.height; y++) {
+      const row = y * info.width;
+      for (let x = 0; x < info.width; x++) {
+        if (data[(row + x) * 4 + 3] > 4) {
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+          const dist = Math.abs(x + 0.5 - cx);
+          if (dist > maxHalfW) maxHalfW = dist;
+        }
+      }
+    }
+    rawFrames.push(frame);
+  }
+
+  // Small safety margin inside the 512x512 canvas so wobble never clips frame edges.
+  const margin = 4;
+  const cropTop = Math.max(0, minY - margin);
+  const cropBot = Math.min(canvasH - 1, maxY + margin);
+  const cropHalfW = Math.min(Math.floor(canvasW / 2), Math.ceil(maxHalfW) + margin);
+  const cropLeft = Math.floor(canvasW / 2) - cropHalfW;
+  const cropW = cropHalfW * 2;
+  const cropH = cropBot - cropTop + 1;
+
+  const frameW = Math.max(1, Math.round((cropW / cropH) * roomH));
+  const pad = 6;
+  const innerW = frameW * 2;
+  const innerH = roomH * 2;
+  const workW = innerW + pad * 2;
+  const workH = innerH + pad * 2;
+  const natW = Math.max(1, Math.round(frameW * BACKDROP_NATIVE_RATIO));
+  const natH = Math.max(1, Math.round(roomH * BACKDROP_NATIVE_RATIO));
+
+  const composites = [];
+  for (let i = 0; i < rawFrames.length; i++) {
+    const { id: frameId, src } = rawFrames[i];
+    const { data } = await sharp(src)
+      .extract({ left: cropLeft, top: cropTop, width: cropW, height: cropH })
+      .resize(innerW, innerH, { kernel: 'lanczos3' })
+      .extend({ top: pad, bottom: pad, left: pad, right: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const out = applyHandInkedStyle(data, workW, workH, {
+      seed: seedFromId(frameId),
+      inkBlend,
+      wobble,
+      uneven,
+    });
+
+    const inner2x = await sharp(Buffer.from(out.buffer), {
+      raw: { width: workW, height: workH, channels: 4 },
+    })
+      .extract({ left: pad, top: pad, width: innerW, height: innerH })
+      .resize(natW, natH, { kernel: 'lanczos3' })
+      .raw()
+      .toBuffer();
+
+    const framePng = await sharp(inner2x, { raw: { width: natW, height: natH, channels: 4 } })
+      .resize(frameW, roomH, { kernel: 'cubic' })
+      .png()
+      .toBuffer();
+
+    composites.push({ input: framePng, left: i * frameW, top: 0 });
+  }
+
+  await sharp({
+    create: {
+      width: frameW * rawFrames.length,
+      height: roomH,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite(composites)
+    .png()
+    .toFile(destPath);
+
+  return { w: frameW, h: roomH, frames: rawFrames.length };
+}
+
 const manifest = JSON.parse(fs.readFileSync(path.join(packDir, 'manifest.json'), 'utf8'));
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
@@ -340,6 +462,17 @@ for (const [id, spec] of Object.entries(SPRITE_SPECS)) {
   const dest = path.join(outDir, `${id}.png`);
   sizes[id] = await harmonizeSprite(id, src, dest, spec);
   console.log(`${id}: ${sizes[id].w}x${sizes[id].h}`);
+}
+
+for (const [id, spec] of Object.entries(SPRITE_STRIPS)) {
+  const frameEntries = spec.frames.map((frameId) => {
+    const entry = manifest.assets.find((a) => a.id === frameId);
+    if (!entry) throw new Error(`Strip frame "${frameId}" is not in the pack manifest`);
+    return { id: frameId, src: path.join(packDir, entry.filename) };
+  });
+  const dest = path.join(outDir, `${id}.png`);
+  sizes[id] = await harmonizeStrip(id, frameEntries, dest, spec);
+  console.log(`${id}: ${sizes[id].w}x${sizes[id].h} (${sizes[id].frames} frames)`);
 }
 
 const bgOut = path.join(root, 'public', 'backgrounds');

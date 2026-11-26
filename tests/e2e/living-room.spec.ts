@@ -97,3 +97,23 @@ test('tapping the pet makes it hop', async ({ page }) => {
   await pet.dispatchEvent('pointerdown');
   await expect(pet.locator('.pet-anim')).toHaveAttribute('data-mode', 'happy');
 });
+
+test('both human characters play their 4-frame walking animations when strolling', async ({ page }) => {
+  for (const id of ['her', 'him'] as const) {
+    const char = page.getByTestId(`character-${id}`);
+    const anim = char.locator('.character-anim');
+    await expect(anim).toHaveAttribute('data-mode', 'walk', { timeout: 8000 });
+    await expect(anim).toHaveAttribute('data-walk-strip', '1', { timeout: 4000 });
+
+    const img = char.locator('img');
+    await expect
+      .poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(400);
+
+    const firstFrame = await anim.getAttribute('data-walk-frame');
+    expect(firstFrame).not.toBeNull();
+    await expect
+      .poll(() => anim.getAttribute('data-walk-frame'), { timeout: 2000 })
+      .not.toBe(firstFrame);
+  }
+});

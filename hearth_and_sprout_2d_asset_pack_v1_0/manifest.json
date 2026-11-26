@@ -4,14 +4,14 @@
   "style_pass": "hand_drawn_sofa_benchmark_unified_v6_0",
   "creation_date": "2026-11-25",
   "clean_room_status": "original_from_scratch_no_third_party_reference_assets_included",
-  "total_sprites": 29,
+  "total_sprites": 37,
   "total_backgrounds": 1,
   "total_previews": 1,
   "category_counts": {
     "home": 6,
     "living_room": 6,
     "garden": 7,
-    "characters": 5,
+    "characters": 13,
     "small_props": 5
   },
   "style_guide": "STYLE_GUIDE.md",
@@ -1020,6 +1020,278 @@
       "usage_terms_notes": "Generated from user-supplied character reference photo in the embedded Our Home hand-drawn cottage gouache style.",
       "file_size_bytes": 134003,
       "sha256": "72a48752173b4caa2d6d61a971758330655e9c4e7bba2dddd8f6a6d3c654c85b"
+    },
+    {
+      "id": "resident_her_walk_1",
+      "filename": "sprites/characters/resident_her_walk_1.png",
+      "category": "characters",
+      "description": "Walk cycle frame 1 (contact stride A) for resident character (her), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7808,
+        "padding_px": {
+          "top": 36,
+          "right": 152,
+          "bottom": 32,
+          "left": 158
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 124055,
+      "sha256": "a1a31a5b04e4fa8eacc853d8a6731e1decebc22cbab76cda54a87e364b7885fa"
+    },
+    {
+      "id": "resident_her_walk_2",
+      "filename": "sprites/characters/resident_her_walk_2.png",
+      "category": "characters",
+      "description": "Walk cycle frame 2 (passing A) for resident character (her), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7984,
+        "padding_px": {
+          "top": 32,
+          "right": 165,
+          "bottom": 32,
+          "left": 167
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 109838,
+      "sha256": "b655b8055fda315475594f9b07826b3a45a831972209334ca61bf2fc7af9704f"
+    },
+    {
+      "id": "resident_her_walk_3",
+      "filename": "sprites/characters/resident_her_walk_3.png",
+      "category": "characters",
+      "description": "Walk cycle frame 3 (contact stride B) for resident character (her), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7924,
+        "padding_px": {
+          "top": 37,
+          "right": 148,
+          "bottom": 32,
+          "left": 166
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 119330,
+      "sha256": "c1e32d19e02fc8b50f801ebbdbe9a1abc7116fbda0c1535db9908648fd4bf25e"
+    },
+    {
+      "id": "resident_her_walk_4",
+      "filename": "sprites/characters/resident_her_walk_4.png",
+      "category": "characters",
+      "description": "Walk cycle frame 4 (passing B) for resident character (her), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7984,
+        "padding_px": {
+          "top": 32,
+          "right": 165,
+          "bottom": 32,
+          "left": 166
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 108404,
+      "sha256": "f810c96b6f003573ea69fad4abc4f44ff1bb1f236a253310c0e86a3e94f08afc"
+    },
+    {
+      "id": "resident_him_walk_1",
+      "filename": "sprites/characters/resident_him_walk_1.png",
+      "category": "characters",
+      "description": "Walk cycle frame 1 (contact stride A) for resident character (him), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7972,
+        "padding_px": {
+          "top": 34,
+          "right": 151,
+          "bottom": 32,
+          "left": 144
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.05,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_him.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 139933,
+      "sha256": "0ba01ba0786d6c58e9eae21c7ccff5d0973ab62dbfe1b7b5e85377941c04e6bd"
+    },
+    {
+      "id": "resident_him_walk_2",
+      "filename": "sprites/characters/resident_him_walk_2.png",
+      "category": "characters",
+      "description": "Walk cycle frame 2 (passing A) for resident character (him), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.8093,
+        "padding_px": {
+          "top": 32,
+          "right": 168,
+          "bottom": 32,
+          "left": 174
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.05,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_him.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 124375,
+      "sha256": "c11662a9f201017c2c30c2ed6214dd5c5a16c522fc3a01c5a98dcba888077b4d"
+    },
+    {
+      "id": "resident_him_walk_3",
+      "filename": "sprites/characters/resident_him_walk_3.png",
+      "category": "characters",
+      "description": "Walk cycle frame 3 (contact stride B) for resident character (him), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.8176,
+        "padding_px": {
+          "top": 32,
+          "right": 158,
+          "bottom": 32,
+          "left": 161
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.05,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_him.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 128879,
+      "sha256": "db93fb6ae8d32a7ab5d22696983209179431667c2c1bea0496650b02207c85b7"
+    },
+    {
+      "id": "resident_him_walk_4",
+      "filename": "sprites/characters/resident_him_walk_4.png",
+      "category": "characters",
+      "description": "Walk cycle frame 4 (passing B) for resident character (him), aligned to shared baseline and head center.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.8096,
+        "padding_px": {
+          "top": 33,
+          "right": 162,
+          "bottom": 32,
+          "left": 169
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.05,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Walk cycle frame derived from resident_him.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 125091,
+      "sha256": "20fdae73851cce0a762c8ef9b23d35e89c31d52add85798758c974236f3d7054"
     }
   ],
   "backgrounds": [

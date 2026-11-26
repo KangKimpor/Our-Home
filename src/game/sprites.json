@@ -54,5 +54,15 @@
   "resident_him": {
     "w": 128,
     "h": 295
+  },
+  "resident_her_walk": {
+    "w": 135,
+    "h": 275,
+    "frames": 4
+  },
+  "resident_him_walk": {
+    "w": 150,
+    "h": 295,
+    "frames": 4
   }
 }
