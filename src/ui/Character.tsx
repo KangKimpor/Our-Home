@@ -5,6 +5,7 @@ import {
   characterTapped,
   clampCharacterPos,
   createCharacter,
+  resolveCharacterOutfit,
   stepCharacter,
   walkFrameOf,
   type CharacterDef,
@@ -19,6 +20,7 @@ const TOUCH_TAP_SLOP = 10;
 
 interface Props {
   def: CharacterDef;
+  outfitId?: string;
   stage: StageContext;
   onInteract?: () => void;
 }
@@ -28,11 +30,12 @@ interface Props {
  * hand-drawn walk cycle, reacts with a happy hop & floating heart when tapped,
  * and can also be dragged anywhere on the floor.
  */
-export function Character({ def, stage, onInteract }: Props) {
-  const { w, h } = itemSize({ sprite: def.sprite, height: def.height });
-  const { w: walkW, h: walkH } = itemSize({ sprite: def.walkSprite, height: def.height });
-  const idleUrl = versionedAssetUrl(`/sprites/${def.sprite}.png`);
-  const walkUrl = versionedAssetUrl(`/sprites/${def.walkSprite}.png`);
+export function Character({ def, outfitId, stage, onInteract }: Props) {
+  const outfit = resolveCharacterOutfit(def, outfitId);
+  const { w, h } = itemSize({ sprite: outfit.sprite, height: def.height });
+  const { w: walkW, h: walkH } = itemSize({ sprite: outfit.walkSprite, height: def.height });
+  const idleUrl = versionedAssetUrl(`/sprites/${outfit.sprite}.png`);
+  const walkUrl = versionedAssetUrl(`/sprites/${outfit.walkSprite}.png`);
 
   const state = useRef<CharacterState>(createCharacter(def));
   const rootRef = useRef<HTMLDivElement>(null);
@@ -116,7 +119,7 @@ export function Character({ def, stage, onInteract }: Props) {
       }
 
       const useStrip = s.mode === 'walk' && walkReady.current && !reducedMotion.current;
-      const frameIdx = useStrip ? walkFrameOf(s, def.walkFrames) : 0;
+      const frameIdx = useStrip ? walkFrameOf(s, outfit.walkFrames) : 0;
 
       if (useStrip !== shownStrip) {
         shownStrip = useStrip;
@@ -132,7 +135,7 @@ export function Character({ def, stage, onInteract }: Props) {
         const imgEl = imgRef.current;
         if (imgEl) {
           imgEl.src = useStrip ? walkUrl : idleUrl;
-          imgEl.style.width = `${useStrip ? walkW * def.walkFrames : w}px`;
+          imgEl.style.width = `${useStrip ? walkW * outfit.walkFrames : w}px`;
           imgEl.style.height = `${useStrip ? walkH : h}px`;
         }
       }
@@ -167,14 +170,14 @@ export function Character({ def, stage, onInteract }: Props) {
           state.current = { ...state.current, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', walkPhase: 0 };
         }
       } else {
-        state.current = stepCharacter(state.current, dt, Math.random, def.walkFrames);
+        state.current = stepCharacter(state.current, dt, Math.random, outfit.walkFrames);
       }
       applyDom(state.current, Boolean(d?.moved));
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [def.spriteFacing, def.walkFrames, h, idleUrl, w, walkH, walkUrl, walkW]);
+  }, [def.spriteFacing, outfit.walkFrames, h, idleUrl, w, walkH, walkUrl, walkW]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
@@ -233,6 +236,7 @@ export function Character({ def, stage, onInteract }: Props) {
       ref={rootRef}
       className={`character${dragging ? ' is-dragging' : ''}`}
       data-testid={`character-${def.id}`}
+      data-outfit={outfit.id}
       data-mode="idle"
       style={{ width: w, height: h }}
       onPointerDown={onPointerDown}

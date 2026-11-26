@@ -39,6 +39,7 @@ const SPRITE_SPECS = {
   potted_calamondin_tree: { height: 240, inkBlend: 0.62, wobble: 1.5, uneven: 0.7 },
   mossback_hedgehog: { height: 120, inkBlend: 0.58, wobble: 2.35, uneven: 1.0 },
   resident_her: { height: 275, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
+  resident_her_badminton: { height: 275, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
   resident_him: { height: 295, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
 };
 
@@ -48,6 +49,18 @@ const SPRITE_SPECS = {
 const SPRITE_STRIPS = {
   resident_her_walk: {
     frames: ['resident_her_walk_1', 'resident_her_walk_2', 'resident_her_walk_3', 'resident_her_walk_4'],
+    height: 275,
+    inkBlend: 0.45,
+    wobble: 2.35,
+    uneven: 1.0,
+  },
+  resident_her_badminton_walk: {
+    frames: [
+      'resident_her_badminton_walk_1',
+      'resident_her_badminton_walk_2',
+      'resident_her_badminton_walk_3',
+      'resident_her_badminton_walk_4',
+    ],
     height: 275,
     inkBlend: 0.45,
     wobble: 2.35,

@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   CHARACTERS,
   CHARACTER_BOUNDS,
+  DEFAULT_OUTFITS,
   characterPlaced,
   characterTapped,
   createCharacter,
+  loadOutfits,
+  resolveCharacterOutfit,
+  saveOutfits,
   stepCharacter,
   walkFrameOf,
   type CharacterState,
@@ -91,5 +95,32 @@ describe('characters', () => {
     expect(placed.y).toBe(CHARACTER_BOUNDS.maxY);
     expect(placed.mode).toBe('idle');
     expect(placed.walkPhase).toBe(0);
+  });
+
+  it('resolves and persists selectable outfits for her character', () => {
+    const her = CHARACTERS.find((c) => c.id === 'her')!;
+    expect(her.outfits.map((o) => o.id)).toEqual(['dress', 'badminton']);
+    for (const outfit of her.outfits) {
+      expect(sprites[outfit.sprite].h).toBe(her.height);
+      const walkMeta = sprites[outfit.walkSprite] as { w: number; h: number; frames?: number };
+      expect(walkMeta.frames).toBe(outfit.walkFrames);
+      expect(walkMeta.h).toBe(her.height);
+    }
+
+    expect(resolveCharacterOutfit(her, 'badminton').sprite).toBe('resident_her_badminton');
+    expect(resolveCharacterOutfit(her, 'unknown').id).toBe('dress');
+
+    const store: Record<string, string> = {};
+    const storage = {
+      getItem: (k: string) => store[k] ?? null,
+      setItem: (k: string, v: string) => {
+        store[k] = v;
+      },
+    };
+    saveOutfits(storage, { ...DEFAULT_OUTFITS, her: 'badminton' });
+    expect(loadOutfits(storage)).toEqual({ her: 'badminton', him: 'casual' });
+
+    store['our-home:outfits:v1'] = JSON.stringify({ her: 'invalid-id' });
+    expect(loadOutfits(storage)).toEqual(DEFAULT_OUTFITS);
   });
 });

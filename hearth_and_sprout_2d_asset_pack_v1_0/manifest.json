@@ -4,14 +4,14 @@
   "style_pass": "hand_drawn_sofa_benchmark_unified_v6_0",
   "creation_date": "2026-11-25",
   "clean_room_status": "original_from_scratch_no_third_party_reference_assets_included",
-  "total_sprites": 37,
+  "total_sprites": 42,
   "total_backgrounds": 1,
   "total_previews": 1,
   "category_counts": {
     "home": 6,
     "living_room": 6,
     "garden": 7,
-    "characters": 13,
+    "characters": 18,
     "small_props": 5
   },
   "style_guide": "STYLE_GUIDE.md",
@@ -984,8 +984,8 @@
       "creation_date": "2026-11-26",
       "license_status": "unverified",
       "usage_terms_notes": "Generated from user-supplied character reference photo in the embedded Our Home hand-drawn cottage gouache style.",
-      "file_size_bytes": 125946,
-      "sha256": "67c0e1a42956aae454300b5df8d67155de920ed0bdd79810c3f86839c515458d"
+      "file_size_bytes": 126028,
+      "sha256": "37925ca65c820b6dc38206d9ec5e32dc06f72bff72d6fb2342783f4217b54008"
     },
     {
       "id": "resident_him",
@@ -1052,8 +1052,8 @@
       "creation_date": "2026-11-26",
       "license_status": "unverified",
       "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
-      "file_size_bytes": 124055,
-      "sha256": "a1a31a5b04e4fa8eacc853d8a6731e1decebc22cbab76cda54a87e364b7885fa"
+      "file_size_bytes": 124114,
+      "sha256": "22f9ab680d51d46e6a7c9e744e85a688cc57f4830724762f49eaf26ae7c56509"
     },
     {
       "id": "resident_her_walk_2",
@@ -1086,8 +1086,8 @@
       "creation_date": "2026-11-26",
       "license_status": "unverified",
       "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
-      "file_size_bytes": 109838,
-      "sha256": "b655b8055fda315475594f9b07826b3a45a831972209334ca61bf2fc7af9704f"
+      "file_size_bytes": 109898,
+      "sha256": "c4dffd7d1897d1e82e00a6c46356490d72a011b2c3e3ce9e4b30b8bd5a47639b"
     },
     {
       "id": "resident_her_walk_3",
@@ -1120,8 +1120,8 @@
       "creation_date": "2026-11-26",
       "license_status": "unverified",
       "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
-      "file_size_bytes": 119330,
-      "sha256": "c1e32d19e02fc8b50f801ebbdbe9a1abc7116fbda0c1535db9908648fd4bf25e"
+      "file_size_bytes": 119393,
+      "sha256": "a1fbeb5780a39486dc076e74e4d78e01a60da7f405d76669a26dca343af08ffc"
     },
     {
       "id": "resident_her_walk_4",
@@ -1154,8 +1154,8 @@
       "creation_date": "2026-11-26",
       "license_status": "unverified",
       "usage_terms_notes": "Walk cycle frame derived from resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
-      "file_size_bytes": 108404,
-      "sha256": "f810c96b6f003573ea69fad4abc4f44ff1bb1f236a253310c0e86a3e94f08afc"
+      "file_size_bytes": 108478,
+      "sha256": "575526923bdf5502cc2a0cadfddbec22610e4b08a08ee2ccca922c5bffc11020"
     },
     {
       "id": "resident_him_walk_1",
@@ -1292,6 +1292,176 @@
       "usage_terms_notes": "Walk cycle frame derived from resident_him.png in the embedded Our Home hand-drawn cottage gouache style.",
       "file_size_bytes": 125091,
       "sha256": "20fdae73851cce0a762c8ef9b23d35e89c31d52add85798758c974236f3d7054"
+    },
+    {
+      "id": "resident_her_badminton",
+      "filename": "sprites/characters/resident_her_badminton.png",
+      "category": "characters",
+      "description": "Cozy hand-drawn resident character (her) in badminton outfit: mahogany high ponytail, soft pale ice-blue V-neck athletic tee, warm oat-ivory pleated skirt, oat-cream crew socks, and dark 3-stripe sneakers.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.747,
+        "padding_px": {
+          "top": 32,
+          "right": 160,
+          "bottom": 32,
+          "left": 111
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Alternate badminton outfit derived from user photo and resident_her.png in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 136981,
+      "sha256": "69761c38b29781180b989231d782b29ec4a12459bb68f593c1958acd404ff567"
+    },
+    {
+      "id": "resident_her_badminton_walk_1",
+      "filename": "sprites/characters/resident_her_badminton_walk_1.png",
+      "category": "characters",
+      "description": "Badminton outfit walk cycle frame 1 (contact stride A) for resident character (her).",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7655,
+        "padding_px": {
+          "top": 37,
+          "right": 143,
+          "bottom": 32,
+          "left": 93
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Badminton walk cycle frame derived from resident_her_badminton.png.",
+      "file_size_bytes": 144549,
+      "sha256": "38625da8de169cc26254048c6b467c019d5bba668725cd0dcf474495825e5773"
+    },
+    {
+      "id": "resident_her_badminton_walk_2",
+      "filename": "sprites/characters/resident_her_badminton_walk_2.png",
+      "category": "characters",
+      "description": "Badminton outfit walk cycle frame 2 (passing A) for resident character (her).",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7836,
+        "padding_px": {
+          "top": 32,
+          "right": 156,
+          "bottom": 32,
+          "left": 149
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Badminton walk cycle frame derived from resident_her_badminton.png.",
+      "file_size_bytes": 127155,
+      "sha256": "5d3d40d4fe962609c4065d4d0df6a5a26a859bbab55007d1bf7a1b22ae2c8686"
+    },
+    {
+      "id": "resident_her_badminton_walk_3",
+      "filename": "sprites/characters/resident_her_badminton_walk_3.png",
+      "category": "characters",
+      "description": "Badminton outfit walk cycle frame 3 (contact stride B) for resident character (her).",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7988,
+        "padding_px": {
+          "top": 37,
+          "right": 138,
+          "bottom": 32,
+          "left": 177
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Badminton walk cycle frame derived from resident_her_badminton.png.",
+      "file_size_bytes": 132468,
+      "sha256": "a6657273d0a11dcba94a513e7ae6d3e743f4c730d11bcc9ccd14163272aac227"
+    },
+    {
+      "id": "resident_her_badminton_walk_4",
+      "filename": "sprites/characters/resident_her_badminton_walk_4.png",
+      "category": "characters",
+      "description": "Badminton outfit walk cycle frame 4 (passing B) for resident character (her).",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7838,
+        "padding_px": {
+          "top": 32,
+          "right": 156,
+          "bottom": 32,
+          "left": 150
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Badminton walk cycle frame derived from resident_her_badminton.png.",
+      "file_size_bytes": 126815,
+      "sha256": "563c77f3e7046f86869a6589beb3fe405bc6e53b054c9290e35dd99eabf8348e"
     }
   ],
   "backgrounds": [

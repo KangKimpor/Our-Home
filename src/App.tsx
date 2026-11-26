@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { CHARACTERS } from './game/characters';
+import { CHARACTERS, loadOutfits, saveOutfits, type OutfitSelections } from './game/characters';
 import {
   clearLayout,
   DEFAULT_LAYOUT,
@@ -18,6 +18,29 @@ import { Pet } from './ui/Pet';
 import { Stage } from './ui/Stage';
 
 const storage = typeof window !== 'undefined' ? window.localStorage : undefined;
+const HER_DEF = CHARACTERS.find((c) => c.id === 'her')!;
+
+function OutfitIcon() {
+  return (
+    <svg className="hud-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M12 6.8a1.9 1.9 0 1 0-1.9-1.9c0 .7.4 1.3 1 1.6L12 8.2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 8.2 3.8 14.2c-.8.6-.4 1.9.6 1.9h15.2c1 0 1.4-1.3.6-1.9L12 8.2Z"
+        fill="#d8aa5f"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function ResetIcon() {
   return (
@@ -73,10 +96,24 @@ function FrameIcon({ compact }: { compact: boolean }) {
 
 export function App() {
   const [layout, setLayout] = useState<Layout>(() => loadLayout(storage));
+  const [outfits, setOutfits] = useState<OutfitSelections>(() => loadOutfits(storage));
+  const [outfitMenuOpen, setOutfitMenuOpen] = useState(false);
   const [lampOn, setLampOn] = useState(true);
   const [showHint, setShowHint] = useState(true);
 
-  const hideHint = useCallback(() => setShowHint(false), []);
+  const hideHint = useCallback(() => {
+    setShowHint(false);
+    setOutfitMenuOpen(false);
+  }, []);
+
+  const selectHerOutfit = useCallback((outfitId: string) => {
+    setShowHint(false);
+    setOutfits((prev) => {
+      const next: OutfitSelections = { ...prev, her: outfitId };
+      saveOutfits(storage, next);
+      return next;
+    });
+  }, []);
 
   const onMove = useCallback((id: string, pos: Pos) => {
     setShowHint(false);
@@ -107,6 +144,20 @@ export function App() {
         <>
           <header className="hud">
             <div className="hud-actions">
+              <button
+                type="button"
+                className={`hud-button hud-button--secondary${outfitMenuOpen ? ' is-open' : ''}`}
+                data-testid="outfit-toggle"
+                aria-expanded={outfitMenuOpen}
+                aria-controls="outfit-picker"
+                onClick={() => {
+                  setShowHint(false);
+                  setOutfitMenuOpen((open) => !open);
+                }}
+              >
+                <OutfitIcon />
+                <span>Outfits</span>
+              </button>
               {stage.canToggleMode && (
                 <button
                   type="button"
@@ -124,6 +175,39 @@ export function App() {
               </button>
             </div>
           </header>
+          {outfitMenuOpen && (
+            <section
+              id="outfit-picker"
+              className="outfit-popover"
+              data-testid="outfit-picker"
+              aria-label="Choose outfit"
+            >
+              <div className="outfit-grid">
+                {HER_DEF.outfits.map((outfit) => {
+                  const selected = outfits.her === outfit.id;
+                  return (
+                    <button
+                      key={outfit.id}
+                      type="button"
+                      className={`outfit-option${selected ? ' is-selected' : ''}`}
+                      data-testid={`outfit-option-${outfit.id}`}
+                      aria-pressed={selected}
+                      onClick={() => selectHerOutfit(outfit.id)}
+                    >
+                      <span className="outfit-thumb">
+                        <img
+                          src={versionedAssetUrl(`/sprites/${outfit.sprite}.png`)}
+                          alt=""
+                          draggable={false}
+                        />
+                      </span>
+                      <span className="outfit-label">{outfit.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          )}
           <p className={`hint${showHint ? '' : ' is-hidden'}`}>
             {stage.canPan
               ? 'Swipe background to pan · drag & tap to play'
@@ -149,7 +233,7 @@ export function App() {
           ))}
           <Pet />
           {CHARACTERS.map((def) => (
-            <Character key={def.id} def={def} stage={stage} onInteract={hideHint} />
+            <Character key={def.id} def={def} outfitId={outfits[def.id]} stage={stage} onInteract={hideHint} />
           ))}
           <div className="room-dim" />
         </div>

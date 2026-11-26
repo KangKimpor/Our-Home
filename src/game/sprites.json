@@ -51,12 +51,21 @@
     "w": 124,
     "h": 275
   },
+  "resident_her_badminton": {
+    "w": 147,
+    "h": 275
+  },
   "resident_him": {
     "w": 128,
     "h": 295
   },
   "resident_her_walk": {
     "w": 135,
+    "h": 275,
+    "frames": 4
+  },
+  "resident_her_badminton_walk": {
+    "w": 199,
     "h": 275,
     "frames": 4
   },

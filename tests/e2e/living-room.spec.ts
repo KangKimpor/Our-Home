@@ -160,3 +160,26 @@ test('blocks game with retry button if an asset fails to load and recovers clean
   await page.getByRole('button', { name: 'Try again' }).click();
   await expect(page.locator('.room')).toBeVisible();
 });
+
+test('switches her outfit back and forth between Cozy dress and Badminton and persists across reload', async ({
+  page,
+}) => {
+  const her = page.getByTestId('character-her');
+  await expect(her).toHaveAttribute('data-outfit', 'dress');
+
+  await page.getByTestId('outfit-toggle').click();
+  await expect(page.getByTestId('outfit-picker')).toBeVisible();
+
+  await page.getByTestId('outfit-option-badminton').click();
+  await expect(her).toHaveAttribute('data-outfit', 'badminton');
+  await expect(her.locator('img')).toHaveAttribute('src', /resident_her_badminton/);
+
+  // Survives a full page reload.
+  await page.reload();
+  await expect(page.getByTestId('character-her')).toHaveAttribute('data-outfit', 'badminton');
+
+  // Switch cleanly back to Cozy dress.
+  await page.getByTestId('outfit-toggle').click();
+  await page.getByTestId('outfit-option-dress').click();
+  await expect(page.getByTestId('character-her')).toHaveAttribute('data-outfit', 'dress');
+});

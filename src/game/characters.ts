@@ -2,6 +2,16 @@ import { ROOM, type SpriteId } from './layout';
 
 export type CharacterMode = 'idle' | 'walk' | 'happy';
 
+export interface CharacterOutfit {
+  id: string;
+  label: string;
+  sprite: SpriteId;
+  /** Horizontal walk-cycle sprite strip (frames arranged left to right). */
+  walkSprite: SpriteId;
+  /** Number of frames in `walkSprite`. */
+  walkFrames: number;
+}
+
 export interface CharacterDef {
   id: 'her' | 'him';
   label: string;
@@ -10,6 +20,8 @@ export interface CharacterDef {
   walkSprite: SpriteId;
   /** Number of frames in `walkSprite`. */
   walkFrames: number;
+  /** Selectable outfits for this character (index 0 is the default). */
+  outfits: readonly CharacterOutfit[];
   /** Display height in room pixels; width follows the sprite's aspect ratio. */
   height: number;
   /** Facing direction baked into the sprite image: 1 = right, -1 = left. */
@@ -19,6 +31,8 @@ export interface CharacterDef {
   startFacing: 1 | -1;
   initialIdleSeconds: number;
 }
+
+export type OutfitSelections = Record<CharacterDef['id'], string>;
 
 export interface CharacterState {
   x: number;
@@ -51,6 +65,22 @@ export const CHARACTERS: readonly CharacterDef[] = [
     sprite: 'resident_her',
     walkSprite: 'resident_her_walk',
     walkFrames: 4,
+    outfits: [
+      {
+        id: 'dress',
+        label: 'Cozy dress',
+        sprite: 'resident_her',
+        walkSprite: 'resident_her_walk',
+        walkFrames: 4,
+      },
+      {
+        id: 'badminton',
+        label: 'Badminton',
+        sprite: 'resident_her_badminton',
+        walkSprite: 'resident_her_badminton_walk',
+        walkFrames: 4,
+      },
+    ],
     height: 275,
     spriteFacing: 1,
     startX: 660,
@@ -64,6 +94,15 @@ export const CHARACTERS: readonly CharacterDef[] = [
     sprite: 'resident_him',
     walkSprite: 'resident_him_walk',
     walkFrames: 4,
+    outfits: [
+      {
+        id: 'casual',
+        label: 'Striped shirt',
+        sprite: 'resident_him',
+        walkSprite: 'resident_him_walk',
+        walkFrames: 4,
+      },
+    ],
     height: 295,
     spriteFacing: -1,
     startX: 1350,
@@ -72,6 +111,48 @@ export const CHARACTERS: readonly CharacterDef[] = [
     initialIdleSeconds: 4.6,
   },
 ];
+
+export const DEFAULT_OUTFITS: OutfitSelections = {
+  her: 'dress',
+  him: 'casual',
+};
+
+export function resolveCharacterOutfit(def: CharacterDef, outfitId?: string): CharacterOutfit {
+  return def.outfits.find((o) => o.id === outfitId) ?? def.outfits[0];
+}
+
+const OUTFITS_STORAGE_KEY = 'our-home:outfits:v1';
+
+interface StorageLike {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+}
+
+export function loadOutfits(storage: StorageLike | undefined): OutfitSelections {
+  const outfits: OutfitSelections = { ...DEFAULT_OUTFITS };
+  try {
+    const raw = storage?.getItem(OUTFITS_STORAGE_KEY);
+    if (!raw) return outfits;
+    const saved = JSON.parse(raw) as Record<string, unknown>;
+    for (const def of CHARACTERS) {
+      const candidate = saved[def.id];
+      if (typeof candidate === 'string' && def.outfits.some((o) => o.id === candidate)) {
+        outfits[def.id] = candidate;
+      }
+    }
+  } catch {
+    // Ignore corrupt or unavailable storage.
+  }
+  return outfits;
+}
+
+export function saveOutfits(storage: StorageLike | undefined, outfits: OutfitSelections): void {
+  try {
+    storage?.setItem(OUTFITS_STORAGE_KEY, JSON.stringify(outfits));
+  } catch {
+    // Ignore full or blocked storage.
+  }
+}
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
