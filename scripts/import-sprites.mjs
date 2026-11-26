@@ -38,6 +38,8 @@ const SPRITE_SPECS = {
   patchwork_floor_cushion: { height: 105, inkBlend: 0.68, wobble: 2.35, uneven: 1.0 },
   potted_calamondin_tree: { height: 240, inkBlend: 0.62, wobble: 1.5, uneven: 0.7 },
   mossback_hedgehog: { height: 120, inkBlend: 0.58, wobble: 2.35, uneven: 1.0 },
+  resident_her: { height: 275, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
+  resident_him: { height: 295, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
 };
 
 // Room backdrops, copied as-is (they are full 1600x900 scenes).

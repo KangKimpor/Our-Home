@@ -8,11 +8,13 @@ test.beforeEach(async ({ page }) => {
 
 test('renders the living room sprites', async ({ page }) => {
   const images = page.locator('.room img');
-  await expect(images).toHaveCount(13); // backdrop + 11 furniture + pet
+  await expect(images).toHaveCount(15); // backdrop + 11 furniture + pet + 2 characters
   await expect
     .poll(() => images.evaluateAll((imgs) => imgs.every((i) => (i as HTMLImageElement).naturalWidth > 0)))
     .toBe(true);
   await expect(page.getByTestId('pet')).toBeVisible();
+  await expect(page.getByTestId('character-her')).toBeVisible();
+  await expect(page.getByTestId('character-him')).toBeVisible();
 });
 
 test('dragging furniture moves it and the move survives a reload', async ({ page }) => {

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { CHARACTERS } from './game/characters';
 import {
   clearLayout,
   DEFAULT_LAYOUT,
@@ -11,6 +12,7 @@ import {
   ROOM,
 } from './game/layout';
 import { versionedAssetUrl } from './game/version';
+import { Character } from './ui/Character';
 import { Furniture } from './ui/Furniture';
 import { Pet } from './ui/Pet';
 import { Stage } from './ui/Stage';
@@ -62,6 +64,9 @@ export function App() {
             />
           ))}
           <Pet />
+          {CHARACTERS.map((def) => (
+            <Character key={def.id} def={def} scale={scale} onInteract={() => setShowHint(false)} />
+          ))}
           <div className="room-dim" />
 
           <header className="hud">
@@ -71,7 +76,7 @@ export function App() {
             </button>
           </header>
           <p className={`hint${showHint ? '' : ' is-hidden'}`}>
-            Drag furniture to rearrange · tap things to play
+            Drag furniture or characters · tap things to play
           </p>
         </div>
       )}

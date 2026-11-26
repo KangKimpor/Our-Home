@@ -17,14 +17,20 @@ All future asset generation **must** reference these committed visual benchmarks
   - Wall-to-floor baseboard seam: `y = 540` (`ROOM.wallBottom = 540`, 60% from top).
   - Floor placement band: `y = 565..885` (`ROOM.floorMinY..floorMaxY`).
 
-## 3. Linework, Texture & Perspective ("Hand-Inked Cottage Gouache")
+## 3. Linework, Texture & Perspective ("Uneven Hand-Inked Cottage Gouache")
 - **Ink Color:** Warm deep charcoal-umber `#312210` (`RGB(49, 34, 16)`) — never pure `#000000`.
-- **Uneven Hand-Drawn Outlines:** Confident, slightly wobbly, organic felt-tip/brush-pen outlines whose thickness subtly swells and tapers (`~3.5 px` average in `1600 × 900` room space). Closed silhouettes so sprites read cleanly over any wall or floor surface.
-- **Fills & Shading:** Warm matte hand-painted gouache / watercolor wash with subtle paper warmth and restrained upper-left daylight shading.
+- **Visibly Uneven Hand-Drawn Outlines (Non-Negotiable):** Every asset **must** look drawn by a real human hand with a slightly textured felt-tip / dip-pen ink brush on watercolor paper:
+  - Outlines visibly **swell thicker and taper thinner** organically (`~3.5 px` average in `1600 × 900` room space).
+  - Straight edges and curves have gentle, natural human wobble and subtle nib-tooth texture (never sterile smooth monoline digital lines or vector Bezier curves).
+  - Closed silhouettes so sprites read cleanly over any wall or floor surface.
+- **Fills & Shading:** Warm matte hand-painted gouache / watercolor wash with subtle mottled brush warmth and restrained upper-left daylight shading.
 - **Perspective:** Straight-on 1-point cozy cottage elevation (horizontal furniture edges parallel to the floor planks — avoid steep 45° diagonal isometric rotation).
-- **Pets & Characters:** Face **left** by default (`src/ui/Pet.tsx` flips horizontally with `scaleX(-1)` when walking right), solid dark charcoal-umber button eyes (no anime catchlights), matte terracotta cheek ovals (no airbrushed blur).
-- **No Baked Shadows / No Text:** Zero cast floor shadows (rendered at runtime via `.contact-shadow` in `src/ui/Furniture.tsx` and `src/ui/Pet.tsx`) and zero legible letters or numbers (use abstract botanical icons and dots).
-- **Strictly Avoid:** Sterile smooth Bezier vector clipart, plastic 3D specular gloss, airbrushed gradients, or dense fine fur/woodgrain hatching that muddies at `105–210 px` display height.
+- **Characters & Pets:**
+  - **Plump, chunky 2.2-head storybook proportions** for human characters (rounded head, compact cozy body, simple rounded hands with no skinny 5-finger clutter, chunky shoes, bold simplified outfit details) so characters sit harmoniously beside the `240 px` sofa and `120 px` hedgehog rather than looking like tall skinny webtoon/Bitmoji figures.
+  - Simple solid dark charcoal-umber (`#312210`) button eyes (no anime catchlights), clean matte terracotta (`#C87F62`) oval cheek blushes (no airbrushed blur).
+  - Pets face left by default (`src/ui/Pet.tsx`); human characters declare their native `spriteFacing` (`1 | -1`) in `src/game/characters.ts` so asymmetric details (like beauty marks or hair parts) stay true when idle.
+- **No Baked Shadows / No Text:** Zero cast floor shadows (rendered at runtime via `.contact-shadow` in `src/ui/Furniture.tsx`, `src/ui/Pet.tsx`, and `src/ui/Character.tsx`) and zero legible letters or numbers (use abstract botanical icons and dots).
+- **Strictly Avoid:** Smooth uniform digital monoline outlines, sterile Bezier vector clipart, tall skinny 4-head webtoon/Bitmoji humans, plastic 3D specular gloss, airbrushed gradients, or dense fine fur/pinstripe hatching that muddies at room scale.
 
 ## 4. Core Botanical Palette Tokens
 | Swatch | Hex | Primary Usage |

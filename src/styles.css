@@ -86,7 +86,8 @@ body,
   transform-origin: 50% 0%;
 }
 .item img,
-.pet img {
+.pet img,
+.character img {
   display: block;
   width: 100%;
   height: 100%;
@@ -207,6 +208,115 @@ body,
   }
 }
 
+/* Resident characters */
+.character {
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+  transition: filter 160ms ease;
+}
+.character.is-dragging {
+  cursor: grabbing;
+  filter: drop-shadow(0 14px 10px rgb(73 58 53 / 0.28));
+}
+.character.is-dragging .character-anim {
+  transform: translateY(-8px);
+}
+.character-flip,
+.character-anim {
+  position: absolute;
+  inset: 0;
+}
+.character-flip {
+  transition: transform 200ms ease;
+}
+.character-anim {
+  transform-origin: 50% 100%;
+}
+.character-anim[data-mode='idle'] {
+  animation: char-breathe 3s ease-in-out infinite;
+}
+.character-anim[data-mode='walk'] {
+  animation: char-stroll 0.56s ease-in-out infinite;
+}
+.character-anim[data-mode='happy'] {
+  animation: char-hop 0.46s cubic-bezier(0.3, 0.7, 0.4, 1) 2;
+}
+
+.character-heart {
+  position: absolute;
+  left: 50%;
+  top: -12px;
+  translate: -50% 0;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--terracotta);
+  text-shadow:
+    0 2px 0 var(--ink),
+    -1.5px 0 0 var(--ink),
+    1.5px 0 0 var(--ink),
+    0 -1.5px 0 var(--ink);
+  pointer-events: none;
+  animation: heart-float 1.3s ease-out forwards;
+}
+
+@keyframes char-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.01, 0.99);
+  }
+}
+@keyframes char-stroll {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.6deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(0) rotate(1.6deg);
+  }
+  75% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+}
+@keyframes char-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  18% {
+    transform: translateY(0) scale(1.05, 0.94);
+  }
+  50% {
+    transform: translateY(-22px) scale(0.97, 1.04);
+  }
+  85% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+}
+@keyframes heart-float {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-48px) scale(0.95);
+  }
+}
+
 /* HUD */
 .hud {
   position: absolute;
@@ -264,7 +374,9 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pet-anim {
+  .pet-anim,
+  .character-anim,
+  .character-heart {
     animation: none !important;
   }
 }

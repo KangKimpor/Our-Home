@@ -46,5 +46,13 @@
   "mossback_hedgehog": {
     "w": 114,
     "h": 120
+  },
+  "resident_her": {
+    "w": 124,
+    "h": 275
+  },
+  "resident_him": {
+    "w": 128,
+    "h": 295
   }
 }

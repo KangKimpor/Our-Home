@@ -22,14 +22,16 @@ shadows).
 
 STYLE BENCHMARK — match the EXACT hand-drawn art style of the attached
 STYLE_REFERENCE_BOARD.png and BACKDROP_STYLE_CROP.png 100%:
-- Organic, slightly uneven, gently wobbly warm dark charcoal-umber felt-tip
-  ink outlines (#312210, never pure #000000) with natural human pen pressure
-  (subtle swelling and tapering) and closed silhouettes.
-- Soft matte hand-painted gouache / watercolor wash fills with gentle paper
-  warmth and restrained upper-left daylight shading.
+- VISIBLY UNEVEN, ROUGH HAND-DRAWN INK OUTLINES: thick, tactile, slightly
+  wobbly warm dark charcoal-umber felt-tip / dip-pen ink outlines (#312210,
+  never pure #000000) where every stroke visibly swells thicker and tapers
+  thinner like a real human hand drawing on textured paper (NEVER smooth
+  uniform digital monoline lines or clean vector curves). Closed silhouettes.
+- Soft mottled matte hand-painted gouache / watercolor wash fills with gentle
+  paper warmth and restrained upper-left daylight shading.
 - Cozy Hearth & Sprout warm botanical palette:
   - Ink: #312210 (warm charcoal-umber)
-  - Oat Cream: #F3E7CE (lampshades, mugs, bellies, cloth, frames — NEVER pure white inside objects)
+  - Oat Cream: #F3E7CE (lampshades, mugs, bellies, shirts, socks, frames — NEVER pure white inside objects)
   - Warm Wall Cream: #F7F0DF
   - Honey Oak: #D8AA5F (furniture frames, floorboards, handles)
   - Terracotta: #C87F62 (pots, bricks, teapots, pillows, cheeks)
@@ -38,16 +40,21 @@ STYLE_REFERENCE_BOARD.png and BACKDROP_STYLE_CROP.png 100%:
   - Muted Plum: #856B78 (quills, pillows, blossoms, accents)
 - Straight-on 1-point cozy cottage front/side elevation (horizontal edges
   parallel to the floor line — NO steep 45-degree diagonal isometric tilt).
-- Characters/pets MUST face LEFT (the game mirrors horizontally when walking
-  right), use solid dark charcoal-umber button eyes (zero anime eye sparkles),
-  and clean matte terracotta cheek ovals (no airbrushed gradient blur).
+- Human characters: plump, chunky 2.2-head storybook cottage proportions
+  (rounded head, compact body, simple rounded hands without skinny 5-finger
+  clutter, chunky shoes, bold simplified fabric stripes/folds — NOT tall
+  skinny 4-head webtoon/Bitmoji humans). Solid dark charcoal-umber button eyes
+  (zero anime eye sparkles) and clean matte terracotta cheek ovals (no
+  airbrushed gradient blur).
 - Zero legible text, letters, or numerals on clocks, labels, or packets — use
   simple abstract botanical dots and leaves only.
 
 STRICTLY AVOID:
-- Sterile smooth Adobe Illustrator / flat vector Bezier clipart.
+- Smooth uniform digital monoline lineart, Bitmoji/webtoon character styling,
+  or sterile Adobe Illustrator / flat vector Bezier clipart.
 - Glossy 3D highlights, smooth digital airbrushing, or shiny chibi/anime sticker shading.
-- Dense fine fur hatching or cramped micro-detail that muddies at 105–210 px height.
+- Dense fine fur hatching, skinny detailed fingers, or fragile pinstripes that
+  thin out and clash with the room's bold hand-drawn ink.
 - Baked floor shadows (the game draws `.contact-shadow` at runtime).
 
 EXACT GRID PLACEMENT:

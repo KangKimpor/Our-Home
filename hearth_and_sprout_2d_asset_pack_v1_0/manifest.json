@@ -4,14 +4,14 @@
   "style_pass": "hand_drawn_sofa_benchmark_unified_v6_0",
   "creation_date": "2026-11-25",
   "clean_room_status": "original_from_scratch_no_third_party_reference_assets_included",
-  "total_sprites": 27,
+  "total_sprites": 29,
   "total_backgrounds": 1,
   "total_previews": 1,
   "category_counts": {
     "home": 6,
     "living_room": 6,
     "garden": 7,
-    "characters": 3,
+    "characters": 5,
     "small_props": 5
   },
   "style_guide": "STYLE_GUIDE.md",
@@ -952,6 +952,74 @@
       "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
       "file_size_bytes": 274960,
       "sha256": "881eac759b969ce92057f963e69b4b885b5d6fbac4d07c2a10fa49ba7efc2dbf"
+    },
+    {
+      "id": "resident_her",
+      "filename": "sprites/characters/resident_her.png",
+      "category": "characters",
+      "description": "Cozy hand-drawn resident character (her) with long mahogany-brown hair, charcoal-brown lace V-neck dress, pearl stud earring, gold pendant necklace, oat-cream socks, and terracotta flats.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7539,
+        "padding_px": {
+          "top": 32,
+          "right": 156,
+          "bottom": 32,
+          "left": 155
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.0,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Generated from user-supplied character reference photo in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 130290,
+      "sha256": "3a3c2e239e218e36601f42a461fb91b9728f5b5151b9e5a671a5782f0a2177b9"
+    },
+    {
+      "id": "resident_him",
+      "filename": "sprites/characters/resident_him.png",
+      "category": "characters",
+      "description": "Cozy hand-drawn resident character (him) with neat dark espresso hair, rounded-square glasses, oat-cream and dusty-blue vertically striped rolled-sleeve shirt, sage-slate trousers, and honey-brown shoes.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7732,
+        "padding_px": {
+          "top": 32,
+          "right": 159,
+          "bottom": 32,
+          "left": 159
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.05,
+      "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.py + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-26",
+      "license_status": "unverified",
+      "usage_terms_notes": "Generated from user-supplied character reference photo in the embedded Our Home hand-drawn cottage gouache style.",
+      "file_size_bytes": 134003,
+      "sha256": "72a48752173b4caa2d6d61a971758330655e9c4e7bba2dddd8f6a6d3c654c85b"
     }
   ],
   "backgrounds": [
