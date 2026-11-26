@@ -386,7 +386,7 @@ body,
   left: max(12px, env(safe-area-inset-left));
   right: max(12px, env(safe-area-inset-right));
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 10px;
   pointer-events: none;
@@ -396,7 +396,6 @@ body,
   align-items: center;
   gap: 8px;
 }
-.hud-title,
 .hud-button,
 .hint {
   position: relative;
@@ -410,7 +409,6 @@ body,
   border: 0;
   filter: drop-shadow(0 3px 0 rgb(49 34 16 / 0.22));
 }
-.hud-title::before,
 .hud-button::before,
 .hint::before {
   content: '';
@@ -426,21 +424,6 @@ body,
   height: 1.05em;
   flex-shrink: 0;
   margin-top: -1px;
-}
-.hud-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 46px;
-  padding: 6px 20px 9px 17px;
-  white-space: nowrap;
-}
-.hud-title::before {
-  border-width: 11px 13px 14px 13px;
-  border-image-source: url('./assets/ui/plaque_title.png');
-  border-image-slice: 26 28 32 28 fill;
-  border-image-width: 11px 13px 14px 13px;
-  border-image-repeat: stretch;
 }
 .hud-button {
   pointer-events: auto;
@@ -510,12 +493,6 @@ body,
 @media (max-width: 480px) {
   .hud {
     gap: 8px;
-  }
-  .hud-title {
-    min-height: 44px;
-    padding: 5px 16px 8px 14px;
-    font-size: 14px;
-    gap: 6px;
   }
   .hud-button {
     min-height: 44px;
