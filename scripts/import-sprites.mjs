@@ -1,49 +1,288 @@
 // Copies the sprites the game uses from the Hearth & Sprout pack into
-// public/sprites/, trimming the transparent padding so each image's bottom
-// edge is the object's base. Writes src/game/sprites.json with the trimmed
-// sizes so layout code knows each sprite's aspect ratio.
+// public/sprites/, trimming transparent padding and harmonizing each sprite's
+// room-space resolution, uneven hand-inked stroke weight (~3.5 px), subtle
+// hand-drawn wobble, and warm sepia ink tone to match living_room_backdrop.webp
+// (1376x768 -> 1600x900). Writes src/game/sprites.json with the output sizes.
 //
 //   node scripts/import-sprites.mjs [packDir]
 import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/(\w:)/, '$1')), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packDir = path.resolve(process.argv[2] ?? path.join(root, 'hearth_and_sprout_2d_asset_pack_v1_0'));
 const outDir = path.join(root, 'public', 'sprites');
 const manifestOut = path.join(root, 'src', 'game', 'sprites.json');
 
-// Sprite ids used by the living room. Add an id here to import it.
-const USED = [
-  'cottage_lounge_sofa',
-  'low_oak_coffee_table',
-  'braided_oval_rug',
-  'arched_display_bookshelf',
-  'standing_globe_floor_lamp',
-  'wall_pinboard_trio',
-  'seed_drawer_cabinet',
-  'tea_trolley',
-  'wall_clock',
-  'patchwork_floor_cushion',
-  'potted_calamondin_tree',
-  'mossback_hedgehog',
-];
+// Backdrop native-to-stage optical scale (1376x768 -> 1600x900) and ink RGB.
+const BACKDROP_NATIVE_RATIO = 1376 / 1600;
+const TARGET_INK = [49, 34, 16];
+
+// Active living-room sprites: display height in room px, base dark-ink
+// thickening blend (0..1 at 2x room scale), and hand-wobble amplitude (px at 2x).
+const SPRITE_SPECS = {
+  cottage_lounge_sofa: { height: 240, inkBlend: 0.15, wobble: 0.5 },
+  low_oak_coffee_table: { height: 160, inkBlend: 0.72, wobble: 1.35 },
+  braided_oval_rug: { height: 250, inkBlend: 0.15, wobble: 0.6 },
+  arched_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4 },
+  standing_globe_floor_lamp: { height: 280, inkBlend: 0.92, wobble: 1.15 },
+  wall_pinboard_trio: { height: 175, inkBlend: 0.95, wobble: 1.1 },
+  seed_drawer_cabinet: { height: 210, inkBlend: 0.85, wobble: 1.0 },
+  tea_trolley: { height: 210, inkBlend: 0.72, wobble: 1.35 },
+  wall_clock: { height: 145, inkBlend: 0.88, wobble: 1.1 },
+  patchwork_floor_cushion: { height: 105, inkBlend: 0.78, wobble: 1.55 },
+  potted_calamondin_tree: { height: 240, inkBlend: 0.68, wobble: 0.95 },
+  mossback_hedgehog: { height: 120, inkBlend: 0.78, wobble: 1.35 },
+};
+
 // Room backdrops, copied as-is (they are full 1600x900 scenes).
 const BACKGROUNDS = ['living_room_backdrop'];
+
+const clampByte = (v) => (v < 0 ? 0 : v > 255 ? 255 : Math.round(v));
+
+// Deterministic smooth 2D value noise in [0, 1] seeded per sprite id.
+function hash2(ix, iy, seed) {
+  let n = Math.imul(ix, 374761393) + Math.imul(iy, 668265263) + Math.imul(seed, 1442695041);
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
+}
+
+function smoothNoise(x, y, seed) {
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const fx = x - ix;
+  const fy = y - iy;
+  const ux = fx * fx * (3 - 2 * fx);
+  const uy = fy * fy * (3 - 2 * fy);
+  const a = hash2(ix, iy, seed);
+  const b = hash2(ix + 1, iy, seed);
+  const c = hash2(ix, iy + 1, seed);
+  const d = hash2(ix + 1, iy + 1, seed);
+  return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+}
+
+function seedFromId(id) {
+  let h = 2166136261;
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+// Bilinear RGBA sample with transparent out-of-bounds clamp.
+function sampleRGBA(buf, w, h, fx, fy, dst, dstOffset) {
+  const x0 = Math.floor(fx);
+  const y0 = Math.floor(fy);
+  const tx = fx - x0;
+  const ty = fy - y0;
+  const x1 = x0 + 1;
+  const y1 = y0 + 1;
+
+  const get = (cx, cy, c) => {
+    if (cx < 0 || cy < 0 || cx >= w || cy >= h) return 0;
+    return buf[(cy * w + cx) * 4 + c];
+  };
+
+  const w00 = (1 - tx) * (1 - ty);
+  const w10 = tx * (1 - ty);
+  const w01 = (1 - tx) * ty;
+  const w11 = tx * ty;
+
+  const a =
+    get(x0, y0, 3) * w00 + get(x1, y0, 3) * w10 + get(x0, y1, 3) * w01 + get(x1, y1, 3) * w11;
+  if (a < 6) {
+    dst[dstOffset] = dst[dstOffset + 1] = dst[dstOffset + 2] = dst[dstOffset + 3] = 0;
+    return;
+  }
+  // Premultiplied interpolation avoids dark/light ringing on transparent edges.
+  for (let c = 0; c < 3; c++) {
+    const num =
+      get(x0, y0, c) * get(x0, y0, 3) * w00 +
+      get(x1, y0, c) * get(x1, y0, 3) * w10 +
+      get(x0, y1, c) * get(x0, y1, 3) * w01 +
+      get(x1, y1, c) * get(x1, y1, 3) * w11;
+    dst[dstOffset + c] = clampByte(num / a);
+  }
+  dst[dstOffset + 3] = clampByte(a);
+}
+
+async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend, wobble }) {
+  const seed = seedFromId(id);
+  const trimmedBuf = await sharp(srcPath).trim({ threshold: 1 }).ensureAlpha().png().toBuffer();
+  const meta = await sharp(trimmedBuf).metadata();
+  const roomW = Math.max(1, Math.round((meta.width / meta.height) * roomH));
+
+  // Add a small 4px transparent margin at 2x scale so hand-wobble never clips edges.
+  const pad = 4;
+  const innerW = roomW * 2;
+  const innerH = roomH * 2;
+  const workW = innerW + pad * 2;
+  const workH = innerH + pad * 2;
+  const { data } = await sharp(trimmedBuf)
+    .resize(innerW, innerH, { kernel: 'lanczos3' })
+    .extend({ top: pad, bottom: pad, left: pad, right: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  // 1. Subtle seeded hand-drawn paper warp (both outlines and fills warp together
+  //    so fills stay registered while straight/geometric edges gain natural wobble).
+  const warped = new Uint8ClampedArray(workW * workH * 4);
+  if (wobble > 0) {
+    for (let y = 0; y < workH; y++) {
+      for (let x = 0; x < workW; x++) {
+        // Combine gentle slow curve bow (period ~38px) + fine hand pen tooth (period ~13px).
+        const nx1 = smoothNoise(x / 38, y / 38, seed + 11) - 0.5;
+        const ny1 = smoothNoise(x / 38, y / 38, seed + 29) - 0.5;
+        const nx2 = smoothNoise(x / 13, y / 13, seed + 53) - 0.5;
+        const ny2 = smoothNoise(x / 13, y / 13, seed + 71) - 0.5;
+        const dx = (nx1 * 1.45 + nx2 * 0.55) * wobble;
+        const dy = (ny1 * 1.45 + ny2 * 0.55) * wobble;
+        sampleRGBA(data, workW, workH, x + dx, y + dy, warped, (y * workW + x) * 4);
+      }
+    }
+  } else {
+    warped.set(data);
+  }
+
+  // 2. Uneven hand-inked pressure modulation: thicken/thin dark outlines using a
+  //    smooth 2D pressure noise field so strokes swell and taper organically.
+  const out = new Uint8ClampedArray(warped);
+  const isInk = new Uint8Array(workW * workH);
+  for (let i = 0; i < workW * workH; i++) {
+    const o = i * 4;
+    const lum = (warped[o] + warped[o + 1] + warped[o + 2]) / 3;
+    if (lum < 80 && warped[o + 3] > 140) isInk[i] = 1;
+  }
+
+  for (let y = 0; y < workH; y++) {
+    const y0 = y > 0 ? y - 1 : 0;
+    const y1 = y + 1 < workH ? y + 1 : workH - 1;
+    const y0b = y > 1 ? y - 2 : 0;
+    const y1b = y + 2 < workH ? y + 2 : workH - 1;
+    for (let x = 0; x < workW; x++) {
+      const x0 = x > 0 ? x - 1 : 0;
+      const x1 = x + 1 < workW ? x + 1 : workW - 1;
+      const x0b = x > 1 ? x - 2 : 0;
+      const x1b = x + 2 < workW ? x + 2 : workW - 1;
+
+      // Local pen pressure field (period ~26px + subtle 11px tooth): swells & tapers!
+      const pSlow = smoothNoise(x / 26, y / 26, seed + 101);
+      const pFast = smoothNoise(x / 11, y / 11, seed + 137);
+      const pressure = pSlow * 0.72 + pFast * 0.28; // [0..1]
+
+      // Swell weight varies unevenly along each stroke (0.2x..1.55x of base inkBlend).
+      const localBlend = Math.min(1.0, Math.max(0, inkBlend * (0.2 + 1.35 * pressure)));
+      const useWide = inkBlend >= 0.65 && pressure > 0.72;
+
+      if (localBlend > 0.04) {
+        const ya = useWide ? y0b : y0;
+        const yb = useWide ? y1b : y1;
+        const xa = useWide ? x0b : x0;
+        const xb = useWide ? x1b : x1;
+        let hasInk = 0;
+        let minR = 255;
+        let minG = 255;
+        let minB = 255;
+        let maxA = 0;
+        for (let ny = ya; ny <= yb; ny++) {
+          const row = ny * workW;
+          for (let nx = xa; nx <= xb; nx++) {
+            // Circular-ish 5x5 when wide (skip far corners).
+            if (useWide && Math.abs(nx - x) === 2 && Math.abs(ny - y) === 2) continue;
+            const ni = row + nx;
+            if (isInk[ni]) hasInk = 1;
+            const no = ni * 4;
+            if (warped[no] < minR) minR = warped[no];
+            if (warped[no + 1] < minG) minG = warped[no + 1];
+            if (warped[no + 2] < minB) minB = warped[no + 2];
+            if (warped[no + 3] > maxA) maxA = warped[no + 3];
+          }
+        }
+        if (hasInk && maxA > 90) {
+          const o = (y * workW + x) * 4;
+          const b = useWide ? Math.min(1.0, localBlend * 0.75) : localBlend;
+          const inv = 1 - b;
+          out[o] = clampByte(warped[o] * inv + minR * b);
+          out[o + 1] = clampByte(warped[o + 1] * inv + minG * b);
+          out[o + 2] = clampByte(warped[o + 2] * inv + minB * b);
+          out[o + 3] = clampByte(Math.max(warped[o + 3], maxA * b));
+        }
+      }
+    }
+  }
+
+  // 3. Harmonize ink hue toward exact backdrop warm dark-brown RGB(49, 34, 16)
+  //    and apply subtle sunlit warm lift to fills to match the room lighting.
+  for (let i = 0; i < workW * workH; i++) {
+    const o = i * 4;
+    const a = out[o + 3];
+    if (a < 8) {
+      out[o] = out[o + 1] = out[o + 2] = out[o + 3] = 0;
+      continue;
+    }
+    const r = out[o];
+    const g = out[o + 1];
+    const b = out[o + 2];
+    const af = a / 255;
+    const lum = (r + g + b) / 3;
+    const inkW = Math.min(1, Math.max(0, (92 - lum) / 52)) * af;
+    const fillW = (1 - inkW) * af;
+
+    const inkScale = Math.min(1.32, Math.max(0.78, lum / 36));
+    const ir = Math.min(255, TARGET_INK[0] * inkScale);
+    const ig = Math.min(255, TARGET_INK[1] * inkScale);
+    const ib = Math.min(255, TARGET_INK[2] * inkScale);
+
+    const iw = 0.55 * inkW;
+    const nr = r * (1 - iw) + ir * iw;
+    const ng = g * (1 - iw) + ig * iw;
+    const nb = b * (1 - iw) + ib * iw;
+
+    const lr = Math.min(255, nr * 1.045 + 4);
+    const lg = Math.min(255, ng * 1.045 + 2);
+    const lb = Math.max(0, Math.min(255, nb * 1.045 - 2));
+
+    out[o] = clampByte(nr * (1 - fillW) + lr * fillW);
+    out[o + 1] = clampByte(ng * (1 - fillW) + lg * fillW);
+    out[o + 2] = clampByte(nb * (1 - fillW) + lb * fillW);
+  }
+
+  // 4. Trim margin cleanly and match backdrop's exact optical resolution (1376/1600 -> 1600x900).
+  const trimmed2x = await sharp(Buffer.from(out.buffer), {
+    raw: { width: workW, height: workH, channels: 4 },
+  })
+    .trim({ threshold: 4 })
+    .png()
+    .toBuffer();
+  const tMeta = await sharp(trimmed2x).metadata();
+  const finalW = Math.max(1, Math.round((tMeta.width / tMeta.height) * roomH));
+  const natW = Math.max(1, Math.round(finalW * BACKDROP_NATIVE_RATIO));
+  const natH = Math.max(1, Math.round(roomH * BACKDROP_NATIVE_RATIO));
+
+  const natBuf = await sharp(trimmed2x).resize(natW, natH, { kernel: 'lanczos3' }).raw().toBuffer();
+  const info = await sharp(natBuf, { raw: { width: natW, height: natH, channels: 4 } })
+    .resize(finalW, roomH, { kernel: 'cubic' })
+    .png()
+    .toFile(destPath);
+
+  return { w: info.width, h: info.height };
+}
 
 const manifest = JSON.parse(fs.readFileSync(path.join(packDir, 'manifest.json'), 'utf8'));
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 
 const sizes = {};
-for (const id of USED) {
+for (const [id, spec] of Object.entries(SPRITE_SPECS)) {
   const entry = manifest.assets.find((a) => a.id === id);
   if (!entry) throw new Error(`Sprite "${id}" is not in the pack manifest`);
   const src = path.join(packDir, entry.filename);
   const dest = path.join(outDir, `${id}.png`);
-  const info = await sharp(src).trim({ threshold: 1 }).png().toFile(dest);
-  sizes[id] = { w: info.width, h: info.height };
-  console.log(`${id}: ${info.width}x${info.height}`);
+  sizes[id] = await harmonizeSprite(id, src, dest, spec);
+  console.log(`${id}: ${sizes[id].w}x${sizes[id].h}`);
 }
 
 const bgOut = path.join(root, 'public', 'backgrounds');

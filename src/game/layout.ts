@@ -54,7 +54,7 @@ export const ITEMS: ItemDef[] = [
     height: 280,
     mount: 'floor',
     tap: 'lamp',
-    glow: { x: 22, y: 27 },
+    glow: { x: 20, y: 33 },
   },
   { id: 'trolley', sprite: 'tea_trolley', height: 210, mount: 'floor', tap: 'bounce' },
   { id: 'cushion', sprite: 'patchwork_floor_cushion', height: 105, mount: 'floor', tap: 'bounce' },

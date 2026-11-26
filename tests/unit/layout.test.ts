@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import sprites from '../../src/game/sprites.json';
 import {
   clampPosition,
   DEFAULT_LAYOUT,
@@ -63,9 +64,10 @@ describe('layout', () => {
   });
 
   it('keeps width in proportion to the sprite', () => {
-    const { w, h } = itemSize({ sprite: 'patchwork_floor_cushion', height: 353 });
-    expect(h).toBe(353);
-    expect(w).toBe(448);
+    const raw = sprites.patchwork_floor_cushion;
+    const { w, h } = itemSize({ sprite: 'patchwork_floor_cushion', height: raw.h });
+    expect(h).toBe(raw.h);
+    expect(w).toBe(raw.w);
   });
 
   it('round-trips a saved layout', () => {

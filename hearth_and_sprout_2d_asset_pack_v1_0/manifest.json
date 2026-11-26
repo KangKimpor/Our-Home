@@ -82,12 +82,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4149,
+        "transparent_pixel_ratio": 0.3464,
         "padding_px": {
           "top": 32,
-          "right": 39,
+          "right": 32,
           "bottom": 32,
-          "left": 39
+          "left": 32
         }
       },
       "scale_tier": "large",
@@ -100,8 +100,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 254253,
-      "sha256": "564ba98966c37b6ee2b5c1bbd22acd9744b1683026fcc0bbff363f2c4cc276f1"
+      "file_size_bytes": 302764,
+      "sha256": "d49debb0f0af0fd1444a527031bab49da19b68b2c9dff812d32d181dd0d5e286"
     },
     {
       "id": "small_reading_lamp",
@@ -150,12 +150,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6389,
+        "transparent_pixel_ratio": 0.6409,
         "padding_px": {
-          "top": 32,
-          "right": 56,
-          "bottom": 32,
-          "left": 56
+          "top": 78,
+          "right": 32,
+          "bottom": 78,
+          "left": 32
         }
       },
       "scale_tier": "large",
@@ -168,8 +168,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 226111,
-      "sha256": "7d516fc62a38ff1472f07b13d4be12880ab951ef861d5a28917ed6b73d89e46f"
+      "file_size_bytes": 230593,
+      "sha256": "d804b092343ed222820c5db4402552c618d7c5fa8827ab5fe70a2f3a4a524e6a"
     },
     {
       "id": "wall_clock",
@@ -184,12 +184,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.5722,
+        "transparent_pixel_ratio": 0.5651,
         "padding_px": {
           "top": 32,
-          "right": 68,
+          "right": 75,
           "bottom": 32,
-          "left": 67
+          "left": 74
         }
       },
       "scale_tier": "medium",
@@ -202,8 +202,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 189275,
-      "sha256": "a1da4361ae885b4b45773d7a9db4c750dfb85afc59ff9b00b62440b24b338d5e"
+      "file_size_bytes": 238877,
+      "sha256": "e1bf452c9e80c0bef24b1176df3751c4a96e8a5bcdd48c222b6ecc8eb611eb4b"
     },
     {
       "id": "patchwork_floor_cushion",
@@ -218,11 +218,11 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4973,
+        "transparent_pixel_ratio": 0.5573,
         "padding_px": {
-          "top": 79,
+          "top": 96,
           "right": 32,
-          "bottom": 80,
+          "bottom": 96,
           "left": 32
         }
       },
@@ -236,8 +236,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 218150,
-      "sha256": "97569eb9d22784a4ff638ccce87c0304b87ff9b095f0815118400a309d4f262e"
+      "file_size_bytes": 200370,
+      "sha256": "91408fdf2c16f4e370a3a2c280e52ff79593c8a9a7adefec64ce2f352d65c7cf"
     },
     {
       "id": "rounded_watering_can",
@@ -388,12 +388,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.7112,
+        "transparent_pixel_ratio": 0.7032,
         "padding_px": {
           "top": 32,
-          "right": 108,
+          "right": 110,
           "bottom": 32,
-          "left": 108
+          "left": 109
         }
       },
       "scale_tier": "large",
@@ -406,8 +406,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 177951,
-      "sha256": "72a4ac3ecca2604d873145b1a9ea84ee7294c3f3ae4703b9896cf3f44c998d74"
+      "file_size_bytes": 183073,
+      "sha256": "7286b6b752eeec0301ca5b95679ad3b0aaa795f729561f4a6578b493b8959cd9"
     },
     {
       "id": "curved_orchard_stool",
@@ -490,12 +490,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4468,
+        "transparent_pixel_ratio": 0.4518,
         "padding_px": {
           "top": 32,
-          "right": 61,
+          "right": 46,
           "bottom": 32,
-          "left": 60
+          "left": 46
         }
       },
       "scale_tier": "medium",
@@ -508,8 +508,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 220112,
-      "sha256": "02f4581ee26a3e4137220d27a78d8bfd322a73a107f4149136e7d9a8e868f52c"
+      "file_size_bytes": 269869,
+      "sha256": "928a207dcbe14517b242805c59016987b53e6749b6ae5b21a3e5ec08ab4cddbd"
     },
     {
       "id": "terracotta_tortoise",
@@ -762,11 +762,11 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6174,
+        "transparent_pixel_ratio": 0.6078,
         "padding_px": {
-          "top": 112,
+          "top": 110,
           "right": 32,
-          "bottom": 113,
+          "bottom": 110,
           "left": 32
         }
       },
@@ -780,8 +780,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated raster artwork created by the user in ChatGPT from our original Hearth & Sprout prompt and integrated as a v5.0 design anchor. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are marked unverified pending user review of ChatGPT/OpenAI terms of service.",
-      "file_size_bytes": 177287,
-      "sha256": "1702be2df53d1e93508e37c28fd61889a17ee571279cd68eac43517cd39db405"
+      "file_size_bytes": 202109,
+      "sha256": "9e2cbc053db94ec9c8675b5d35b04feb7aca6a2652068b26ad3ec73679e6847b"
     },
     {
       "id": "low_oak_coffee_table",
@@ -796,11 +796,11 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6814,
+        "transparent_pixel_ratio": 0.6765,
         "padding_px": {
-          "top": 84,
+          "top": 89,
           "right": 32,
-          "bottom": 85,
+          "bottom": 89,
           "left": 32
         }
       },
@@ -814,8 +814,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated raster artwork created by the user in ChatGPT from our original Hearth & Sprout prompt and integrated as a v5.0 design anchor. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are marked unverified pending user review of ChatGPT/OpenAI terms of service.",
-      "file_size_bytes": 151411,
-      "sha256": "9d752f457afdffbb72937401d1702b1cb3db827e4b030fb9409b3526c2c22398"
+      "file_size_bytes": 188537,
+      "sha256": "722ed8cd185784650b980a6bdfd51350c97f2c7a3964d0e3e5d34a1d345fa004"
     },
     {
       "id": "braided_oval_rug",
@@ -830,11 +830,11 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.6877,
+        "transparent_pixel_ratio": 0.7026,
         "padding_px": {
-          "top": 141,
+          "top": 147,
           "right": 32,
-          "bottom": 142,
+          "bottom": 148,
           "left": 32
         }
       },
@@ -848,8 +848,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated raster artwork created by the user in ChatGPT from our original Hearth & Sprout prompt and integrated as a v5.0 design anchor. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and commercial usage terms are marked unverified pending user review of ChatGPT/OpenAI terms of service.",
-      "file_size_bytes": 166115,
-      "sha256": "6e1e34e8c7371f1243c005cc272e9339c16db48461064c84a12e0ed468b61dbe"
+      "file_size_bytes": 168441,
+      "sha256": "ecd4befcd61a702286cf89f7a8a88dd4217e7f6419664f2b5a036576cdb5b1e6"
     },
     {
       "id": "arched_display_bookshelf",
@@ -864,12 +864,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.4414,
+        "transparent_pixel_ratio": 0.4391,
         "padding_px": {
           "top": 32,
           "right": 75,
           "bottom": 32,
-          "left": 75
+          "left": 74
         }
       },
       "scale_tier": "large",
@@ -882,8 +882,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 242580,
-      "sha256": "d0718ca5f264a5af9a5c7d0d27b86d0c3438396771f5d711067f58e3d4616055"
+      "file_size_bytes": 271970,
+      "sha256": "c02a7860770390007bb2537b2c040c89d00f64daa7d9915c3d6b2d3a767041ab"
     },
     {
       "id": "standing_globe_floor_lamp",
@@ -898,12 +898,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.8737,
+        "transparent_pixel_ratio": 0.8829,
         "padding_px": {
           "top": 32,
-          "right": 124,
+          "right": 133,
           "bottom": 32,
-          "left": 123
+          "left": 133
         }
       },
       "scale_tier": "large",
@@ -916,8 +916,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "AI-generated hand-drawn raster artwork refined to match the approved revised cottage_lounge_sofa.png benchmark (#2C221E charcoal-umber ink, matte botanical palette, subtle cel shading) and normalized to 512x512 transparent RGBA PNG. Human authorship, copyright ownership, and exclusive rights are NOT claimed.",
-      "file_size_bytes": 75212,
-      "sha256": "5bbaf1c5b801110d8c5736f6b269754299eab57df52f9fcdc6572e54886b30db"
+      "file_size_bytes": 76941,
+      "sha256": "092713c0b3c577018170a052f224c2ed70c95d11fe8758c588947d0e0e353ae3"
     },
     {
       "id": "wall_pinboard_trio",
@@ -932,12 +932,12 @@
       "color_mode": "RGBA",
       "transparency": {
         "has_alpha_channel": true,
-        "transparent_pixel_ratio": 0.3731,
+        "transparent_pixel_ratio": 0.4147,
         "padding_px": {
-          "top": 39,
-          "right": 32,
-          "bottom": 40,
-          "left": 32
+          "top": 32,
+          "right": 44,
+          "bottom": 32,
+          "left": 44
         }
       },
       "scale_tier": "medium",
@@ -950,8 +950,8 @@
       "creation_date": "2026-11-25",
       "license_status": "unverified",
       "usage_terms_notes": "Original SVG artwork authored by an AI agent and harmonized to the v5.0 sunlit anchor palette and #2D1E18 hand-drawn ink. Human authorship, copyright ownership, and exclusive rights are NOT claimed. License and usage terms are marked unverified pending user legal/distribution review.",
-      "file_size_bytes": 185419,
-      "sha256": "ed81592c5a668f99b50b146f03fce3cb809901758fe7e6f547065bf135884215"
+      "file_size_bytes": 274960,
+      "sha256": "881eac759b969ce92057f963e69b4b885b5d6fbac4d07c2a10fa49ba7efc2dbf"
     }
   ],
   "backgrounds": [
@@ -982,8 +982,8 @@
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "file_size_bytes": 1214297,
-      "sha256": "0cd089935bfe687700bc892f4f1f6a8fe5f7bf180b29379fac2c4f9320d70705"
+      "file_size_bytes": 1580184,
+      "sha256": "01f38fb9956f842424adc5c3f312c7c1196f95c55a389357e2ee68fb7931590d"
     }
   ],
   "previews": [
