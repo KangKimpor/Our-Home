@@ -1,8 +1,9 @@
 // Copies the sprites the game uses from the Hearth & Sprout pack into
 // public/sprites/, trimming transparent padding and harmonizing each sprite's
-// room-space resolution, uneven hand-inked stroke weight (~3.5 px), subtle
-// hand-drawn wobble, and warm sepia ink tone to match living_room_backdrop.webp
-// (1376x768 -> 1600x900). Writes src/game/sprites.json with the output sizes.
+// room-space resolution, visibly uneven hand-drawn ink outlines (bidirectional
+// pen swelling/tapering + organic contour wobble + nib tooth), and warm sepia
+// ink tone to match living_room_backdrop.webp (1376x768 -> 1600x900).
+// Writes src/game/sprites.json with the output sizes.
 //
 //   node scripts/import-sprites.mjs [packDir]
 import sharp from 'sharp';
@@ -19,21 +20,24 @@ const manifestOut = path.join(root, 'src', 'game', 'sprites.json');
 const BACKDROP_NATIVE_RATIO = 1376 / 1600;
 const TARGET_INK = [49, 34, 16];
 
-// Active living-room sprites: display height in room px, base dark-ink
-// thickening blend (0..1 at 2x room scale), and hand-wobble amplitude (px at 2x).
+// Active living-room sprites:
+// - height: display height in 1600x900 room px
+// - inkBlend: base dark-ink thickening to match backdrop's ~3.5px weight
+// - wobble: organic hand-drawn contour irregularity (px at 2x room scale)
+// - uneven: bidirectional pen swelling/tapering + nib-tooth roughness (0..1)
 const SPRITE_SPECS = {
-  cottage_lounge_sofa: { height: 240, inkBlend: 0.15, wobble: 0.5 },
-  low_oak_coffee_table: { height: 160, inkBlend: 0.72, wobble: 1.35 },
-  braided_oval_rug: { height: 250, inkBlend: 0.15, wobble: 0.6 },
-  arched_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4 },
-  standing_globe_floor_lamp: { height: 280, inkBlend: 0.92, wobble: 1.15 },
-  wall_pinboard_trio: { height: 175, inkBlend: 0.95, wobble: 1.1 },
-  seed_drawer_cabinet: { height: 210, inkBlend: 0.85, wobble: 1.0 },
-  tea_trolley: { height: 210, inkBlend: 0.72, wobble: 1.35 },
-  wall_clock: { height: 145, inkBlend: 0.88, wobble: 1.1 },
-  patchwork_floor_cushion: { height: 105, inkBlend: 0.78, wobble: 1.55 },
-  potted_calamondin_tree: { height: 240, inkBlend: 0.68, wobble: 0.95 },
-  mossback_hedgehog: { height: 120, inkBlend: 0.78, wobble: 1.35 },
+  cottage_lounge_sofa: { height: 240, inkBlend: 0.12, wobble: 0.5, uneven: 0.25 },
+  low_oak_coffee_table: { height: 160, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+  braided_oval_rug: { height: 250, inkBlend: 0.12, wobble: 0.7, uneven: 0.3 },
+  arched_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4, uneven: 0.2 },
+  standing_globe_floor_lamp: { height: 280, inkBlend: 0.85, wobble: 1.8, uneven: 0.85 },
+  wall_pinboard_trio: { height: 175, inkBlend: 0.9, wobble: 1.7, uneven: 0.8 },
+  seed_drawer_cabinet: { height: 210, inkBlend: 0.8, wobble: 1.6, uneven: 0.75 },
+  tea_trolley: { height: 210, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+  wall_clock: { height: 145, inkBlend: 0.82, wobble: 1.7, uneven: 0.8 },
+  patchwork_floor_cushion: { height: 105, inkBlend: 0.68, wobble: 2.35, uneven: 1.0 },
+  potted_calamondin_tree: { height: 240, inkBlend: 0.62, wobble: 1.5, uneven: 0.7 },
+  mossback_hedgehog: { height: 120, inkBlend: 0.58, wobble: 2.35, uneven: 1.0 },
 };
 
 // Room backdrops, copied as-is (they are full 1600x900 scenes).
@@ -96,7 +100,6 @@ function sampleRGBA(buf, w, h, fx, fy, dst, dstOffset) {
     dst[dstOffset] = dst[dstOffset + 1] = dst[dstOffset + 2] = dst[dstOffset + 3] = 0;
     return;
   }
-  // Premultiplied interpolation avoids dark/light ringing on transparent edges.
   for (let c = 0; c < 3; c++) {
     const num =
       get(x0, y0, c) * get(x0, y0, 3) * w00 +
@@ -108,14 +111,14 @@ function sampleRGBA(buf, w, h, fx, fy, dst, dstOffset) {
   dst[dstOffset + 3] = clampByte(a);
 }
 
-async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend, wobble }) {
+async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend, wobble, uneven }) {
   const seed = seedFromId(id);
   const trimmedBuf = await sharp(srcPath).trim({ threshold: 1 }).ensureAlpha().png().toBuffer();
   const meta = await sharp(trimmedBuf).metadata();
   const roomW = Math.max(1, Math.round((meta.width / meta.height) * roomH));
 
-  // Add a small 4px transparent margin at 2x scale so hand-wobble never clips edges.
-  const pad = 4;
+  // Add a 6px transparent margin at 2x scale so hand-wobble never clips edges.
+  const pad = 6;
   const innerW = roomW * 2;
   const innerH = roomH * 2;
   const workW = innerW + pad * 2;
@@ -127,19 +130,19 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
     .raw()
     .toBuffer({ resolveWithObject: true });
 
-  // 1. Subtle seeded hand-drawn paper warp (both outlines and fills warp together
-  //    so fills stay registered while straight/geometric edges gain natural wobble).
+  // 1. Multi-octave hand-drawn contour wobble (bowed curves + tactile pen jitter)
+  //    applied identically to fills & outlines so registration stays locked.
   const warped = new Uint8ClampedArray(workW * workH * 4);
   if (wobble > 0) {
     for (let y = 0; y < workH; y++) {
       for (let x = 0; x < workW; x++) {
-        // Combine gentle slow curve bow (period ~38px) + fine hand pen tooth (period ~13px).
-        const nx1 = smoothNoise(x / 38, y / 38, seed + 11) - 0.5;
-        const ny1 = smoothNoise(x / 38, y / 38, seed + 29) - 0.5;
-        const nx2 = smoothNoise(x / 13, y / 13, seed + 53) - 0.5;
-        const ny2 = smoothNoise(x / 13, y / 13, seed + 71) - 0.5;
-        const dx = (nx1 * 1.45 + nx2 * 0.55) * wobble;
-        const dy = (ny1 * 1.45 + ny2 * 0.55) * wobble;
+        // Organic hand-drawn line bow (period ~20px) + subtle pen tremor (period ~7px).
+        const nx1 = smoothNoise(x / 20, y / 20, seed + 11) - 0.5;
+        const ny1 = smoothNoise(x / 20, y / 20, seed + 29) - 0.5;
+        const nx2 = smoothNoise(x / 7, y / 7, seed + 53) - 0.5;
+        const ny2 = smoothNoise(x / 7, y / 7, seed + 71) - 0.5;
+        const dx = (nx1 * 1.35 + nx2 * 0.75) * wobble;
+        const dy = (ny1 * 1.35 + ny2 * 0.75) * wobble;
         sampleRGBA(data, workW, workH, x + dx, y + dy, warped, (y * workW + x) * 4);
       }
     }
@@ -147,14 +150,16 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
     warped.set(data);
   }
 
-  // 2. Uneven hand-inked pressure modulation: thicken/thin dark outlines using a
-  //    smooth 2D pressure noise field so strokes swell and taper organically.
+  // 2. Bidirectional uneven hand-inked pressure modulation:
+  //    - High-pressure zones SWELL dark outlines (up to 5x5 radius)
+  //    - Low-pressure zones TAPER/THIN outer ink edge pixels back toward adjacent fill/alpha
+  //    - High-frequency nib tooth adds real hand-inked paper texture on outlines.
   const out = new Uint8ClampedArray(warped);
   const isInk = new Uint8Array(workW * workH);
   for (let i = 0; i < workW * workH; i++) {
     const o = i * 4;
     const lum = (warped[o] + warped[o + 1] + warped[o + 2]) / 3;
-    if (lum < 80 && warped[o + 3] > 140) isInk[i] = 1;
+    if (lum < 86 && warped[o + 3] > 125) isInk[i] = 1;
   }
 
   for (let y = 0; y < workH; y++) {
@@ -163,21 +168,68 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
     const y0b = y > 1 ? y - 2 : 0;
     const y1b = y + 2 < workH ? y + 2 : workH - 1;
     for (let x = 0; x < workW; x++) {
+      const idx = y * workW + x;
+      const o = idx * 4;
       const x0 = x > 0 ? x - 1 : 0;
       const x1 = x + 1 < workW ? x + 1 : workW - 1;
       const x0b = x > 1 ? x - 2 : 0;
       const x1b = x + 2 < workW ? x + 2 : workW - 1;
 
-      // Local pen pressure field (period ~26px + subtle 11px tooth): swells & tapers!
-      const pSlow = smoothNoise(x / 26, y / 26, seed + 101);
-      const pFast = smoothNoise(x / 11, y / 11, seed + 137);
-      const pressure = pSlow * 0.72 + pFast * 0.28; // [0..1]
+      // Tighter spatial pen-pressure field so unevenness is genuinely visible on
+      // small 105-160px sprites as well as large furniture.
+      const pMed = smoothNoise(x / 14, y / 14, seed + 101);
+      const pTooth = smoothNoise(x / 4.5, y / 4.5, seed + 137);
+      const pressure = pMed * 0.65 + pTooth * 0.35; // [0..1]
 
-      // Swell weight varies unevenly along each stroke (0.2x..1.55x of base inkBlend).
-      const localBlend = Math.min(1.0, Math.max(0, inkBlend * (0.2 + 1.35 * pressure)));
-      const useWide = inkBlend >= 0.65 && pressure > 0.72;
+      // 2a. Taper/thin outer edge of ink where pen pressure is light.
+      if (isInk[idx] && uneven > 0.25 && pressure < 0.36) {
+        let nonInkCount = 0;
+        let fillR = 0;
+        let fillG = 0;
+        let fillB = 0;
+        let fillN = 0;
+        let transCount = 0;
+        for (let ny = y0; ny <= y1; ny++) {
+          const row = ny * workW;
+          for (let nx = x0; nx <= x1; nx++) {
+            const ni = row + nx;
+            if (!isInk[ni]) {
+              nonInkCount++;
+              const no = ni * 4;
+              if (warped[no + 3] > 180) {
+                fillR += warped[no];
+                fillG += warped[no + 1];
+                fillB += warped[no + 2];
+                fillN++;
+              } else if (warped[no + 3] < 40) {
+                transCount++;
+              }
+            }
+          }
+        }
+        // Only erode edge-of-stroke pixels (never punch holes through the core of a thin line).
+        if (nonInkCount >= 2 && nonInkCount <= 5) {
+          const taper = Math.min(0.88, ((0.36 - pressure) / 0.36) * uneven * 0.95);
+          if (transCount > fillN) {
+            out[o + 3] = clampByte(warped[o + 3] * (1 - taper * 0.85));
+          } else if (fillN > 0) {
+            const fr = fillR / fillN;
+            const fg = fillG / fillN;
+            const fb = fillB / fillN;
+            out[o] = clampByte(warped[o] * (1 - taper) + fr * taper);
+            out[o + 1] = clampByte(warped[o + 1] * (1 - taper) + fg * taper);
+            out[o + 2] = clampByte(warped[o + 2] * (1 - taper) + fb * taper);
+          }
+        }
+        continue;
+      }
 
-      if (localBlend > 0.04) {
+      // 2b. Swell/thicken dark outlines unevenly where pen pressure is medium-to-heavy.
+      const swellDrive = Math.max(0, (pressure - 0.28) / 0.72); // 0..1
+      const localBlend = Math.min(1.0, inkBlend * (0.15 + 1.55 * swellDrive) + uneven * 0.22 * Math.max(0, pressure - 0.6));
+      const useWide = (inkBlend >= 0.5 || uneven >= 0.8) && pressure > 0.66;
+
+      if (localBlend > 0.05) {
         const ya = useWide ? y0b : y0;
         const yb = useWide ? y1b : y1;
         const xa = useWide ? x0b : x0;
@@ -190,7 +242,6 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
         for (let ny = ya; ny <= yb; ny++) {
           const row = ny * workW;
           for (let nx = xa; nx <= xb; nx++) {
-            // Circular-ish 5x5 when wide (skip far corners).
             if (useWide && Math.abs(nx - x) === 2 && Math.abs(ny - y) === 2) continue;
             const ni = row + nx;
             if (isInk[ni]) hasInk = 1;
@@ -202,8 +253,7 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
           }
         }
         if (hasInk && maxA > 90) {
-          const o = (y * workW + x) * 4;
-          const b = useWide ? Math.min(1.0, localBlend * 0.75) : localBlend;
+          const b = useWide ? Math.min(1.0, localBlend * 0.82) : localBlend;
           const inv = 1 - b;
           out[o] = clampByte(warped[o] * inv + minR * b);
           out[o + 1] = clampByte(warped[o + 1] * inv + minG * b);
@@ -215,39 +265,44 @@ async function harmonizeSprite(id, srcPath, destPath, { height: roomH, inkBlend,
   }
 
   // 3. Harmonize ink hue toward exact backdrop warm dark-brown RGB(49, 34, 16)
-  //    and apply subtle sunlit warm lift to fills to match the room lighting.
-  for (let i = 0; i < workW * workH; i++) {
-    const o = i * 4;
-    const a = out[o + 3];
-    if (a < 8) {
-      out[o] = out[o + 1] = out[o + 2] = out[o + 3] = 0;
-      continue;
+  //    with subtle felt-tip ink grain, plus warm sunlit lift on fills.
+  for (let y = 0; y < workH; y++) {
+    for (let x = 0; x < workW; x++) {
+      const i = y * workW + x;
+      const o = i * 4;
+      const a = out[o + 3];
+      if (a < 8) {
+        out[o] = out[o + 1] = out[o + 2] = out[o + 3] = 0;
+        continue;
+      }
+      const r = out[o];
+      const g = out[o + 1];
+      const b = out[o + 2];
+      const af = a / 255;
+      const lum = (r + g + b) / 3;
+      const inkW = Math.min(1, Math.max(0, (92 - lum) / 52)) * af;
+      const fillW = (1 - inkW) * af;
+
+      // Subtle paper-tooth variation on ink density so lines feel inked on paper.
+      const tooth = (smoothNoise(x / 3.5, y / 3.5, seed + 211) - 0.5) * 18 * uneven * inkW;
+      const inkScale = Math.min(1.32, Math.max(0.78, lum / 36));
+      const ir = Math.min(255, Math.max(0, TARGET_INK[0] * inkScale + tooth));
+      const ig = Math.min(255, Math.max(0, TARGET_INK[1] * inkScale + tooth * 0.85));
+      const ib = Math.min(255, Math.max(0, TARGET_INK[2] * inkScale + tooth * 0.65));
+
+      const iw = 0.58 * inkW;
+      const nr = r * (1 - iw) + ir * iw;
+      const ng = g * (1 - iw) + ig * iw;
+      const nb = b * (1 - iw) + ib * iw;
+
+      const lr = Math.min(255, nr * 1.045 + 4);
+      const lg = Math.min(255, ng * 1.045 + 2);
+      const lb = Math.max(0, Math.min(255, nb * 1.045 - 2));
+
+      out[o] = clampByte(nr * (1 - fillW) + lr * fillW);
+      out[o + 1] = clampByte(ng * (1 - fillW) + lg * fillW);
+      out[o + 2] = clampByte(nb * (1 - fillW) + lb * fillW);
     }
-    const r = out[o];
-    const g = out[o + 1];
-    const b = out[o + 2];
-    const af = a / 255;
-    const lum = (r + g + b) / 3;
-    const inkW = Math.min(1, Math.max(0, (92 - lum) / 52)) * af;
-    const fillW = (1 - inkW) * af;
-
-    const inkScale = Math.min(1.32, Math.max(0.78, lum / 36));
-    const ir = Math.min(255, TARGET_INK[0] * inkScale);
-    const ig = Math.min(255, TARGET_INK[1] * inkScale);
-    const ib = Math.min(255, TARGET_INK[2] * inkScale);
-
-    const iw = 0.55 * inkW;
-    const nr = r * (1 - iw) + ir * iw;
-    const ng = g * (1 - iw) + ig * iw;
-    const nb = b * (1 - iw) + ib * iw;
-
-    const lr = Math.min(255, nr * 1.045 + 4);
-    const lg = Math.min(255, ng * 1.045 + 2);
-    const lb = Math.max(0, Math.min(255, nb * 1.045 - 2));
-
-    out[o] = clampByte(nr * (1 - fillW) + lr * fillW);
-    out[o + 1] = clampByte(ng * (1 - fillW) + lg * fillW);
-    out[o + 2] = clampByte(nb * (1 - fillW) + lb * fillW);
   }
 
   // 4. Trim margin cleanly and match backdrop's exact optical resolution (1376/1600 -> 1600x900).
