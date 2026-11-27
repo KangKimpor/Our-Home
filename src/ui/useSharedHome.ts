@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { SharedHomePatch, SharedHomeState } from '../game/homeState';
 import { createHomeSync, type HomeSync } from '../game/homeSync';
 
@@ -14,17 +14,27 @@ export interface SharedHome {
   home: SharedHomeState;
   update: (patch: SharedHomePatch) => void;
   reset: () => void;
+  /** Adopts a room state the partner pushed over the live channel (when newer and no local write is in flight). */
+  adoptExternal: (state: SharedHomeState) => boolean;
+}
+
+export interface SharedHomeOptions {
+  /** Called with the new optimistic state after every local change (used to broadcast it live). */
+  onLocalChange?: (state: SharedHomeState) => void;
 }
 
 /**
  * React binding for the one shared living room save: instant first paint from
- * the local cache, optimistic ordered writes, and live sync (fetch on mount,
- * every 15s while visible, and whenever the tab returns to the foreground).
+ * the local cache, optimistic ordered writes, live partner updates via `adoptExternal`,
+ * and a durable fallback sync (fetch on mount, every 15s while visible, and whenever
+ * the tab returns to the foreground).
  */
-export function useSharedHome(storage: StorageLike | undefined): SharedHome {
+export function useSharedHome(storage: StorageLike | undefined, options: SharedHomeOptions = {}): SharedHome {
   // A single engine for the lifetime of the component (created lazily, stable across renders).
   const [sync] = useState<HomeSync>(() => createHomeSync({ storage, onChange: (next) => setHome(next) }));
   const [home, setHome] = useState<SharedHomeState>(() => sync.getState());
+  const onLocalChange = useRef(options.onLocalChange);
+  onLocalChange.current = options.onLocalChange;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -46,5 +56,17 @@ export function useSharedHome(storage: StorageLike | undefined): SharedHome {
     };
   }, [sync]);
 
-  return { home, update: sync.update, reset: sync.reset };
+  const update = useCallback(
+    (patch: SharedHomePatch) => {
+      sync.update(patch);
+      onLocalChange.current?.(sync.getState());
+    },
+    [sync],
+  );
+  const reset = useCallback(() => {
+    sync.reset();
+    onLocalChange.current?.(sync.getState());
+  }, [sync]);
+
+  return { home, update, reset, adoptExternal: sync.adoptExternal };
 }

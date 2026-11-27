@@ -39,7 +39,8 @@ describe('asset preloader', () => {
       expect(urls.some((u) => u.includes(`/sprites/${char.sprite}.png`))).toBe(true);
       expect(urls.some((u) => u.includes(`/sprites/${char.walkSprite}.png`))).toBe(true);
     }
-    // Every hand-drawn UI piece (plaques, cards, tab pills, close button, check badge) is decoded too.
+    // Every hand-drawn UI piece (plaques, cards, tab pills, close button, check badge,
+    // multiplayer emote bubble + stickers) is decoded too.
     for (const ui of [
       'plaque_title',
       'plaque_button',
@@ -51,14 +52,22 @@ describe('asset preloader', () => {
       'tab_pill_selected',
       'button_close',
       'badge_check',
+      'bubble_emote',
+      'emote_love',
+      'emote_wave',
+      'emote_tea',
+      'emote_music',
+      'emote_sleepy',
+      'emote_shuttle',
     ]) {
       expect(
         urls.some((u) => u.includes(`/${ui}.png`)),
         ui,
       ).toBe(true);
     }
-    // Includes 1 backdrop + all sprites.json entries + 10 hand-painted UI assets.
-    expect(urls.length).toBe(1 + Object.keys(sprites).length + 10);
+    // Includes 1 backdrop + all sprites.json entries + 17 hand-painted UI assets
+    // (10 plaques/cards/pills/buttons + the emote bubble + 6 emote stickers).
+    expect(urls.length).toBe(1 + Object.keys(sprites).length + 17);
   });
 
   it('waits until every asset resolves and reports monotonic progress', async () => {

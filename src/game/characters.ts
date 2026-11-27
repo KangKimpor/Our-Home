@@ -222,3 +222,105 @@ export function characterPlaced(s: CharacterState, x: number, y: number): Charac
   const pos = clampCharacterPos(x, y);
   return { ...s, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', timer: 3.5, walkPhase: 0 };
 }
+
+// ---------------------------------------------------------------------------
+// Player- / partner-driven movement (live 2-player mode)
+// ---------------------------------------------------------------------------
+
+export const PLAYER_CONTROL = {
+  /** Walking speed when a player steers their own character (room px per second). */
+  speed: 165,
+  /** Walk-cycle frames per second at `speed` (keeps steps matched to the faster pace). */
+  walkFps: 8,
+  /** The partner's character may hurry up to this multiple of `speed` to catch up. */
+  maxCatchUp: 3,
+  /** Keyboard strolls broadcast a target this many seconds ahead, so the partner never stalls. */
+  lookAheadSeconds: 0.28,
+} as const;
+
+/** Starts walking toward a (floor-clamped) spot; returns the state unchanged when already there. */
+export function characterWalkTo(s: CharacterState, x: number, y: number): CharacterState {
+  const pos = clampCharacterPos(x, y);
+  const dx = pos.x - s.x;
+  if (Math.hypot(dx, pos.y - s.y) < 2) {
+    return { ...s, x: pos.x, y: pos.y, tx: pos.x, ty: pos.y, mode: 'idle', timer: 0, walkPhase: 0 };
+  }
+  const facing: 1 | -1 = Math.abs(dx) < 1 ? s.facing : dx > 0 ? 1 : -1;
+  const walkPhase = s.mode === 'walk' ? s.walkPhase : 0;
+  return { ...s, tx: pos.x, ty: pos.y, mode: 'walk', timer: 0, facing, walkPhase };
+}
+
+/** A happy hop that keeps the current walk target, so a controlled character resumes afterwards. */
+export function characterHop(s: CharacterState): CharacterState {
+  return { ...s, mode: 'happy', timer: CHARACTER_BOUNDS.happySeconds, walkPhase: 0 };
+}
+
+/** Holds a controlled character still exactly where it stands. */
+export function characterRest(s: CharacterState): CharacterState {
+  return { ...s, tx: s.x, ty: s.y, mode: 'idle', timer: 0, walkPhase: 0 };
+}
+
+/**
+ * Advances a character steered by a player (or mirrored from the partner): it walks to its target
+ * and then rests there breathing, never wandering off on its own.
+ */
+export function stepControlledCharacter(
+  s: CharacterState,
+  dt: number,
+  frameCount: number = CHARACTER_BOUNDS.walkFrames,
+  speedScale = 1,
+): CharacterState {
+  if (s.mode === 'happy') {
+    const timer = s.timer - dt;
+    if (timer > 0) return { ...s, timer };
+    const pending = Math.hypot(s.tx - s.x, s.ty - s.y) >= 2;
+    return { ...s, mode: pending ? 'walk' : 'idle', timer: 0, walkPhase: 0 };
+  }
+  if (s.mode === 'idle') return s;
+
+  const dx = s.tx - s.x;
+  const dy = s.ty - s.y;
+  const dist = Math.hypot(dx, dy);
+  const scale = clamp(speedScale, 1, PLAYER_CONTROL.maxCatchUp);
+  const stepLen = PLAYER_CONTROL.speed * scale * dt;
+  if (dist <= stepLen) {
+    return { ...s, x: s.tx, y: s.ty, mode: 'idle', timer: 0, walkPhase: 0 };
+  }
+  const walkPhase = (s.walkPhase + dt * PLAYER_CONTROL.walkFps * Math.min(1.5, scale)) % Math.max(1, frameCount);
+  const facing: 1 | -1 = Math.abs(dx) < 1 ? s.facing : dx > 0 ? 1 : -1;
+  return { ...s, x: s.x + (dx / dist) * stepLen, y: s.y + (dy / dist) * stepLen, walkPhase, facing };
+}
+
+/**
+ * Keyboard stroll (WASD / arrows): moves along the held direction at player speed.
+ * `dirX` / `dirY` are -1, 0, or 1. Diagonals are normalized.
+ */
+export function stepKeyboardCharacter(
+  s: CharacterState,
+  dirX: number,
+  dirY: number,
+  dt: number,
+  frameCount: number = CHARACTER_BOUNDS.walkFrames,
+): CharacterState {
+  const len = Math.hypot(dirX, dirY);
+  if (len === 0) return s.mode === 'walk' ? characterRest(s) : s;
+  const stepLen = PLAYER_CONTROL.speed * dt;
+  // Keep sub-pixel precision while moving; the floor bounds still hold.
+  const x = clamp(s.x + (dirX / len) * stepLen, CHARACTER_BOUNDS.minX, CHARACTER_BOUNDS.maxX);
+  const y = clamp(s.y + (dirY / len) * stepLen, CHARACTER_BOUNDS.minY, CHARACTER_BOUNDS.maxY);
+  const facing: 1 | -1 = dirX > 0 ? 1 : dirX < 0 ? -1 : s.facing;
+  const walkPhase =
+    ((s.mode === 'walk' ? s.walkPhase : 0) + dt * PLAYER_CONTROL.walkFps) % Math.max(1, frameCount);
+  return { ...s, x, y, tx: x, ty: y, mode: 'walk', timer: 0, facing, walkPhase };
+}
+
+/** Where a keyboard stroll is heading a moment from now (broadcast so the partner keeps walking). */
+export function keyboardLookAhead(
+  s: CharacterState,
+  dirX: number,
+  dirY: number,
+): { x: number; y: number } {
+  const len = Math.hypot(dirX, dirY) || 1;
+  const ahead = PLAYER_CONTROL.speed * PLAYER_CONTROL.lookAheadSeconds;
+  return clampCharacterPos(s.x + (dirX / len) * ahead, s.y + (dirY / len) * ahead);
+}

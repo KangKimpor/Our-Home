@@ -146,27 +146,51 @@ test('renders the living room sprites and touch-friendly HUD', async ({ page }) 
   await expect(page.getByTestId('rotate-gate')).toHaveCount(0);
 
   // Every HUD control stays >= 44px tall and fully inside the viewport on every iPhone/iPad/desktop size.
-  const vp = page.viewportSize()!;
   const buttons = [
+    page.getByTestId('player-toggle'),
     page.getByTestId('decorate-toggle'),
     page.getByTestId('outfit-toggle'),
     page.getByRole('button', { name: 'Reset room' }),
   ];
   if ((await page.getByTestId('frame-toggle').count()) > 0) buttons.push(page.getByTestId('frame-toggle'));
   await expect(page.locator('.hud-button')).toHaveCount(buttons.length);
+  await expect(page.getByTestId('player-toggle')).toHaveAttribute('data-role', 'none');
+  await expect(page.getByTestId('player-toggle')).toContainText('Play as');
+  await expect(page.getByTestId('emote-toggle')).toHaveCount(0);
+  await expectHudFitsOneRow(page);
 
-  let rowTop: number | null = null;
-  for (const btn of buttons) {
-    await expect(btn).toBeVisible();
-    const box = (await btn.boundingBox())!;
+  // Choosing who you play adds the Emotes button, and the row still fits (never blocks the room).
+  await page.getByTestId('player-toggle').click();
+  await expect(page.getByTestId('player-picker')).toBeVisible();
+  await page.getByTestId('player-option-her').click();
+  await expect(page.getByTestId('player-picker')).toHaveCount(0);
+  await expect(page.getByTestId('player-toggle')).toHaveAttribute('data-role', 'her');
+  await expect(page.getByTestId('emote-toggle')).toBeVisible();
+  await expect(page.locator('.hud-button')).toHaveCount(buttons.length + 1);
+  await expectHudFitsOneRow(page);
+  await expect(page.locator('.room img')).toHaveCount(15);
+});
+
+/** Every `.hud-button` is >= 44px tall, inside the viewport, in one tidy row, and never overlapping. */
+async function expectHudFitsOneRow(page: Page) {
+  const vp = page.viewportSize()!;
+  const boxes = await page.locator('.hud-button').evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.x, y: r.y, width: r.width, height: r.height };
+    }),
+  );
+  expect(boxes.length).toBeGreaterThan(0);
+  const rowTop = boxes[0].y;
+  boxes.sort((a, b) => a.x - b.x);
+  for (const [i, box] of boxes.entries()) {
     expect(box.height).toBeGreaterThanOrEqual(44);
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(vp.width + 1);
-    // All buttons sit in one tidy row.
-    rowTop ??= box.y;
     expect(Math.abs(box.y - rowTop)).toBeLessThan(4);
+    if (i > 0) expect(box.x).toBeGreaterThanOrEqual(boxes[i - 1].x + boxes[i - 1].width - 1);
   }
-});
+}
 
 test('Fill view pans the room, even when the swipe starts on fixed furniture', async ({ page }) => {
   const viewportEl = page.locator('.viewport');
@@ -418,6 +442,191 @@ test('Decorate and Outfits panels never overlap', async ({ page }) => {
   for (const id of ['decorate-close']) {
     const b = (await page.getByTestId(id).boundingBox())!;
     expect(b.height).toBeGreaterThanOrEqual(36);
+  }
+});
+
+test('Player and Emote pickers are hand-drawn popovers that never overlap the others', async ({ page }) => {
+  const vp = page.viewportSize()!;
+  const popovers = ['player-picker', 'emote-picker', 'outfit-picker', 'decorate-panel'];
+  const expectOnlyOpen = async (open: string) => {
+    for (const id of popovers) await expect(page.getByTestId(id)).toHaveCount(id === open ? 1 : 0);
+  };
+
+  await openDecorate(page);
+  await page.getByTestId('player-toggle').click();
+  await expectOnlyOpen('player-picker');
+  await expect(page.getByTestId('player-toggle')).toHaveClass(/is-open/);
+  await expect(page.getByTestId('player-status')).toContainText('Share this link with your partner');
+  await expect(page.getByTestId('player-option-her').locator('.partner-tag')).toHaveCount(0);
+  const picker = (await page.getByTestId('player-picker').boundingBox())!;
+  expect(picker.x).toBeGreaterThanOrEqual(0);
+  expect(picker.x + picker.width).toBeLessThanOrEqual(vp.width + 1);
+  expect(picker.y + picker.height).toBeLessThanOrEqual(vp.height + 1);
+  expect((await page.getByTestId('player-close').boundingBox())!.height).toBeGreaterThanOrEqual(36);
+  await page.getByTestId('player-close').click();
+  await expectOnlyOpen('');
+
+  await page.getByTestId('player-toggle').click();
+  await page.getByTestId('player-option-him').click();
+  await expect(page.getByTestId('player-toggle')).toHaveAttribute('data-role', 'him');
+  await expect(page.getByTestId('character-him')).toHaveAttribute('data-controlled', 'local');
+  await expect(page.getByTestId('character-her')).toHaveAttribute('data-control', 'auto');
+
+  await page.getByTestId('emote-toggle').click();
+  await expectOnlyOpen('emote-picker');
+  for (const id of ['love', 'wave', 'tea', 'music', 'sleepy', 'shuttle']) {
+    const option = page.getByTestId(`emote-option-${id}`);
+    await expect(option).toBeVisible();
+    expect(await option.locator('.emote-option-icon').evaluate((el) => getComputedStyle(el).backgroundImage)).toContain(
+      `emote_${id}`,
+    );
+  }
+  await expect(page.getByTestId('emote-picker').locator('img')).toHaveCount(0);
+  const emotes = (await page.getByTestId('emote-picker').boundingBox())!;
+  expect(emotes.x + emotes.width).toBeLessThanOrEqual(vp.width + 1);
+  expect(emotes.y + emotes.height).toBeLessThanOrEqual(vp.height + 1);
+
+  await page.getByTestId('outfit-toggle').click();
+  await expectOnlyOpen('outfit-picker');
+  await page.getByTestId('emote-toggle').click();
+  await expectOnlyOpen('emote-picker');
+
+  // Sending an emote closes the picker and floats a hand-drawn bubble (CSS art, no <img>) over him.
+  await page.getByTestId('emote-option-love').click();
+  await expectOnlyOpen('');
+  const bubble = page.getByTestId('emote-bubble-him');
+  await expect(bubble).toHaveAttribute('data-emote', 'love');
+  expect(await bubble.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain('bubble_emote');
+  await expect(page.locator('.room img')).toHaveCount(15);
+  await expect(bubble).toHaveCount(0, { timeout: 6000 });
+
+  // The role survives a reload.
+  await page.reload();
+  await expect(page.getByTestId('player-toggle')).toHaveAttribute('data-role', 'him');
+});
+
+/** Room coordinates -> viewport coordinates for the current camera. */
+async function roomToClient(page: Page, x: number, y: number) {
+  const box = (await page.locator('.stage').boundingBox())!;
+  const scale = box.width / 1950;
+  return { x: box.x + x * scale, y: box.y + y * scale };
+}
+
+/** Picks an open floor spot near the right side (not covered by the pet, a person, or furniture). */
+async function openFloorSpot(page: Page) {
+  for (const [x, y] of [
+    [1660, 820],
+    [1700, 860],
+    [1620, 870],
+    [1740, 780],
+    [1580, 860],
+  ]) {
+    const pt = await roomToClient(page, x, y);
+    const blocked = await page.evaluate(
+      ({ cx, cy }) => {
+        const el = document.elementFromPoint(cx, cy);
+        return !el || Boolean(el.closest('.pet, .character, .hud-overlay, .item:not(.item--rug)'));
+      },
+      { cx: pt.x, cy: pt.y },
+    );
+    if (!blocked) return { room: { x, y }, client: pt };
+  }
+  throw new Error('No open floor spot found');
+}
+
+async function roomPos(page: Page, id: 'her' | 'him') {
+  const el = page.getByTestId(`character-${id}`);
+  return { x: Number(await el.getAttribute('data-x')), y: Number(await el.getAttribute('data-y')) };
+}
+
+test('live 2-player: presence, walking, emotes, pokes, and decorating sync instantly', async ({
+  page,
+  browser,
+}, testInfo) => {
+  const A = page;
+
+  // 1. Player A plays Him.
+  await A.getByTestId('player-toggle').click();
+  await A.getByTestId('player-option-him').click();
+  await expect(A.getByTestId('player-toggle')).toHaveAttribute('data-role', 'him');
+  await expect(A.getByTestId('player-toggle')).toHaveAttribute('data-partner-online', 'false');
+
+  const baseURL = testInfo.project.use.baseURL!;
+  const { hasTouch, isMobile, deviceScaleFactor } = testInfo.project.use;
+  const ctxB = await browser.newContext({ baseURL, viewport: A.viewportSize(), hasTouch, isMobile, deviceScaleFactor });
+  let ctxBOpen = true;
+  try {
+    await ctxB.addCookies([{ name: NS_COOKIE, value: ns, url: baseURL }]);
+    const B = await ctxB.newPage();
+    await B.goto('/');
+    await expect(B.locator('.room')).toBeVisible();
+
+    // A gets a cozy "came home" note when B arrives.
+    await expect(A.getByTestId('presence-toast')).toContainText('came home');
+
+    // 2. B sees Him is taken by the partner and picks Her.
+    await B.getByTestId('player-toggle').click();
+    await expect(B.getByTestId('player-option-him')).toHaveAttribute('data-partner', 'true');
+    await expect(B.getByTestId('player-option-him')).toContainText('Partner here');
+    await expect(B.getByTestId('player-status')).toContainText('Both of you are home');
+    await B.getByTestId('player-option-her').click();
+    await expect(B.getByTestId('player-toggle')).toHaveAttribute('data-role', 'her');
+
+    // 3. Both screens show live presence.
+    for (const p of [A, B]) {
+      await expect(p.getByTestId('player-toggle')).toHaveAttribute('data-partner-online', 'true');
+      await expect(p.getByTestId('player-toggle')).toContainText('Together');
+      await expectHudFitsOneRow(p);
+    }
+    await expect(A.getByTestId('character-her')).toHaveAttribute('data-control', 'remote');
+    await expect(B.getByTestId('character-him')).toHaveAttribute('data-control', 'remote');
+    await expect(B.getByTestId('character-her')).toHaveAttribute('data-controlled', 'local');
+
+    // 4. A taps an open floor spot on the right: Him walks there on both screens.
+    const spot = await openFloorSpot(A);
+    await A.mouse.click(spot.client.x, spot.client.y);
+    await expect(A.locator('.walk-target')).toHaveCount(1);
+    await expect(A.getByTestId('character-him')).toHaveAttribute('data-mode', 'walk');
+    await expect(B.getByTestId('character-him')).toHaveAttribute('data-mode', 'walk');
+    for (const p of [A, B]) {
+      await expect
+        .poll(
+          async () => {
+            const pos = await roomPos(p, 'him');
+            return Math.hypot(pos.x - spot.room.x, pos.y - spot.room.y);
+          },
+          { timeout: 12_000 },
+        )
+        .toBeLessThan(4);
+      await expect(p.getByTestId('character-him')).toHaveAttribute('data-mode', 'idle');
+    }
+
+    // 5. A sends the shuttlecock emote: the bubble floats over Him on both screens.
+    await A.getByTestId('emote-toggle').click();
+    await A.getByTestId('emote-option-shuttle').click();
+    for (const p of [A, B]) {
+      await expect(p.getByTestId('emote-bubble-him')).toHaveAttribute('data-emote', 'shuttle');
+      await expect(p.locator('.room img')).toHaveCount(15);
+    }
+
+    // 6. B taps Him: he hops happily on A's screen too.
+    await B.getByTestId('character-him').click();
+    await expect(A.getByTestId('character-him')).toHaveAttribute('data-mode', 'happy');
+    await expect(A.getByTestId('character-him').locator('.character-heart')).toHaveCount(1);
+
+    // 7. B decorates: A's sofa swaps live (no reload, no 15s poll).
+    await openDecorate(B);
+    await pick(B, 'sofa', 'sage');
+    await expect(A.locator('[data-item="sofa"]')).toHaveAttribute('data-option', 'sage', { timeout: 3000 });
+    await expect(A.locator('[data-item="sofa"] img')).toHaveAttribute('src', /sage_lounge_sofa/);
+
+    // 8. B leaves: A is home alone again and Her resumes strolling on her own.
+    await ctxB.close();
+    ctxBOpen = false;
+    await expect(A.getByTestId('player-toggle')).toHaveAttribute('data-partner-online', 'false');
+    await expect(A.getByTestId('character-her')).toHaveAttribute('data-control', 'auto');
+  } finally {
+    if (ctxBOpen) await ctxB.close();
   }
 });
 

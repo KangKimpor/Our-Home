@@ -35,10 +35,18 @@ function viewportSize(): { vw: number; vh: number } {
   };
 }
 
+const MOUSE_TAP_SLOP = 6;
+const TOUCH_TAP_SLOP = 10;
+
 interface Props {
   children: (ctx: StageContext) => ReactNode;
   overlay?: (ctx: StageContext) => ReactNode;
   onCameraMove?: () => void;
+  /**
+   * A clean one-finger tap on the room (not a pan or pinch) that did not start on a character,
+   * the pet, or the HUD. Receives logical room coordinates and the element that was pressed.
+   */
+  onRoomTap?: (pt: { x: number; y: number }, target: HTMLElement | null) => void;
 }
 
 /**
@@ -47,7 +55,7 @@ interface Props {
  * - Portrait phones & iPad default to full-height cozy pan mode (with one-tap Fit toggle).
  * - Supports 1-finger backdrop pan and 2-finger pinch-to-zoom.
  */
-export function Stage({ children, overlay, onCameraMove }: Props) {
+export function Stage({ children, overlay, onCameraMove, onRoomTap }: Props) {
   const [vp, setVp] = useState(viewportSize);
   const [camera, setCamera] = useState<CameraState>(() => {
     const { vw, vh } = viewportSize();
@@ -62,6 +70,10 @@ export function Stage({ children, overlay, onCameraMove }: Props) {
   const pointers = useRef<Map<number, { x: number; y: number }>>(new Map());
   const pinch = useRef<{ dist: number; scale: number; midX: number; midY: number } | null>(null);
   const [panning, setPanning] = useState(false);
+  /** A press that may still turn out to be a tap (cleared once it travels or a 2nd finger lands). */
+  const tapPress = useRef<{ id: number; sx: number; sy: number; slop: number; target: HTMLElement | null } | null>(
+    null,
+  );
 
   useEffect(() => {
     const onResize = () => {
@@ -120,6 +132,16 @@ export function Stage({ children, overlay, onCameraMove }: Props) {
     // (touch pointers are implicitly captured by the item and keep bubbling up to us).
     if (!target?.closest('.item')) e.currentTarget.setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    tapPress.current =
+      pointers.current.size === 1
+        ? {
+            id: e.pointerId,
+            sx: e.clientX,
+            sy: e.clientY,
+            slop: e.pointerType === 'touch' ? TOUCH_TAP_SLOP : MOUSE_TAP_SLOP,
+            target,
+          }
+        : null;
 
     if (pointers.current.size === 2) {
       const [a, b] = Array.from(pointers.current.values());
@@ -141,6 +163,10 @@ export function Stage({ children, overlay, onCameraMove }: Props) {
     const dx = e.clientX - prev.x;
     const dy = e.clientY - prev.y;
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const press = tapPress.current;
+    if (press && press.id === e.pointerId && Math.hypot(e.clientX - press.sx, e.clientY - press.sy) >= press.slop) {
+      tapPress.current = null;
+    }
 
     const { vw, vh } = vpRef.current;
 
@@ -169,6 +195,14 @@ export function Stage({ children, overlay, onCameraMove }: Props) {
   };
 
   const endPointer = (e: React.PointerEvent) => {
+    const press = tapPress.current;
+    if (press && press.id === e.pointerId) {
+      tapPress.current = null;
+      const travelled = Math.hypot(e.clientX - press.sx, e.clientY - press.sy) >= press.slop;
+      if (e.type === 'pointerup' && !travelled && pointers.current.has(e.pointerId)) {
+        onRoomTap?.(clientToRoom(e.clientX, e.clientY), press.target);
+      }
+    }
     pointers.current.delete(e.pointerId);
     if (pointers.current.size < 2) pinch.current = null;
     if (pointers.current.size === 0) setPanning(false);

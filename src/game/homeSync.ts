@@ -9,6 +9,7 @@ import {
   patchFromState,
   patchSharedHomeState,
   resetSharedHomeState,
+  sanitizeSharedHomeState,
   saveCachedHomeState,
   type SharedHomePatch,
   type SharedHomeResponse,
@@ -55,6 +56,11 @@ export interface HomeSync {
   reset: () => void;
   /** Fetches the shared save and adopts it when no local write is in flight. */
   pull: (signal?: AbortSignal) => Promise<void>;
+  /**
+   * Adopts a room state pushed live by the partner's device. Ignored while a local write is in
+   * flight or queued, or when the incoming state is older than ours. Returns true when adopted.
+   */
+  adoptExternal: (incoming: SharedHomeState) => boolean;
   /** Resolves once every queued write has settled (tests / teardown). */
   flush: () => Promise<void>;
   isWriting: () => boolean;
@@ -84,6 +90,8 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
   let chain: Promise<void> = Promise.resolve();
   let outbox: Outbox | null = null;
   let seeded = false;
+  /** Bumped whenever a live partner state is adopted, so slower in-flight pulls never undo it. */
+  let externalSeq = 0;
 
   const commit = (next: SharedHomeState) => {
     state = next;
@@ -153,6 +161,7 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
       if (pendingWrites > 0) return;
       if (flushOutbox()) return;
       const seqAtStart = mutationSeq;
+      const externalAtStart = externalSeq;
       let res: SharedHomeResponse | null = null;
       try {
         res = await api.fetch(signal);
@@ -162,6 +171,8 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
       if (!res || signal?.aborted) return;
       // A local change happened while fetching: our newer write wins.
       if (pendingWrites > 0 || seqAtStart !== mutationSeq || outbox) return;
+      // The partner's live update landed while fetching; the next pull re-checks the server.
+      if (externalAtStart !== externalSeq) return;
       if (res.state) {
         adopt(res.state);
       } else if (
@@ -173,6 +184,16 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
         seeded = true;
         enqueue({ kind: 'patch', patch: patchFromState(state) });
       }
+    },
+    adoptExternal(incoming) {
+      if (pendingWrites > 0 || outbox) return false;
+      const next = sanitizeSharedHomeState(incoming);
+      const newer = next.revision > state.revision;
+      const differs = next.revision === state.revision && !isSameHomeChoices(next, state);
+      if (!newer && !differs) return false;
+      externalSeq += 1;
+      commit(next);
+      return true;
     },
     async flush() {
       let current: Promise<void>;

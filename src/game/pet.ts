@@ -58,12 +58,33 @@ export function createPet(): PetState {
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
+export interface StepPetOptions {
+  /**
+   * Whether the pet picks its own wander spots (default true). While two partners are together,
+   * only the pet leader's device wanders; the other follows its `pet_sync` broadcasts.
+   */
+  wander?: boolean;
+  /** Speed multiplier (a following pet briefly hurries to catch up). Clamped to [1, 3]. */
+  speedScale?: number;
+}
+
 /** Advances the pet by dt seconds. `rand` returns values in [0, 1). */
-export function stepPet(s: PetState, dt: number, rand: () => number = Math.random): PetState {
+export function stepPet(
+  s: PetState,
+  dt: number,
+  rand: () => number = Math.random,
+  options: StepPetOptions = {},
+): PetState {
+  const wander = options.wander ?? true;
   if (s.mode === 'idle' || s.mode === 'happy') {
     const timer = s.timer - dt;
     if (timer > 0) return { ...s, timer };
     if (s.mode === 'happy') return { ...s, mode: 'idle', timer: 0.6 + rand() * 1.2 };
+    if (!wander) {
+      // Following: rest until the leader's pet heads somewhere new.
+      if (Math.hypot(s.tx - s.x, s.ty - s.y) < 1) return { ...s, timer: 0 };
+      return { ...s, mode: 'walk', timer: 0, facing: s.tx >= s.x ? 1 : -1 };
+    }
     // Pick a new spot to wander to, not too close to where we are.
     let tx = lerp(PET.minX, PET.maxX, rand());
     const ty = lerp(PET.minY, PET.maxY, rand());
@@ -75,7 +96,8 @@ export function stepPet(s: PetState, dt: number, rand: () => number = Math.rando
   const dx = s.tx - s.x;
   const dy = s.ty - s.y;
   const dist = Math.hypot(dx, dy);
-  const stepLen = PET.speed * dt;
+  const speedScale = Math.min(3, Math.max(1, options.speedScale ?? 1));
+  const stepLen = PET.speed * speedScale * dt;
   if (dist <= stepLen) {
     return { ...s, x: s.tx, y: s.ty, mode: 'idle', timer: 1.5 + rand() * 3 };
   }
@@ -85,4 +107,22 @@ export function stepPet(s: PetState, dt: number, rand: () => number = Math.rando
 /** Tapping the pet makes it stop and hop happily. */
 export function petTapped(s: PetState): PetState {
   return { ...s, mode: 'happy', timer: PET.happySeconds, tx: s.x, ty: s.y };
+}
+
+/** Mirrors the leader's pet: heads to its destination (or resting spot) from wherever ours is. */
+export function petSynced(
+  s: PetState,
+  sync: { x: number; y: number; tx: number; ty: number; mode: 'idle' | 'walk'; facing: 1 | -1 },
+): { state: PetState; speedScale: number } {
+  const tx = sync.mode === 'walk' ? sync.tx : sync.x;
+  const ty = sync.mode === 'walk' ? sync.ty : sync.y;
+  const remaining = Math.hypot(tx - s.x, ty - s.y);
+  // Hurry when we are further from the destination than the leader's pet is.
+  const leaderRemaining = Math.max(1, Math.hypot(tx - sync.x, ty - sync.y));
+  const speedScale = sync.mode === 'walk' ? Math.min(3, Math.max(1, remaining / leaderRemaining)) : 2;
+  if (remaining < 1) {
+    return { state: { ...s, x: tx, y: ty, tx, ty, mode: 'idle', timer: 0, facing: sync.facing }, speedScale };
+  }
+  const facing: 1 | -1 = Math.abs(tx - s.x) < 1 ? sync.facing : tx > s.x ? 1 : -1;
+  return { state: { ...s, tx, ty, mode: 'walk', timer: 0, facing }, speedScale };
 }

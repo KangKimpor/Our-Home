@@ -1,7 +1,14 @@
 import badgeCheckUrl from '../assets/ui/badge_check.png';
+import bubbleEmoteUrl from '../assets/ui/bubble_emote.png';
 import buttonCloseUrl from '../assets/ui/button_close.png';
 import cardOptionUrl from '../assets/ui/card_option.png';
 import cardOptionSelectedUrl from '../assets/ui/card_option_selected.png';
+import emoteLoveUrl from '../assets/ui/emote_love.png';
+import emoteMusicUrl from '../assets/ui/emote_music.png';
+import emoteShuttleUrl from '../assets/ui/emote_shuttle.png';
+import emoteSleepyUrl from '../assets/ui/emote_sleepy.png';
+import emoteTeaUrl from '../assets/ui/emote_tea.png';
+import emoteWaveUrl from '../assets/ui/emote_wave.png';
 import plaqueButtonUrl from '../assets/ui/plaque_button.png';
 import plaqueNoteUrl from '../assets/ui/plaque_note.png';
 import plaqueSecondaryUrl from '../assets/ui/plaque_secondary.png';
@@ -9,6 +16,7 @@ import plaqueTitleUrl from '../assets/ui/plaque_title.png';
 import tabPillUrl from '../assets/ui/tab_pill.png';
 import tabPillSelectedUrl from '../assets/ui/tab_pill_selected.png';
 import { ROOM } from './layout';
+import type { EmoteId } from './multiplayer';
 import sprites from './sprites.json';
 import { versionedAssetUrl } from './version';
 
@@ -31,6 +39,19 @@ export interface PreloadAssetsOptions {
   waitForFonts?: boolean;
 }
 
+/** Hand-drawn oat-cream speech bubble that floats above a character for emotes. */
+export const BUBBLE_EMOTE_URL: string = bubbleEmoteUrl;
+
+/** Hand-drawn emote stickers shown inside the bubble and in the Emotes picker. */
+export const EMOTE_ICON_URLS: Readonly<Record<EmoteId, string>> = {
+  love: emoteLoveUrl,
+  wave: emoteWaveUrl,
+  tea: emoteTeaUrl,
+  music: emoteMusicUrl,
+  sleepy: emoteSleepyUrl,
+  shuttle: emoteShuttleUrl,
+};
+
 const UI_ASSET_URLS: readonly string[] = [
   plaqueTitleUrl,
   plaqueButtonUrl,
@@ -42,6 +63,13 @@ const UI_ASSET_URLS: readonly string[] = [
   tabPillSelectedUrl,
   buttonCloseUrl,
   badgeCheckUrl,
+  bubbleEmoteUrl,
+  emoteLoveUrl,
+  emoteWaveUrl,
+  emoteTeaUrl,
+  emoteMusicUrl,
+  emoteSleepyUrl,
+  emoteShuttleUrl,
 ];
 
 /**
@@ -53,7 +81,7 @@ const decodedImageCache = new Map<string, HTMLImageElement>();
 /**
  * Returns every visual asset required before revealing the game:
  * the room backdrop, every sprite & animation strip in sprites.json, and all hand-drawn UI art
- * (plaques, option cards, tab pills, close button, and check badge).
+ * (plaques, option cards, tab pills, close button, check badge, emote bubble, and emote stickers).
  */
 export function getGameAssetUrls(): string[] {
   const urls = new Set<string>();

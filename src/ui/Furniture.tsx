@@ -42,6 +42,8 @@ interface Props {
   decorating: boolean;
   selected: boolean;
   onTap: (slot: SlotDef) => void;
+  /** Bumped when the partner taps this piece, so it plays its tap animation here too. */
+  pulse?: number;
 }
 
 /**
@@ -49,7 +51,7 @@ interface Props {
  * small animation, while a swipe that starts on it is left to the Stage so
  * portrait phones keep panning the camera smoothly.
  */
-export function Furniture({ slot, option, lampOn, decorating, selected, onTap }: Props) {
+export function Furniture({ slot, option, lampOn, decorating, selected, onTap, pulse = 0 }: Props) {
   const { w, h } = itemSize(option);
   const artRef = useRef<HTMLDivElement>(null);
   const press = useRef<{ id: number; sx: number; sy: number; slop: number; moved: boolean } | null>(null);
@@ -66,9 +68,22 @@ export function Furniture({ slot, option, lampOn, decorating, selected, onTap }:
     artRef.current?.animate?.(slot.mount === 'wall' ? POP_WALL : POP_FLOOR, { duration: 520, easing: EASE });
   }, [option.id, slot.mount]);
 
-  const activate = () => {
+  const playTap = () => {
     if (slot.tap === 'swing') play(SWING, 700);
     else play(BOUNCE, 420);
+  };
+
+  // The partner tapped this piece on their screen: play the same cozy bounce / swing here.
+  const shownPulse = useRef(pulse);
+  useEffect(() => {
+    if (shownPulse.current === pulse) return;
+    shownPulse.current = pulse;
+    const frames = slot.tap === 'swing' ? SWING : BOUNCE;
+    artRef.current?.animate?.(frames, { duration: slot.tap === 'swing' ? 700 : 420, easing: EASE });
+  }, [pulse, slot.tap]);
+
+  const activate = () => {
+    playTap();
     onTap(slot);
   };
 
@@ -129,6 +144,7 @@ export function Furniture({ slot, option, lampOn, decorating, selected, onTap }:
       className={classes}
       data-item={slot.id}
       data-option={option.id}
+      data-pulse={pulse || undefined}
       role={decorating ? 'button' : undefined}
       tabIndex={decorating ? 0 : undefined}
       aria-label={decorating ? `${slot.label}: ${option.label}` : undefined}
