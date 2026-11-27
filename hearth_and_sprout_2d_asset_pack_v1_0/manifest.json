@@ -4,15 +4,15 @@
   "style_pass": "hand_drawn_sofa_benchmark_unified_v6_0",
   "creation_date": "2026-11-25",
   "clean_room_status": "original_from_scratch_no_third_party_reference_assets_included",
-  "total_sprites": 42,
+  "total_sprites": 60,
   "total_backgrounds": 1,
   "total_previews": 1,
   "category_counts": {
     "home": 6,
-    "living_room": 6,
     "garden": 7,
     "characters": 18,
-    "small_props": 5
+    "small_props": 5,
+    "living_room": 24
   },
   "style_guide": "STYLE_GUIDE.md",
   "qa_report": "QA_REPORT.md",
@@ -1462,6 +1462,618 @@
       "usage_terms_notes": "Badminton walk cycle frame derived from resident_her_badminton.png.",
       "file_size_bytes": 126815,
       "sha256": "563c77f3e7046f86869a6589beb3fe405bc6e53b054c9290e35dd99eabf8348e"
+    },
+    {
+      "id": "botanical_framed_art",
+      "filename": "sprites/living_room/botanical_framed_art.png",
+      "category": "living_room",
+      "description": "Framed honey-oak hillside cottage landscape painting with tucked sage leaves.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.4604,
+        "padding_px": {
+          "top": 89,
+          "right": 32,
+          "bottom": 89,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 0.7,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 234160,
+      "sha256": "c17aa6aab69169529c52c06d748fb6717fc73c5c90fc03d67ced40d8897d2126"
+    },
+    {
+      "id": "macrame_wall_hanging",
+      "filename": "sprites/living_room/macrame_wall_hanging.png",
+      "category": "living_room",
+      "description": "Hand-knotted oat-cream macrame wall hanging on a honey-wood dowel with muted beads and tassels.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.68,
+        "padding_px": {
+          "top": 32,
+          "right": 79,
+          "bottom": 32,
+          "left": 79
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 0.72,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 241697,
+      "sha256": "04ea5751b51370d54db1c1f613ef8f707fdb0dfd26ca37ed1ae12262eb6903fb"
+    },
+    {
+      "id": "wall_floating_shelf",
+      "filename": "sprites/living_room/wall_floating_shelf.png",
+      "category": "living_room",
+      "description": "Honey-oak bracket wall shelf holding a trailing terracotta plant, three hardcover books, and a cream teacup.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6976,
+        "padding_px": {
+          "top": 104,
+          "right": 32,
+          "bottom": 105,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 0.72,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 165739,
+      "sha256": "f9d460e703eae0f22d94f0dc32f5ddc2f76c87edeb9c96a57ef97478b69bf4ff"
+    },
+    {
+      "id": "cottage_oval_mirror",
+      "filename": "sprites/living_room/cottage_oval_mirror.png",
+      "category": "living_room",
+      "description": "Scalloped honey-oak arched wall mirror crowned with a sage leaf and plum blossom wreath.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.3973,
+        "padding_px": {
+          "top": 32,
+          "right": 51,
+          "bottom": 32,
+          "left": 50
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 0.7,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 267656,
+      "sha256": "58540a09623516682c7c907b17b97eb725bccefa0e27c70b2472580a3dc91ad7"
+    },
+    {
+      "id": "cottage_sideboard",
+      "filename": "sprites/living_room/cottage_sideboard.png",
+      "category": "living_room",
+      "description": "Dusty-teal painted cottage sideboard with honey-oak top, cream jar, plum teapot, and sprout pot.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.463,
+        "padding_px": {
+          "top": 47,
+          "right": 32,
+          "bottom": 47,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 0.92,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 240863,
+      "sha256": "875c6d18915cc0fd4fb47653f2ea01e215d2c7c2d6aca365fd82da93a6be4d15"
+    },
+    {
+      "id": "fireplace_basket_set",
+      "filename": "sprites/living_room/fireplace_basket_set.png",
+      "category": "living_room",
+      "description": "Woven wicker basket overflowing with cream, terracotta, and dusty-teal blankets beside stacked firewood logs.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5274,
+        "padding_px": {
+          "top": 64,
+          "right": 32,
+          "bottom": 64,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 0.85,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 299227,
+      "sha256": "1574b576a0b28ad3cc087e51b2a261e95fccc8776e684588791a2e1bd64fe879"
+    },
+    {
+      "id": "monstera_ceramic_pot",
+      "filename": "sprites/living_room/monstera_ceramic_pot.png",
+      "category": "living_room",
+      "description": "Lush monstera and fern fronds in a speckled cream-and-teal ceramic planter on a honey-oak plant stand.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5512,
+        "padding_px": {
+          "top": 32,
+          "right": 39,
+          "bottom": 32,
+          "left": 38
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 0.9,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 306367,
+      "sha256": "a8377a5ade4ed60fc19a64b6cb3307b2497e10efe2b1c16ace9b2d956b80f9e9"
+    },
+    {
+      "id": "woven_pet_basket",
+      "filename": "sprites/living_room/woven_pet_basket.png",
+      "category": "living_room",
+      "description": "Oval braided wicker pet basket with a tufted dusty-teal cushion and draped oat-cream blanket.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5851,
+        "padding_px": {
+          "top": 113,
+          "right": 32,
+          "bottom": 114,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 0.74,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 247950,
+      "sha256": "597f16ed75f0ba506af277d6cd7e485aded953cc3d78607a0275d24e2ea66a25"
+    },
+    {
+      "id": "terracotta_lounge_sofa",
+      "filename": "sprites/living_room/terracotta_lounge_sofa.png",
+      "category": "living_room",
+      "description": "Warm terracotta tufted two-seater cottage sofa with walnut trim, sage striped throw, and dusty-teal and plum pillows.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6078,
+        "padding_px": {
+          "top": 110,
+          "right": 32,
+          "bottom": 110,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.1,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 189309,
+      "sha256": "e79f6d24365422c8500102e953cfa848ae07fc5d40a17be013856fcbeb0cb7ac"
+    },
+    {
+      "id": "sage_lounge_sofa",
+      "filename": "sprites/living_room/sage_lounge_sofa.png",
+      "category": "living_room",
+      "description": "Botanical sage tufted two-seater cottage sofa with honey-oak trim, terracotta striped throw, and honey and terracotta pillows.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6078,
+        "padding_px": {
+          "top": 110,
+          "right": 32,
+          "bottom": 110,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.1,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 187632,
+      "sha256": "de015d09f272e93388ecebcb386040dfade5067a9c54f9caf5b0b2dd848e67a0"
+    },
+    {
+      "id": "oat_cream_lounge_sofa",
+      "filename": "sprites/living_room/oat_cream_lounge_sofa.png",
+      "category": "living_room",
+      "description": "Oat-cream linen tufted two-seater cottage sofa with dusty-teal striped throw and sage and terracotta pillows.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6078,
+        "padding_px": {
+          "top": 110,
+          "right": 32,
+          "bottom": 110,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.1,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 193971,
+      "sha256": "06c283655b767031a4a7b0ead5293639ac7882a4082ae6a39126ede3875892c7"
+    },
+    {
+      "id": "sage_braided_rug",
+      "filename": "sprites/living_room/sage_braided_rug.png",
+      "category": "living_room",
+      "description": "Oval braided cottage rug in moss green, sage, oat cream, warm honey, and terracotta rings.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7026,
+        "padding_px": {
+          "top": 147,
+          "right": 32,
+          "bottom": 148,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.25,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 159125,
+      "sha256": "b4ceb0e7fa9640bb05f8ef5c39d43105a245485c4eaa946f3e1b0ba934f3c55e"
+    },
+    {
+      "id": "plum_braided_rug",
+      "filename": "sprites/living_room/plum_braided_rug.png",
+      "category": "living_room",
+      "description": "Oval braided cottage rug in muted plum, dusty teal, oat cream, terracotta, and warm honey rings.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7026,
+        "padding_px": {
+          "top": 147,
+          "right": 32,
+          "bottom": 148,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.25,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 160948,
+      "sha256": "9837abbe6952b0d6ef7e07e586095ef2e59f9488960cd853fe1773abd2c0b6cb"
+    },
+    {
+      "id": "woven_tassel_rug",
+      "filename": "sprites/living_room/woven_tassel_rug.png",
+      "category": "living_room",
+      "description": "Rectangular hand-woven oat-cream cottage rug with sage and terracotta stripes, geometric diamond motifs, and knotted side fringes.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7261,
+        "padding_px": {
+          "top": 163,
+          "right": 32,
+          "bottom": 164,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.25,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 127323,
+      "sha256": "fe57ccc4b6baa4f031729d0d5ee195b86a69b1c685beb0880d35336c00a23743"
+    },
+    {
+      "id": "teal_coffee_table",
+      "filename": "sprites/living_room/teal_coffee_table.png",
+      "category": "living_room",
+      "description": "Two-tone cottage coffee table with dusty-teal painted base and legs, honey-oak tabletop, plum and sage books, terracotta vase, and cream mug.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6765,
+        "padding_px": {
+          "top": 89,
+          "right": 32,
+          "bottom": 89,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 0.95,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 182369,
+      "sha256": "7be57d7d7166ecdb9608660aee13ebbace4948234488c0645ad17e8b45daff7b"
+    },
+    {
+      "id": "walnut_coffee_table",
+      "filename": "sprites/living_room/walnut_coffee_table.png",
+      "category": "living_room",
+      "description": "Warm chestnut-walnut cottage coffee table with splayed legs, dusty-teal and sage books, oat-cream vase, and cream tea mug.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6765,
+        "padding_px": {
+          "top": 89,
+          "right": 32,
+          "bottom": 89,
+          "left": 32
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 0.95,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 172161,
+      "sha256": "4947478f4bbaae7fd12537426ba3955f88930bbcb0e1590b58c793cfde81a035"
+    },
+    {
+      "id": "sage_display_bookshelf",
+      "filename": "sprites/living_room/sage_display_bookshelf.png",
+      "category": "living_room",
+      "description": "Sage-painted arched cottage display bookshelf with warm oat-cream back panel, trailing plant, ceramics, books, and terracotta basket.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.4391,
+        "padding_px": {
+          "top": 32,
+          "right": 75,
+          "bottom": 32,
+          "left": 74
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 1.15,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 259580,
+      "sha256": "1e1de2cd0930fdf67138d60562d090b9a0f059ecd25fe4945a36199a99f78ccf"
+    },
+    {
+      "id": "pedestal_reading_lamp",
+      "filename": "sprites/living_room/pedestal_reading_lamp.png",
+      "category": "living_room",
+      "description": "Glazed terracotta and scalloped oat-cream cottage reading lamp seated on a carved honey-oak three-legged side table.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7819,
+        "padding_px": {
+          "top": 32,
+          "right": 154,
+          "bottom": 32,
+          "left": 154
+        }
+      },
+      "scale_tier": "large",
+      "recommended_world_scale": 0.95,
+      "creator": "AI-assisted creation (Antigravity living room customization pack)",
+      "tool": "Antigravity image-generator / Hearth & Sprout anchor palette harmonization + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-27",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 122183,
+      "sha256": "c7ec4db262a5cf69e0a666a1c5364ecacf966eb33a114d494e0e958a7061bda4"
     }
   ],
   "backgrounds": [

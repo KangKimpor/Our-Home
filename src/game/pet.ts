@@ -1,4 +1,31 @@
-import { ROOM } from './layout';
+import { ROOM, type SpriteId } from './layout';
+import { PET_CHOICES, type PetId } from './sharedHomeCore';
+
+export interface PetOption {
+  id: PetId;
+  label: string;
+  sprite: SpriteId;
+  /** Display height in room pixels; width follows the sprite's aspect ratio. */
+  height: number;
+}
+
+/** Selectable wandering companions. Every sprite natively faces left. */
+export const PET_OPTIONS: readonly PetOption[] = [
+  { id: 'hedgehog', label: 'Hedgehog', sprite: 'mossback_hedgehog', height: 120 },
+  { id: 'tortoise', label: 'Tortoise', sprite: 'terracotta_tortoise', height: 112 },
+  { id: 'frog', label: 'Sunhat frog', sprite: 'sunhat_garden_frog', height: 115 },
+];
+
+export const DEFAULT_PET_ID: PetId = PET_CHOICES.defaultId;
+
+/** The chosen pet companion, falling back to the hedgehog for unknown ids. */
+export function resolvePetOption(petId?: string): PetOption {
+  return (
+    PET_OPTIONS.find((p) => p.id === petId) ??
+    PET_OPTIONS.find((p) => p.id === DEFAULT_PET_ID) ??
+    PET_OPTIONS[0]
+  );
+}
 
 export type PetMode = 'idle' | 'walk' | 'happy';
 

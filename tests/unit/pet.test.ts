@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { createPet, PET, petTapped, stepPet, type PetState } from '../../src/game/pet';
+import {
+  createPet,
+  DEFAULT_PET_ID,
+  PET,
+  PET_OPTIONS,
+  petTapped,
+  resolvePetOption,
+  stepPet,
+  type PetState,
+} from '../../src/game/pet';
+import { PET_CHOICES } from '../../src/game/sharedHomeCore';
+import sprites from '../../src/game/sprites.json';
 
 const fixed = (v: number) => () => v;
 
@@ -40,5 +51,28 @@ describe('pet', () => {
     expect(s).toMatchObject({ mode: 'happy', x: 300, y: 700 });
     s = stepPet(s, PET.happySeconds);
     expect(s.mode).toBe('idle');
+  });
+});
+
+describe('pet companions', () => {
+  it('offers the hedgehog, tortoise, and sunhat frog with real sprites', () => {
+    expect(PET_OPTIONS.map((p) => [p.id, p.label, p.sprite, p.height])).toEqual([
+      ['hedgehog', 'Hedgehog', 'mossback_hedgehog', 120],
+      ['tortoise', 'Tortoise', 'terracotta_tortoise', 112],
+      ['frog', 'Sunhat frog', 'sunhat_garden_frog', 115],
+    ]);
+    for (const p of PET_OPTIONS) expect(sprites).toHaveProperty(p.sprite);
+  });
+
+  it('defaults to the hedgehog and resolves unknown ids to it', () => {
+    expect(DEFAULT_PET_ID).toBe('hedgehog');
+    expect(resolvePetOption().id).toBe('hedgehog');
+    expect(resolvePetOption('dragon').id).toBe('hedgehog');
+    expect(resolvePetOption('frog').sprite).toBe('sunhat_garden_frog');
+  });
+
+  it('stays in lockstep with the shared-save catalog', () => {
+    expect(PET_CHOICES.defaultId).toBe(DEFAULT_PET_ID);
+    expect([...PET_CHOICES.optionIds]).toEqual(PET_OPTIONS.map((p) => p.id));
   });
 });

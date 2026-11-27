@@ -26,18 +26,69 @@ const TARGET_INK = [49, 34, 16];
 // - wobble: organic hand-drawn contour irregularity (px at 2x room scale)
 // - uneven: bidirectional pen swelling/tapering + nib-tooth roughness (0..1)
 const SPRITE_SPECS = {
+  // Sofas (center sofa slot)
   cottage_lounge_sofa: { height: 240, inkBlend: 0.12, wobble: 0.5, uneven: 0.25 },
+  terracotta_lounge_sofa: { height: 240, inkBlend: 0.12, wobble: 0.5, uneven: 0.25 },
+  sage_lounge_sofa: { height: 240, inkBlend: 0.12, wobble: 0.5, uneven: 0.25 },
+  oat_cream_lounge_sofa: { height: 240, inkBlend: 0.12, wobble: 0.5, uneven: 0.25 },
+
+  // Coffee tables (center table slot)
   low_oak_coffee_table: { height: 160, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+  teal_coffee_table: { height: 160, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+  walnut_coffee_table: { height: 160, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+
+  // Rugs (center rug slot)
   braided_oval_rug: { height: 250, inkBlend: 0.12, wobble: 0.7, uneven: 0.3 },
+  sage_braided_rug: { height: 250, inkBlend: 0.12, wobble: 0.7, uneven: 0.3 },
+  plum_braided_rug: { height: 250, inkBlend: 0.12, wobble: 0.7, uneven: 0.3 },
+  woven_tassel_rug: { height: 245, inkBlend: 0.38, wobble: 1.5, uneven: 0.75 },
+
+  // Back-right alcove (bookshelf / reading nook slot)
   arched_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4, uneven: 0.2 },
+  sage_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4, uneven: 0.2 },
+  arched_window_seat: { height: 335, inkBlend: 0.12, wobble: 0.55, uneven: 0.3 },
+
+  // Floor lighting (lamp slot)
   standing_globe_floor_lamp: { height: 280, inkBlend: 0.85, wobble: 1.8, uneven: 0.85 },
+  pedestal_reading_lamp: { height: 248, inkBlend: 0.58, wobble: 1.7, uneven: 0.8 },
+  greenhouse_lantern: { height: 175, inkBlend: 0.65, wobble: 1.8, uneven: 0.85 },
+
+  // Left wall decor (pinboard slot)
   wall_pinboard_trio: { height: 175, inkBlend: 0.9, wobble: 1.7, uneven: 0.8 },
-  seed_drawer_cabinet: { height: 210, inkBlend: 0.8, wobble: 1.6, uneven: 0.75 },
-  tea_trolley: { height: 210, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+  botanical_framed_art: { height: 165, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
+  wall_floating_shelf: { height: 170, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
+
+  // Center wall decor (clock slot)
   wall_clock: { height: 145, inkBlend: 0.82, wobble: 1.7, uneven: 0.8 },
+  cottage_oval_mirror: { height: 165, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
+  macrame_wall_hanging: { height: 175, inkBlend: 0.45, wobble: 1.35, uneven: 0.65 },
+
+  // Back-left cabinet (cabinet slot)
+  seed_drawer_cabinet: { height: 210, inkBlend: 0.8, wobble: 1.6, uneven: 0.75 },
+  cottage_sideboard: { height: 215, inkBlend: 0.52, wobble: 1.4, uneven: 0.68 },
+  flowering_trellis: { height: 255, inkBlend: 0.45, wobble: 1.4, uneven: 0.65 },
+
+  // Right corner accent (trolley slot)
+  tea_trolley: { height: 210, inkBlend: 0.65, wobble: 2.1, uneven: 0.9 },
+  two_wheeled_herb_cart: { height: 215, inkBlend: 0.55, wobble: 1.8, uneven: 0.8 },
+  fireplace_basket_set: { height: 192, inkBlend: 0.5, wobble: 1.6, uneven: 0.75 },
+
+  // Front-left floor accent (cushion slot)
   patchwork_floor_cushion: { height: 105, inkBlend: 0.68, wobble: 2.35, uneven: 1.0 },
+  woven_pet_basket: { height: 118, inkBlend: 0.52, wobble: 1.8, uneven: 0.82 },
+  curved_orchard_stool: { height: 128, inkBlend: 0.62, wobble: 2.0, uneven: 0.85 },
+
+  // Left corner plant (tree slot)
   potted_calamondin_tree: { height: 240, inkBlend: 0.62, wobble: 1.5, uneven: 0.7 },
+  monstera_ceramic_pot: { height: 225, inkBlend: 0.5, wobble: 1.5, uneven: 0.7 },
+  raised_herb_bed: { height: 180, inkBlend: 0.55, wobble: 1.8, uneven: 0.8 },
+
+  // Wandering pets (pet slot)
   mossback_hedgehog: { height: 120, inkBlend: 0.58, wobble: 2.35, uneven: 1.0 },
+  terracotta_tortoise: { height: 112, inkBlend: 0.55, wobble: 2.2, uneven: 0.95 },
+  sunhat_garden_frog: { height: 115, inkBlend: 0.55, wobble: 2.2, uneven: 0.95 },
+
+  // Residents
   resident_her: { height: 275, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
   resident_her_badminton: { height: 275, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },
   resident_him: { height: 295, inkBlend: 0.45, wobble: 2.35, uneven: 1.0 },

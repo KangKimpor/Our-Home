@@ -1,26 +1,64 @@
 import { describe, expect, it } from 'vitest';
 import { getGameAssetUrls, preloadAllAssets } from '../../src/game/assets';
 import { CHARACTERS } from '../../src/game/characters';
-import { ITEMS, ROOM } from '../../src/game/layout';
+import { FURNITURE_SLOTS, ROOM } from '../../src/game/layout';
+import { PET_OPTIONS } from '../../src/game/pet';
 import sprites from '../../src/game/sprites.json';
 
 describe('asset preloader', () => {
-  it('lists the backdrop, all furniture, pet, character idle sprites, walk strips, and UI plaques', () => {
+  it('lists the backdrop, all furniture, pet, character idle sprites, walk strips, and hand-drawn UI art', () => {
     const urls = getGameAssetUrls();
     expect(urls.some((u) => u.startsWith(ROOM.background))).toBe(true);
 
     for (const spriteId of Object.keys(sprites)) {
       expect(urls.some((u) => u.includes(`/sprites/${spriteId}.png`))).toBe(true);
     }
-    for (const item of ITEMS) {
-      expect(urls.some((u) => u.includes(`/sprites/${item.sprite}.png`))).toBe(true);
+    // Every swappable furniture option and pet companion is decoded before the room appears,
+    // so swapping art in Decorate mode is instant.
+    for (const slot of FURNITURE_SLOTS) {
+      for (const option of slot.options) {
+        expect(
+          urls.some((u) => u.includes(`/sprites/${option.sprite}.png`)),
+          `${slot.id}/${option.id}`,
+        ).toBe(true);
+      }
+    }
+    for (const pet of PET_OPTIONS) {
+      expect(
+        urls.some((u) => u.includes(`/sprites/${pet.sprite}.png`)),
+        pet.id,
+      ).toBe(true);
+    }
+    for (const char of CHARACTERS) {
+      for (const outfit of char.outfits) {
+        expect(urls.some((u) => u.includes(`/sprites/${outfit.sprite}.png`))).toBe(true);
+        expect(urls.some((u) => u.includes(`/sprites/${outfit.walkSprite}.png`))).toBe(true);
+      }
     }
     for (const char of CHARACTERS) {
       expect(urls.some((u) => u.includes(`/sprites/${char.sprite}.png`))).toBe(true);
       expect(urls.some((u) => u.includes(`/sprites/${char.walkSprite}.png`))).toBe(true);
     }
-    // Includes 1 backdrop + all sprites.json entries + 4 hand-painted UI plaques.
-    expect(urls.length).toBe(1 + Object.keys(sprites).length + 4);
+    // Every hand-drawn UI piece (plaques, cards, tab pills, close button, check badge) is decoded too.
+    for (const ui of [
+      'plaque_title',
+      'plaque_button',
+      'plaque_secondary',
+      'plaque_note',
+      'card_option',
+      'card_option_selected',
+      'tab_pill',
+      'tab_pill_selected',
+      'button_close',
+      'badge_check',
+    ]) {
+      expect(
+        urls.some((u) => u.includes(`/${ui}.png`)),
+        ui,
+      ).toBe(true);
+    }
+    // Includes 1 backdrop + all sprites.json entries + 10 hand-painted UI assets.
+    expect(urls.length).toBe(1 + Object.keys(sprites).length + 10);
   });
 
   it('waits until every asset resolves and reports monotonic progress', async () => {

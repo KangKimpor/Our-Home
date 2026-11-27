@@ -23,7 +23,7 @@ export interface StageContext {
   toggleMode: () => void;
   /** Converts viewport client coordinates into logical 1950x900 room coordinates. */
   clientToRoom: (clientX: number, clientY: number) => { x: number; y: number };
-  /** Gently auto-pans the camera while dragging an item near the screen edges. */
+  /** Gently auto-pans the camera while dragging a character near the screen edges. */
   autoPanAt: (clientX: number, dt: number) => void;
 }
 
@@ -111,11 +111,14 @@ export function Stage({ children, overlay, onCameraMove }: Props) {
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
-    // Let interactive items, characters, pets, and HUD buttons handle single-pointer gestures.
+    // Characters, pets, and HUD controls handle their own gestures.
     const target = e.target as HTMLElement | null;
-    if (target?.closest('.item, .pet, .character, .hud-overlay')) return;
+    if (target?.closest('.pet, .character, .hud-overlay')) return;
 
-    e.currentTarget.setPointerCapture(e.pointerId);
+    // Fixed furniture never moves, so swipes that start on it pan the camera too. We skip
+    // pointer capture there so the item still receives its own pointerup to detect taps
+    // (touch pointers are implicitly captured by the item and keep bubbling up to us).
+    if (!target?.closest('.item')) e.currentTarget.setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     if (pointers.current.size === 2) {

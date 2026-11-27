@@ -1,21 +1,15 @@
 import { useCallback, useState } from 'react';
-import { CHARACTERS, loadOutfits, saveOutfits, type OutfitSelections } from './game/characters';
-import {
-  clearLayout,
-  DEFAULT_LAYOUT,
-  ITEMS,
-  loadLayout,
-  saveLayout,
-  type ItemDef,
-  type Layout,
-  type Pos,
-  ROOM,
-} from './game/layout';
+import { CHARACTERS } from './game/characters';
+import { FURNITURE_SLOTS, resolveSlotOption, ROOM, type SlotDef } from './game/layout';
+import type { SlotId } from './game/sharedHomeCore';
 import { versionedAssetUrl } from './game/version';
 import { Character } from './ui/Character';
+import { DecoratePanel, type DecorateTarget } from './ui/DecoratePanel';
 import { Furniture } from './ui/Furniture';
+import { OutfitPanel } from './ui/OutfitPanel';
 import { Pet } from './ui/Pet';
 import { Stage } from './ui/Stage';
+import { useSharedHome } from './ui/useSharedHome';
 
 const storage = typeof window !== 'undefined' ? window.localStorage : undefined;
 const HER_DEF = CHARACTERS.find((c) => c.id === 'her')!;
@@ -36,6 +30,27 @@ function OutfitIcon() {
         stroke="currentColor"
         strokeWidth="2.1"
         strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function DecorateIcon() {
+  return (
+    <svg className="hud-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M19.6 3.6c.7.6.6 1.6-.1 2.3l-6.4 7.2-2.4-2.2 6.3-7.2c.7-.7 1.8-.8 2.6-.1Z"
+        fill="#d8aa5f"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.2 11.6l2.5 2.3c.2 2.6-1.4 5.4-4.6 6.3-1.9.5-3.6.3-4.7-.3 1.3-.6 1.7-1.6 1.9-3 .4-2.7 2.3-5.2 4.9-5.3Z"
+        fill="#c87f62"
+        stroke="currentColor"
+        strokeWidth="2"
         strokeLinejoin="round"
       />
     </svg>
@@ -95,10 +110,10 @@ function FrameIcon({ compact }: { compact: boolean }) {
 }
 
 export function App() {
-  const [layout, setLayout] = useState<Layout>(() => loadLayout(storage));
-  const [outfits, setOutfits] = useState<OutfitSelections>(() => loadOutfits(storage));
+  const { home, update, reset } = useSharedHome(storage);
   const [outfitMenuOpen, setOutfitMenuOpen] = useState(false);
-  const [lampOn, setLampOn] = useState(true);
+  const [decorateOpen, setDecorateOpen] = useState(false);
+  const [decorateTarget, setDecorateTarget] = useState<DecorateTarget>('sofa');
   const [showHint, setShowHint] = useState(true);
 
   const hideHint = useCallback(() => {
@@ -106,36 +121,50 @@ export function App() {
     setOutfitMenuOpen(false);
   }, []);
 
-  const selectHerOutfit = useCallback((outfitId: string) => {
+  const selectHerOutfit = useCallback(
+    (outfitId: string) => {
+      setShowHint(false);
+      update({ outfits: { her: outfitId } });
+    },
+    [update],
+  );
+
+  const onFurnitureTap = useCallback(
+    (slot: SlotDef) => {
+      setShowHint(false);
+      if (decorateOpen) {
+        setDecorateTarget(slot.id);
+        return;
+      }
+      if (slot.tap === 'lamp') update({ lampOn: !home.lampOn });
+    },
+    [decorateOpen, home.lampOn, update],
+  );
+
+  const onPetTap = useCallback(() => {
     setShowHint(false);
-    setOutfits((prev) => {
-      const next: OutfitSelections = { ...prev, her: outfitId };
-      saveOutfits(storage, next);
-      return next;
-    });
-  }, []);
+    if (decorateOpen) setDecorateTarget('pet');
+  }, [decorateOpen]);
 
-  const onMove = useCallback((id: string, pos: Pos) => {
+  const pickSlotOption = useCallback(
+    (slotId: SlotId, optionId: string) => update({ slots: { [slotId]: optionId } }),
+    [update],
+  );
+  const pickPet = useCallback((petId: string) => update({ pet: petId }), [update]);
+
+  const toggleDecorate = () => {
     setShowHint(false);
-    setLayout((l) => ({ ...l, [id]: pos }));
-  }, []);
-
-  const onDrop = useCallback(() => {
-    setLayout((l) => {
-      saveLayout(storage, l);
-      return l;
-    });
-  }, []);
-
-  const onTap = useCallback((def: ItemDef) => {
-    setShowHint(false);
-    if (def.tap === 'lamp') setLampOn((on) => !on);
-  }, []);
-
-  const reset = () => {
-    clearLayout(storage);
-    setLayout({ ...DEFAULT_LAYOUT });
+    setOutfitMenuOpen(false);
+    setDecorateOpen((open) => !open);
   };
+
+  const toggleOutfits = () => {
+    setShowHint(false);
+    setDecorateOpen(false);
+    setOutfitMenuOpen((open) => !open);
+  };
+
+  const panelOpen = decorateOpen || outfitMenuOpen;
 
   return (
     <Stage
@@ -146,14 +175,22 @@ export function App() {
             <div className="hud-actions">
               <button
                 type="button"
+                className={`hud-button hud-button--secondary${decorateOpen ? ' is-open' : ''}`}
+                data-testid="decorate-toggle"
+                aria-expanded={decorateOpen}
+                aria-controls="decorate-panel"
+                onClick={toggleDecorate}
+              >
+                <DecorateIcon />
+                <span>Decorate</span>
+              </button>
+              <button
+                type="button"
                 className={`hud-button hud-button--secondary${outfitMenuOpen ? ' is-open' : ''}`}
                 data-testid="outfit-toggle"
                 aria-expanded={outfitMenuOpen}
                 aria-controls="outfit-picker"
-                onClick={() => {
-                  setShowHint(false);
-                  setOutfitMenuOpen((open) => !open);
-                }}
+                onClick={toggleOutfits}
               >
                 <OutfitIcon />
                 <span>Outfits</span>
@@ -161,79 +198,74 @@ export function App() {
               {stage.canToggleMode && (
                 <button
                   type="button"
-                  className="hud-button hud-button--secondary"
+                  className="hud-button hud-button--secondary hud-button--frame"
+                  data-testid="frame-toggle"
                   onClick={stage.toggleMode}
                   aria-label={stage.mode === 'fill' ? 'Fit whole room' : 'Fill screen'}
                 >
                   <FrameIcon compact={stage.mode === 'fill'} />
-                  <span>{stage.mode === 'fill' ? 'Fit room' : 'Fill view'}</span>
+                  <span className="hud-button-label">{stage.mode === 'fill' ? 'Fit room' : 'Fill view'}</span>
                 </button>
               )}
-              <button type="button" className="hud-button" onClick={reset}>
+              <button type="button" className="hud-button" data-testid="reset-room" onClick={reset}>
                 <ResetIcon />
                 <span>Reset room</span>
               </button>
             </div>
           </header>
           {outfitMenuOpen && (
-            <section
-              id="outfit-picker"
-              className="outfit-popover"
-              data-testid="outfit-picker"
-              aria-label="Choose outfit"
-            >
-              <div className="outfit-grid">
-                {HER_DEF.outfits.map((outfit) => {
-                  const selected = outfits.her === outfit.id;
-                  return (
-                    <button
-                      key={outfit.id}
-                      type="button"
-                      className={`outfit-option${selected ? ' is-selected' : ''}`}
-                      data-testid={`outfit-option-${outfit.id}`}
-                      aria-pressed={selected}
-                      onClick={() => selectHerOutfit(outfit.id)}
-                    >
-                      <span className="outfit-thumb">
-                        <img
-                          src={versionedAssetUrl(`/sprites/${outfit.sprite}.png`)}
-                          alt=""
-                          draggable={false}
-                        />
-                      </span>
-                      <span className="outfit-label">{outfit.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+            <OutfitPanel
+              character={HER_DEF}
+              selectedId={home.outfits.her}
+              onPick={selectHerOutfit}
+              onClose={() => setOutfitMenuOpen(false)}
+            />
           )}
-          <p className={`hint${showHint ? '' : ' is-hidden'}`}>
+          {decorateOpen && (
+            <DecoratePanel
+              active={decorateTarget}
+              slots={home.slots}
+              petId={home.pet}
+              onSelectTarget={setDecorateTarget}
+              onPickSlotOption={pickSlotOption}
+              onPickPet={pickPet}
+              onClose={() => setDecorateOpen(false)}
+            />
+          )}
+          <p
+            className={`hint${showHint && !panelOpen ? '' : ' is-hidden'}`}
+            aria-hidden={!showHint || panelOpen}
+          >
             {stage.canPan
-              ? 'Swipe background to pan · drag & tap to play'
-              : 'Drag furniture or characters · tap things to play'}
+              ? 'Swipe to look around · tap Decorate to swap furniture'
+              : 'Tap Decorate to swap furniture · drag us around · tap things to play'}
           </p>
         </>
       )}
     >
       {(stage) => (
-        <div className={`room${lampOn ? '' : ' is-dim'}`}>
+        <div className={`room${home.lampOn ? '' : ' is-dim'}${decorateOpen ? ' is-decorating' : ''}`}>
           <img className="room-bg" src={versionedAssetUrl(ROOM.background)} alt="" draggable={false} />
-          {ITEMS.map((def) => (
+          {FURNITURE_SLOTS.map((slot) => (
             <Furniture
-              key={def.id}
-              def={def}
-              pos={layout[def.id]}
-              stage={stage}
-              lampOn={lampOn}
-              onMove={onMove}
-              onDrop={onDrop}
-              onTap={onTap}
+              key={slot.id}
+              slot={slot}
+              option={resolveSlotOption(slot, home.slots[slot.id])}
+              lampOn={home.lampOn}
+              decorating={decorateOpen}
+              selected={decorateOpen && decorateTarget === slot.id}
+              onTap={onFurnitureTap}
             />
           ))}
-          <Pet />
+          <Pet petId={home.pet} onTap={onPetTap} />
           {CHARACTERS.map((def) => (
-            <Character key={def.id} def={def} outfitId={outfits[def.id]} stage={stage} onInteract={hideHint} />
+            <Character
+              key={def.id}
+              def={def}
+              outfitId={home.outfits[def.id]}
+              stage={stage}
+              onInteract={hideHint}
+            />
           ))}
           <div className="room-dim" />
         </div>

@@ -19,5 +19,5 @@
     "noUncheckedIndexedAccess": false,
     "types": ["vite/client"]
   },
-  "include": ["src", "tests", "vite.config.ts", "playwright.config.ts"]
+  "include": ["src", "api", "tests", "vite.config.ts", "playwright.config.ts"]
 }

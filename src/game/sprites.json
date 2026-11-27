@@ -3,7 +3,27 @@
     "w": 369,
     "h": 240
   },
+  "terracotta_lounge_sofa": {
+    "w": 368,
+    "h": 240
+  },
+  "sage_lounge_sofa": {
+    "w": 369,
+    "h": 240
+  },
+  "oat_cream_lounge_sofa": {
+    "w": 368,
+    "h": 240
+  },
   "low_oak_coffee_table": {
+    "w": 213,
+    "h": 160
+  },
+  "teal_coffee_table": {
+    "w": 215,
+    "h": 160
+  },
+  "walnut_coffee_table": {
     "w": 213,
     "h": 160
   },
@@ -11,41 +31,125 @@
     "w": 515,
     "h": 250
   },
+  "sage_braided_rug": {
+    "w": 514,
+    "h": 250
+  },
+  "plum_braided_rug": {
+    "w": 514,
+    "h": 250
+  },
+  "woven_tassel_rug": {
+    "w": 590,
+    "h": 245
+  },
   "arched_display_bookshelf": {
     "w": 275,
     "h": 340
+  },
+  "sage_display_bookshelf": {
+    "w": 274,
+    "h": 340
+  },
+  "arched_window_seat": {
+    "w": 256,
+    "h": 335
   },
   "standing_globe_floor_lamp": {
     "w": 154,
     "h": 280
   },
+  "pedestal_reading_lamp": {
+    "w": 114,
+    "h": 248
+  },
+  "greenhouse_lantern": {
+    "w": 121,
+    "h": 175
+  },
   "wall_pinboard_trio": {
     "w": 167,
+    "h": 175
+  },
+  "botanical_framed_art": {
+    "w": 220,
+    "h": 165
+  },
+  "wall_floating_shelf": {
+    "w": 252,
+    "h": 170
+  },
+  "wall_clock": {
+    "w": 117,
+    "h": 145
+  },
+  "cottage_oval_mirror": {
+    "w": 151,
+    "h": 165
+  },
+  "macrame_wall_hanging": {
+    "w": 139,
     "h": 175
   },
   "seed_drawer_cabinet": {
     "w": 210,
     "h": 210
   },
+  "cottage_sideboard": {
+    "w": 230,
+    "h": 215
+  },
+  "flowering_trellis": {
+    "w": 195,
+    "h": 255
+  },
   "tea_trolley": {
     "w": 264,
     "h": 210
   },
-  "wall_clock": {
-    "w": 117,
-    "h": 145
+  "two_wheeled_herb_cart": {
+    "w": 222,
+    "h": 215
+  },
+  "fireplace_basket_set": {
+    "w": 224,
+    "h": 192
   },
   "patchwork_floor_cushion": {
     "w": 148,
     "h": 105
   },
+  "woven_pet_basket": {
+    "w": 184,
+    "h": 118
+  },
+  "curved_orchard_stool": {
+    "w": 137,
+    "h": 128
+  },
   "potted_calamondin_tree": {
     "w": 157,
     "h": 240
   },
+  "monstera_ceramic_pot": {
+    "w": 218,
+    "h": 225
+  },
+  "raised_herb_bed": {
+    "w": 200,
+    "h": 180
+  },
   "mossback_hedgehog": {
     "w": 117,
     "h": 120
+  },
+  "terracotta_tortoise": {
+    "w": 119,
+    "h": 112
+  },
+  "sunhat_garden_frog": {
+    "w": 95,
+    "h": 115
   },
   "resident_her": {
     "w": 124,

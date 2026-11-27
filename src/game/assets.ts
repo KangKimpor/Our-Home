@@ -1,7 +1,13 @@
+import badgeCheckUrl from '../assets/ui/badge_check.png';
+import buttonCloseUrl from '../assets/ui/button_close.png';
+import cardOptionUrl from '../assets/ui/card_option.png';
+import cardOptionSelectedUrl from '../assets/ui/card_option_selected.png';
 import plaqueButtonUrl from '../assets/ui/plaque_button.png';
 import plaqueNoteUrl from '../assets/ui/plaque_note.png';
 import plaqueSecondaryUrl from '../assets/ui/plaque_secondary.png';
 import plaqueTitleUrl from '../assets/ui/plaque_title.png';
+import tabPillUrl from '../assets/ui/tab_pill.png';
+import tabPillSelectedUrl from '../assets/ui/tab_pill_selected.png';
 import { ROOM } from './layout';
 import sprites from './sprites.json';
 import { versionedAssetUrl } from './version';
@@ -30,6 +36,12 @@ const UI_ASSET_URLS: readonly string[] = [
   plaqueButtonUrl,
   plaqueSecondaryUrl,
   plaqueNoteUrl,
+  cardOptionUrl,
+  cardOptionSelectedUrl,
+  tabPillUrl,
+  tabPillSelectedUrl,
+  buttonCloseUrl,
+  badgeCheckUrl,
 ];
 
 /**
@@ -40,7 +52,8 @@ const decodedImageCache = new Map<string, HTMLImageElement>();
 
 /**
  * Returns every visual asset required before revealing the game:
- * the room backdrop, every sprite & animation strip in sprites.json, and all UI plaques.
+ * the room backdrop, every sprite & animation strip in sprites.json, and all hand-drawn UI art
+ * (plaques, option cards, tab pills, close button, and check badge).
  */
 export function getGameAssetUrls(): string[] {
   const urls = new Set<string>();

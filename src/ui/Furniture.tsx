@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { clampPosition, depthOf, itemSize, type ItemDef, type Pos } from '../game/layout';
+import { useEffect, useRef } from 'react';
+import { depthOf, itemSize, type SlotDef, type SlotOption } from '../game/layout';
 import { versionedAssetUrl } from '../game/version';
-import type { StageContext } from './Stage';
 
 const MOUSE_TAP_SLOP = 6;
 const TOUCH_TAP_SLOP = 10;
@@ -20,130 +19,148 @@ const SWING: Keyframe[] = [
   { transform: 'rotate(3deg)' },
   { transform: 'rotate(0deg)' },
 ];
+/** Played when a slot's art is swapped: a cozy squash-and-pop. */
+const POP_FLOOR: Keyframe[] = [
+  { transform: 'scale(0.82, 0.7)', opacity: 0.4 },
+  { transform: 'scale(1.08, 1.1)', opacity: 1, offset: 0.45 },
+  { transform: 'scale(0.97, 0.97)', offset: 0.75 },
+  { transform: 'scale(1, 1)', opacity: 1 },
+];
+const POP_WALL: Keyframe[] = [
+  { transform: 'scale(0.85) rotate(-6deg)', opacity: 0.4 },
+  { transform: 'scale(1.06) rotate(4deg)', opacity: 1, offset: 0.5 },
+  { transform: 'scale(1) rotate(-2deg)', offset: 0.78 },
+  { transform: 'scale(1) rotate(0deg)', opacity: 1 },
+];
+const EASE = 'cubic-bezier(.3,.7,.4,1)';
 
 interface Props {
-  def: ItemDef;
-  pos: Pos;
-  stage: StageContext;
+  slot: SlotDef;
+  option: SlotOption;
   lampOn: boolean;
-  onMove: (id: string, pos: Pos) => void;
-  onDrop: (id: string) => void;
-  onTap: (def: ItemDef) => void;
+  /** Decorate mode: tapping selects the slot instead of using it. */
+  decorating: boolean;
+  selected: boolean;
+  onTap: (slot: SlotDef) => void;
 }
 
-export function Furniture({ def, pos, stage, lampOn, onMove, onDrop, onTap }: Props) {
-  const { w, h } = itemSize(def);
+/**
+ * A furniture piece anchored at its fixed slot. It never moves: a tap plays a
+ * small animation, while a swipe that starts on it is left to the Stage so
+ * portrait phones keep panning the camera smoothly.
+ */
+export function Furniture({ slot, option, lampOn, decorating, selected, onTap }: Props) {
+  const { w, h } = itemSize(option);
   const artRef = useRef<HTMLDivElement>(null);
-  const drag = useRef<{
-    id: number;
-    sx: number;
-    sy: number;
-    lastClientX: number;
-    lastClientY: number;
-    offsetX: number;
-    offsetY: number;
-    slop: number;
-    moved: boolean;
-  } | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const press = useRef<{ id: number; sx: number; sy: number; slop: number; moved: boolean } | null>(null);
+  const shownOption = useRef(option.id);
 
-  // Smoothly auto-pan the camera when dragging an item near screen edges on portrait phones/iPad.
+  const play = (frames: Keyframe[], duration: number) => {
+    artRef.current?.animate?.(frames, { duration, easing: EASE });
+  };
+
+  // Swapping the art pops it in so the change feels tactile.
   useEffect(() => {
-    if (!dragging || !stage.canPan) return;
-    let raf = 0;
-    let last = performance.now();
-    const tick = (now: number) => {
-      const d = drag.current;
-      if (d?.moved) {
-        const dt = Math.min(0.1, (now - last) / 1000);
-        last = now;
-        stage.autoPanAt(d.lastClientX, dt);
-        const pt = stage.clientToRoom(d.lastClientX, d.lastClientY);
-        onMove(def.id, clampPosition(def, { x: pt.x + d.offsetX, y: pt.y + d.offsetY }));
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [def, dragging, onMove, stage]);
+    if (shownOption.current === option.id) return;
+    shownOption.current = option.id;
+    artRef.current?.animate?.(slot.mount === 'wall' ? POP_WALL : POP_FLOOR, { duration: 520, easing: EASE });
+  }, [option.id, slot.mount]);
 
+  const activate = () => {
+    if (slot.tap === 'swing') play(SWING, 700);
+    else play(BOUNCE, 420);
+    onTap(slot);
+  };
+
+  // No stopPropagation and no pointer capture: the Stage still sees the gesture and pans.
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
-    if (drag.current) return; // ignore secondary touch fingers
-    e.stopPropagation();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    const pt = stage.clientToRoom(e.clientX, e.clientY);
-    drag.current = {
+    const prev = press.current;
+    if (prev && prev.id !== e.pointerId) {
+      prev.moved = true; // a second finger means pinch, never a tap
+      return;
+    }
+    const current = {
       id: e.pointerId,
       sx: e.clientX,
       sy: e.clientY,
-      lastClientX: e.clientX,
-      lastClientY: e.clientY,
-      offsetX: pos.x - pt.x,
-      offsetY: pos.y - pt.y,
       slop: e.pointerType === 'touch' ? TOUCH_TAP_SLOP : MOUSE_TAP_SLOP,
       moved: false,
     };
+    press.current = current;
+
+    // Without pointer capture, a press released off this item never reaches it. Forget it then,
+    // so a stale press can't swallow the next tap. (Runs after our own pointerup handler.)
+    const forget = (ev: PointerEvent) => {
+      if (ev.pointerId !== current.id) return;
+      if (press.current === current) press.current = null;
+      window.removeEventListener('pointerup', forget);
+      window.removeEventListener('pointercancel', forget);
+    };
+    window.addEventListener('pointerup', forget);
+    window.addEventListener('pointercancel', forget);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    const d = drag.current;
-    if (!d || d.id !== e.pointerId) return;
-    d.lastClientX = e.clientX;
-    d.lastClientY = e.clientY;
-    const dx = e.clientX - d.sx;
-    const dy = e.clientY - d.sy;
-    if (!d.moved && Math.hypot(dx, dy) < d.slop) return;
-    if (!d.moved) {
-      d.moved = true;
-      setDragging(true);
-    }
-    const pt = stage.clientToRoom(e.clientX, e.clientY);
-    onMove(def.id, clampPosition(def, { x: pt.x + d.offsetX, y: pt.y + d.offsetY }));
+    const p = press.current;
+    if (!p || p.id !== e.pointerId || p.moved) return;
+    if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) >= p.slop) p.moved = true;
   };
 
   const endPress = (e: React.PointerEvent, cancelled: boolean) => {
-    const d = drag.current;
-    if (!d || d.id !== e.pointerId) return;
-    drag.current = null;
-    setDragging(false);
-    if (d.moved) onDrop(def.id);
-    else if (!cancelled) {
-      play(def.tap === 'swing' ? SWING : BOUNCE, def.tap === 'swing' ? 700 : 420);
-      onTap(def);
-    }
+    const p = press.current;
+    if (!p || p.id !== e.pointerId) return;
+    press.current = null;
+    const travelled = p.moved || Math.hypot(e.clientX - p.sx, e.clientY - p.sy) >= p.slop;
+    if (!cancelled && !travelled) activate();
   };
 
-  const play = (frames: Keyframe[], duration: number) => {
-    artRef.current?.animate(frames, { duration, easing: 'cubic-bezier(.3,.7,.4,1)' });
-  };
+  const classes = [
+    'item',
+    `item--${slot.mount}`,
+    decorating ? 'is-decorating' : '',
+    selected ? 'is-selected-slot' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div
-      className={`item item--${def.mount}${dragging ? ' is-dragging' : ''}`}
-      data-item={def.id}
+      className={classes}
+      data-item={slot.id}
+      data-option={option.id}
+      role={decorating ? 'button' : undefined}
+      tabIndex={decorating ? 0 : undefined}
+      aria-label={decorating ? `${slot.label}: ${option.label}` : undefined}
+      aria-pressed={decorating ? selected : undefined}
       style={{
-        left: pos.x - w / 2,
-        top: pos.y - h,
+        left: slot.pos.x - w / 2,
+        top: slot.pos.y - h,
         width: w,
         height: h,
-        zIndex: dragging ? 5000 : depthOf(def.mount, pos.y),
+        zIndex: depthOf(slot.mount, slot.pos.y),
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={(e) => endPress(e, false)}
       onPointerCancel={(e) => endPress(e, true)}
+      onKeyDown={(e) => {
+        if (!decorating || (e.key !== 'Enter' && e.key !== ' ')) return;
+        e.preventDefault();
+        activate();
+      }}
     >
-      {def.mount === 'floor' && <div className="contact-shadow" />}
-      {def.glow && (
+      {slot.mount === 'floor' && <div className="contact-shadow" />}
+      {option.glow && (
         <div
           className={`lamp-glow${lampOn ? ' is-on' : ''}`}
-          style={{ left: `${def.glow.x}%`, top: `${def.glow.y}%` }}
+          style={{ left: `${option.glow.x}%`, top: `${option.glow.y}%` }}
         />
       )}
-      <div ref={artRef} className={`item-art item-art--${def.tap}`}>
-        <img src={versionedAssetUrl(`/sprites/${def.sprite}.png`)} alt="" draggable={false} />
+      <div ref={artRef} className={`item-art item-art--${slot.tap}`}>
+        <img src={versionedAssetUrl(`/sprites/${option.sprite}.png`)} alt="" draggable={false} />
       </div>
+      {decorating && <span className="slot-ring" aria-hidden="true" />}
     </div>
   );
 }
