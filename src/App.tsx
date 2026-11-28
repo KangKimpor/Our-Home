@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { CHARACTERS } from './game/characters';
-import { FURNITURE_SLOTS, resolveSlotOption, ROOM, type SlotDef } from './game/layout';
+import { isMovableSlotId, occupantAtSpot, resolvePlacementMove } from './game/homeState';
+import {
+  FURNITURE_SLOTS,
+  resolveSlotOption,
+  resolveSlotPosition,
+  resolveSlotSpot,
+  ROOM,
+  SLOT_BY_ID,
+  type SlotDef,
+} from './game/layout';
 import { characterControl, roleLabel, type EmoteId, type PlayerRole } from './game/multiplayer';
 import type { SlotId } from './game/sharedHomeCore';
 import { versionedAssetUrl } from './game/version';
@@ -61,28 +70,6 @@ function DecorateIcon() {
         fill="#c87f62"
         stroke="currentColor"
         strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ResetIcon() {
-  return (
-    <svg className="hud-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M6.4 9.2A6.8 6.8 0 1 1 6.2 15.2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      <path
-        d="M4.8 5.4l1.2 4.2 4.3-.9"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
@@ -172,7 +159,7 @@ function FrameIcon({ compact }: { compact: boolean }) {
 export function App() {
   const live = useMultiplayer(storage);
   const { role, presence, bus, send, partnersKey, setRole } = live;
-  const { home, update, reset, adoptExternal } = useSharedHome(storage, {
+  const { home, update, adoptExternal } = useSharedHome(storage, {
     onLocalChange: (state) => send({ type: 'home_state', state }),
   });
   const [panel, setPanel] = useState<HudPanel>(null);
@@ -246,8 +233,9 @@ export function App() {
       }
       send({ type: 'item_tap', slotId: slot.id });
       if (slot.tap === 'lamp') update({ lampOn: !home.lampOn });
+      else if (slot.tap === 'tv') update({ tvOn: !home.tvOn });
     },
-    [decorateOpen, home.lampOn, send, update],
+    [decorateOpen, home.lampOn, home.tvOn, send, update],
   );
 
   const onPetTap = useCallback(() => {
@@ -274,6 +262,13 @@ export function App() {
   const pickSlotOption = useCallback(
     (slotId: SlotId, optionId: string) => update({ slots: { [slotId]: optionId } }),
     [update],
+  );
+  const moveSlot = useCallback(
+    (slotId: SlotId, spotId: string) => {
+      const delta = resolvePlacementMove(home.placements, slotId, spotId);
+      if (Object.keys(delta).length > 0) update({ placements: delta });
+    },
+    [home.placements, update],
   );
   const pickPet = useCallback((petId: string) => update({ pet: petId }), [update]);
 
@@ -382,10 +377,6 @@ export function App() {
                   <span className="hud-button-label">{stage.mode === 'fill' ? 'Fit room' : 'Fill view'}</span>
                 </button>
               )}
-              <button type="button" className="hud-button" data-testid="reset-room" onClick={reset}>
-                <ResetIcon />
-                <span>Reset room</span>
-              </button>
             </div>
           </header>
           {panel === 'player' && (
@@ -411,9 +402,11 @@ export function App() {
             <DecoratePanel
               active={decorateTarget}
               slots={home.slots}
+              placements={home.placements}
               petId={home.pet}
               onSelectTarget={setDecorateTarget}
               onPickSlotOption={pickSlotOption}
+              onMoveSlot={moveSlot}
               onPickPet={pickPet}
               onClose={() => setPanel(null)}
             />
@@ -436,21 +429,63 @@ export function App() {
         </>
       )}
     >
-      {(stage) => (
-        <div className={`room${home.lampOn ? '' : ' is-dim'}${decorateOpen ? ' is-decorating' : ''}`}>
-          <img className="room-bg" src={versionedAssetUrl(ROOM.background)} alt="" draggable={false} />
-          {FURNITURE_SLOTS.map((slot) => (
-            <Furniture
-              key={slot.id}
-              slot={slot}
-              option={resolveSlotOption(slot, home.slots[slot.id])}
-              lampOn={home.lampOn}
-              decorating={decorateOpen}
-              selected={decorateOpen && decorateTarget === slot.id}
-              onTap={onFurnitureTap}
-              pulse={itemPulses[slot.id]}
-            />
-          ))}
+      {(stage) => {
+        const activeSlot = decorateTarget !== 'pet' ? SLOT_BY_ID[decorateTarget] : null;
+        const activeSpotId =
+          activeSlot && isMovableSlotId(activeSlot.id)
+            ? resolveSlotSpot(activeSlot, home.placements[activeSlot.id])?.id
+            : undefined;
+        return (
+          <div className={`room${home.lampOn ? '' : ' is-dim'}${decorateOpen ? ' is-decorating' : ''}`}>
+            <img className="room-bg" src={versionedAssetUrl(ROOM.background)} alt="" draggable={false} />
+            {FURNITURE_SLOTS.map((slot) => {
+              const spotKey = isMovableSlotId(slot.id) ? home.placements[slot.id] : undefined;
+              const spot = resolveSlotSpot(slot, spotKey);
+              return (
+                <Furniture
+                  key={slot.id}
+                  slot={slot}
+                  option={resolveSlotOption(slot, home.slots[slot.id])}
+                  pos={resolveSlotPosition(slot, spotKey)}
+                  spotId={spot?.id}
+                  lampOn={home.lampOn}
+                  tvOn={home.tvOn}
+                  decorating={decorateOpen}
+                  selected={decorateOpen && decorateTarget === slot.id}
+                  onTap={onFurnitureTap}
+                  pulse={itemPulses[slot.id]}
+                />
+              );
+            })}
+            {decorateOpen &&
+              activeSlot?.spots &&
+              activeSlot.spots
+                .filter((spot) => spot.id !== activeSpotId)
+                .map((spot) => {
+                  const occupant = isMovableSlotId(activeSlot.id)
+                    ? occupantAtSpot(home.placements, activeSlot.id, spot.id)
+                    : null;
+                  const markerTop =
+                    spot.pos.y - (activeSlot.mount === 'wall' ? 75 : activeSlot.mount === 'rug' ? 45 : 85);
+                  return (
+                    <button
+                      key={spot.id}
+                      type="button"
+                      className="place-marker"
+                      data-testid={`room-spot-${activeSlot.id}-${spot.id}`}
+                      aria-label={`Move ${activeSlot.label} to ${spot.label}${occupant ? ` (swaps with ${SLOT_BY_ID[occupant].label})` : ''}`}
+                      style={{ left: spot.pos.x, top: markerTop }}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveSlot(activeSlot.id, spot.id);
+                      }}
+                    >
+                      <span>{spot.label}</span>
+                      {occupant && <span aria-hidden="true"> ⇄</span>}
+                    </button>
+                  );
+                })}
           {walkTarget && (
             <div
               key={walkTarget.key}
@@ -484,7 +519,8 @@ export function App() {
           ))}
           <div className="room-dim" />
         </div>
-      )}
+        );
+      }}
     </Stage>
   );
 }

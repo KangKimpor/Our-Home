@@ -13,7 +13,6 @@ interface StorageLike {
 export interface SharedHome {
   home: SharedHomeState;
   update: (patch: SharedHomePatch) => void;
-  reset: () => void;
   /** Adopts a room state the partner pushed over the live channel (when newer and no local write is in flight). */
   adoptExternal: (state: SharedHomeState) => boolean;
 }
@@ -63,10 +62,6 @@ export function useSharedHome(storage: StorageLike | undefined, options: SharedH
     },
     [sync],
   );
-  const reset = useCallback(() => {
-    sync.reset();
-    onLocalChange.current?.(sync.getState());
-  }, [sync]);
 
-  return { home, update, reset, adoptExternal: sync.adoptExternal };
+  return { home, update, adoptExternal: sync.adoptExternal };
 }

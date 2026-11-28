@@ -18,9 +18,11 @@ let ns = 'default';
 
 interface ApiState {
   slots: Record<string, string>;
+  placements: Record<string, string>;
   pet: string;
   outfits: { her: string; him: string };
   lampOn: boolean;
+  tvOn: boolean;
   revision: number;
 }
 
@@ -116,9 +118,10 @@ test(
     // Portrait phone/tablet: a hand-painted card covers the room, which stays mounted but inert.
     await expect(gate).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Turn sideways to come in' })).toBeVisible();
-    await expect(page.locator('.room img')).toHaveCount(15);
+    await expect(page.locator('.room img')).toHaveCount(22);
     expect(await page.locator('.orientation-shell').evaluate((el) => (el as HTMLElement).inert)).toBe(true);
-    await expect(page.getByRole('button', { name: 'Reset room' })).toHaveCount(0); // hidden from a11y tree while gated
+    await expect(page.getByRole('button', { name: 'Decorate' })).toHaveCount(0); // hidden from a11y tree while gated
+    await expect(page.getByTestId('reset-room')).toHaveCount(0);
 
     // Rotating to landscape reveals the playable room instantly, with nothing reloaded.
     await page.setViewportSize({ width: vp.height, height: vp.width });
@@ -134,9 +137,9 @@ test(
   },
 );
 
-test('renders the living room sprites and touch-friendly HUD', async ({ page }) => {
+test('renders the living room sprites and touch-friendly HUD without Reset room', async ({ page }) => {
   const images = page.locator('.room img');
-  await expect(images).toHaveCount(15); // backdrop + 11 furniture + pet + 2 characters
+  await expect(images).toHaveCount(22); // backdrop + 18 slots + pet + 2 characters
   await expect
     .poll(() => images.evaluateAll((imgs) => imgs.every((i) => (i as HTMLImageElement).naturalWidth > 0)))
     .toBe(true);
@@ -144,13 +147,14 @@ test('renders the living room sprites and touch-friendly HUD', async ({ page }) 
   await expect(page.getByTestId('character-her')).toBeVisible();
   await expect(page.getByTestId('character-him')).toBeVisible();
   await expect(page.getByTestId('rotate-gate')).toHaveCount(0);
+  await expect(page.getByTestId('reset-room')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Reset room' })).toHaveCount(0);
 
   // Every HUD control stays >= 44px tall and fully inside the viewport on every iPhone/iPad/desktop size.
   const buttons = [
     page.getByTestId('player-toggle'),
     page.getByTestId('decorate-toggle'),
     page.getByTestId('outfit-toggle'),
-    page.getByRole('button', { name: 'Reset room' }),
   ];
   if ((await page.getByTestId('frame-toggle').count()) > 0) buttons.push(page.getByTestId('frame-toggle'));
   await expect(page.locator('.hud-button')).toHaveCount(buttons.length);
@@ -168,7 +172,7 @@ test('renders the living room sprites and touch-friendly HUD', async ({ page }) 
   await expect(page.getByTestId('emote-toggle')).toBeVisible();
   await expect(page.locator('.hud-button')).toHaveCount(buttons.length + 1);
   await expectHudFitsOneRow(page);
-  await expect(page.locator('.room img')).toHaveCount(15);
+  await expect(page.locator('.room img')).toHaveCount(22);
 });
 
 /** Every `.hud-button` is >= 44px tall, inside the viewport, in one tidy row, and never overlapping. */
@@ -234,14 +238,14 @@ test('Fill view pans the room, even when the swipe starts on fixed furniture', a
   expect(stageFit.width).toBeLessThanOrEqual(vp.width + 2);
 });
 
-test('fixed furniture: slots stay anchored while Decorate swaps art, persists, and resets', async ({
+test('furniture: Decorate swaps art, moves placements across spots, toggles TV, and persists', async ({
   page,
   request,
 }) => {
   // Dragging furniture never moves it.
   const table = page.locator('[data-item="coffee-table"]');
   const tableAnchor = await anchorOf(table);
-  expect(tableAnchor).toEqual({ x: 895, y: 830 });
+  expect(tableAnchor).toEqual({ x: 895, y: 836 });
   const box = (await table.boundingBox())!;
   const cx = box.x + box.width / 2;
   const cy = box.y + box.height * 0.6;
@@ -253,36 +257,77 @@ test('fixed furniture: slots stay anchored while Decorate swaps art, persists, a
 
   await openDecorate(page);
   await expect(page.locator('.hint')).toHaveClass(/is-hidden/);
-  await expect(page.locator('.room img')).toHaveCount(15); // the drawer lives outside the room
+  await expect(page.locator('.room img')).toHaveCount(22); // the drawer lives outside the room
   for (const id of [
     'sofa',
     'rug',
     'coffee-table',
+    'reading-nook',
+    'tv',
     'bookshelf',
-    'lamp',
     'cabinet',
+    'armchair',
+    'side-table',
+    'lamp',
     'trolley',
     'tree',
     'cushion',
+    'accent-rug',
+    'hanging-decor',
+    'garland',
     'pinboard',
     'clock',
     'pet',
   ]) {
     await expect(page.getByTestId(`slot-tab-${id}`)).toHaveCount(1);
   }
-  await expect(page.locator('.item.is-decorating')).toHaveCount(11);
+  await expect(page.locator('.item.is-decorating')).toHaveCount(18);
 
   const sofa = page.locator('[data-item="sofa"]');
   await pick(page, 'sofa', 'sage');
   await expect(sofa).toHaveAttribute('data-option', 'sage');
   await expect(sofa.locator('img')).toHaveAttribute('src', /sage_lounge_sofa/);
   await expect(sofa).toHaveClass(/is-selected-slot/);
-  expect(await anchorOf(sofa)).toEqual({ x: 890, y: 722 });
+  expect(await anchorOf(sofa)).toEqual({ x: 895, y: 735 });
 
   const rug = page.locator('[data-item="rug"]');
   await pick(page, 'rug', 'tassel');
   await expect(rug.locator('img')).toHaveAttribute('src', /woven_tassel_rug/);
-  expect(await anchorOf(rug)).toEqual({ x: 890, y: 852 });
+  expect(await anchorOf(rug)).toEqual({ x: 895, y: 858 });
+
+  // Reading nook under the new window.
+  await pick(page, 'reading-nook', 'reading-chair');
+  const nook = page.locator('[data-item="reading-nook"]');
+  await expect(nook).toHaveAttribute('data-option', 'reading-chair');
+  await expect(nook.locator('img')).toHaveAttribute('src', /reading_nook_armchair/);
+  expect(await anchorOf(nook)).toEqual({ x: 1435, y: 588 });
+
+  // Backdrop decorations: hanging plant defaults to terracotta-plant, swap to ivy-basket, plus garland.
+  const hanging = page.locator('[data-item="hanging-decor"]');
+  await expect(hanging).toHaveAttribute('data-option', 'terracotta-plant');
+  await pick(page, 'hanging-decor', 'ivy-basket');
+  await expect(hanging.locator('img')).toHaveAttribute('src', /hanging_ivy_basket/);
+  await pick(page, 'garland', 'lights');
+  await expect(page.locator('[data-item="garland"] img')).toHaveAttribute('src', /ceiling_fairy_lights/);
+
+  // TV swapping + multi-spot placement via Decorate drawer (swapping cleanly with cabinet).
+  await pick(page, 'tv', 'retro-tv');
+  const tv = page.locator('[data-item="tv"]');
+  const cabinet = page.locator('[data-item="cabinet"]');
+  await expect(tv).toHaveAttribute('data-spot', 'mid-left');
+  await expect(cabinet).toHaveAttribute('data-spot', 'left-wall');
+  await page.getByTestId('slot-place-tv-left-wall').click();
+  await expect(tv).toHaveAttribute('data-spot', 'left-wall');
+  await expect(cabinet).toHaveAttribute('data-spot', 'mid-left');
+  expect(await anchorOf(tv)).toEqual({ x: 365, y: 582 });
+  expect(await anchorOf(cabinet)).toEqual({ x: 615, y: 582 });
+
+  // Multi-spot placement via in-room marker.
+  await page.getByTestId('slot-tab-armchair').click();
+  await page.getByTestId('room-spot-armchair-fireside-front').click();
+  const armchair = page.locator('[data-item="armchair"]');
+  await expect(armchair).toHaveAttribute('data-spot', 'fireside-front');
+  expect(await anchorOf(armchair)).toEqual({ x: 1790, y: 836 });
 
   // Tapping a piece in the room selects its slot in the drawer.
   await tap(table);
@@ -302,14 +347,14 @@ test('fixed furniture: slots stay anchored while Decorate swaps art, persists, a
   await expect(lamp).toHaveAttribute('data-option', 'lantern');
   await expect(lamp.locator('img')).toHaveAttribute('src', /greenhouse_lantern/);
   await expect(lamp.locator('.lamp-glow')).toHaveCount(1);
-  expect(await anchorOf(lamp)).toEqual({ x: 1200, y: 730 });
+  expect(await anchorOf(lamp)).toEqual({ x: 1150, y: 738 });
 
   // Wall decor.
-  await pick(page, 'clock', 'mirror');
-  await expect(page.locator('[data-item="clock"] img')).toHaveAttribute('src', /cottage_oval_mirror/);
-  await pick(page, 'pinboard', 'painting');
-  await expect(page.locator('[data-item="pinboard"] img')).toHaveAttribute('src', /botanical_framed_art/);
-  expect(await anchorOf(page.locator('[data-item="pinboard"]'))).toEqual({ x: 480, y: 345 });
+  await pick(page, 'clock', 'gallery');
+  await expect(page.locator('[data-item="clock"] img')).toHaveAttribute('src', /cottage_gallery_frames/);
+  await pick(page, 'pinboard', 'tapestry');
+  await expect(page.locator('[data-item="pinboard"] img')).toHaveAttribute('src', /botanical_wall_tapestry/);
+  expect(await anchorOf(page.locator('[data-item="pinboard"]'))).toEqual({ x: 455, y: 335 });
 
   // Pet companion (also selectable by tapping the pet).
   await page.getByTestId('slot-tab-sofa').click();
@@ -318,12 +363,15 @@ test('fixed furniture: slots stay anchored while Decorate swaps art, persists, a
   await page.getByTestId('slot-option-pet-frog').click();
   await expect(page.getByTestId('pet')).toHaveAttribute('data-pet', 'frog');
   await expect(page.getByTestId('pet').locator('img')).toHaveAttribute('src', /sunhat_garden_frog/);
-  await expect(page.locator('.room img')).toHaveCount(15);
+  await expect(page.locator('.room img')).toHaveCount(22);
 
-  // Close the drawer.
+  // Close the drawer and tap the TV to toggle it off.
   await page.getByTestId('decorate-close').click();
   await expect(page.getByTestId('decorate-panel')).toHaveCount(0);
   await expect(page.locator('.item.is-decorating')).toHaveCount(0);
+  await expect(tv).toHaveAttribute('data-tv-on', 'true');
+  await tap(tv);
+  await expect(tv).toHaveAttribute('data-tv-on', 'false');
 
   // Saved to the one shared save, and survives a reload.
   await expect
@@ -333,31 +381,48 @@ test('fixed furniture: slots stay anchored while Decorate swaps art, persists, a
         s.slots.sofa,
         s.slots.rug,
         s.slots['coffee-table'],
+        s.slots['reading-nook'],
+        s.slots.tv,
+        s.slots['hanging-decor'],
+        s.slots.garland,
         s.slots.lamp,
         s.slots.clock,
         s.slots.pinboard,
+        s.placements.tv,
+        s.placements.cabinet,
+        s.placements.armchair,
+        s.tvOn,
         s.pet,
       ];
     })
-    .toEqual(['sage', 'tassel', 'walnut', 'lantern', 'mirror', 'painting', 'frog']);
+    .toEqual([
+      'sage',
+      'tassel',
+      'walnut',
+      'reading-chair',
+      'retro-tv',
+      'ivy-basket',
+      'lights',
+      'lantern',
+      'gallery',
+      'tapestry',
+      'left-wall',
+      'mid-left',
+      'fireside-front',
+      false,
+      'frog',
+    ]);
   await page.reload();
   await expect(page.locator('[data-item="sofa"]')).toHaveAttribute('data-option', 'sage');
-  await expect(page.locator('[data-item="rug"]')).toHaveAttribute('data-option', 'tassel');
-  await expect(page.locator('[data-item="coffee-table"]')).toHaveAttribute('data-option', 'walnut');
-  await expect(page.locator('[data-item="lamp"]')).toHaveAttribute('data-option', 'lantern');
-  await expect(page.locator('[data-item="clock"]')).toHaveAttribute('data-option', 'mirror');
+  await expect(page.locator('[data-item="reading-nook"]')).toHaveAttribute('data-option', 'reading-chair');
+  await expect(page.locator('[data-item="tv"]')).toHaveAttribute('data-option', 'retro-tv');
+  await expect(page.locator('[data-item="tv"]')).toHaveAttribute('data-spot', 'left-wall');
+  await expect(page.locator('[data-item="tv"]')).toHaveAttribute('data-tv-on', 'false');
+  await expect(page.locator('[data-item="cabinet"]')).toHaveAttribute('data-spot', 'mid-left');
+  await expect(page.locator('[data-item="armchair"]')).toHaveAttribute('data-spot', 'fireside-front');
   await expect(page.getByTestId('pet')).toHaveAttribute('data-pet', 'frog');
-  expect(await anchorOf(page.locator('[data-item="sofa"]'))).toEqual({ x: 890, y: 722 });
-
-  // Reset room restores every default for everyone.
-  await page.getByRole('button', { name: 'Reset room' }).click();
-  await expect(page.locator('[data-item="sofa"]')).toHaveAttribute('data-option', 'teal');
-  await expect(page.locator('[data-item="rug"]')).toHaveAttribute('data-option', 'terracotta');
-  await expect(page.locator('[data-item="coffee-table"]')).toHaveAttribute('data-option', 'oak');
-  await expect(page.locator('[data-item="lamp"]')).toHaveAttribute('data-option', 'globe');
-  await expect(page.locator('[data-item="clock"]')).toHaveAttribute('data-option', 'clock');
-  await expect(page.getByTestId('pet')).toHaveAttribute('data-pet', 'hedgehog');
-  await expect.poll(async () => (await serverState(request)).slots.sofa).toBe('teal');
+  expect(await anchorOf(page.locator('[data-item="sofa"]'))).toEqual({ x: 895, y: 735 });
+  expect(await anchorOf(page.locator('[data-item="tv"]'))).toEqual({ x: 365, y: 582 });
 });
 
 test('one shared save across two independent players', async ({ page, browser, request }, testInfo) => {
@@ -432,7 +497,9 @@ test('Decorate and Outfits panels never overlap', async ({ page }) => {
   await expect(page.getByTestId('decorate-panel')).toBeVisible();
   await expect(page.getByTestId('outfit-picker')).toHaveCount(0);
 
-  // The drawer fits inside the viewport and leaves the room visible above it.
+  // Switch to a movable slot (shows placement bar) and ensure the drawer fits inside the viewport.
+  await page.getByTestId('slot-tab-tv').click();
+  await expect(page.getByTestId('decorate-placements')).toBeVisible();
   const vp = page.viewportSize()!;
   const panel = (await page.getByTestId('decorate-panel').boundingBox())!;
   expect(panel.x).toBeGreaterThanOrEqual(0);
@@ -497,7 +564,7 @@ test('Player and Emote pickers are hand-drawn popovers that never overlap the ot
   const bubble = page.getByTestId('emote-bubble-him');
   await expect(bubble).toHaveAttribute('data-emote', 'love');
   expect(await bubble.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain('bubble_emote');
-  await expect(page.locator('.room img')).toHaveCount(15);
+  await expect(page.locator('.room img')).toHaveCount(22);
   await expect(bubble).toHaveCount(0, { timeout: 6000 });
 
   // The role survives a reload.
@@ -520,6 +587,8 @@ async function openFloorSpot(page: Page) {
     [1620, 870],
     [1740, 780],
     [1580, 860],
+    [1260, 860],
+    [1450, 865],
   ]) {
     const pt = await roomToClient(page, x, y);
     const blocked = await page.evaluate(
@@ -606,7 +675,7 @@ test('live 2-player: presence, walking, emotes, pokes, and decorating sync insta
     await A.getByTestId('emote-option-shuttle').click();
     for (const p of [A, B]) {
       await expect(p.getByTestId('emote-bubble-him')).toHaveAttribute('data-emote', 'shuttle');
-      await expect(p.locator('.room img')).toHaveCount(15);
+      await expect(p.locator('.room img')).toHaveCount(22);
     }
 
     // 6. B taps Him: he hops happily on A's screen too.
@@ -614,11 +683,18 @@ test('live 2-player: presence, walking, emotes, pokes, and decorating sync insta
     await expect(A.getByTestId('character-him')).toHaveAttribute('data-mode', 'happy');
     await expect(A.getByTestId('character-him').locator('.character-heart')).toHaveCount(1);
 
-    // 7. B decorates: A's sofa swaps live (no reload, no 15s poll).
+    // 7. B decorates & moves furniture: A's room updates live (no reload, no 15s poll).
     await openDecorate(B);
     await pick(B, 'sofa', 'sage');
     await expect(A.locator('[data-item="sofa"]')).toHaveAttribute('data-option', 'sage', { timeout: 3000 });
     await expect(A.locator('[data-item="sofa"] img')).toHaveAttribute('src', /sage_lounge_sofa/);
+
+    await B.getByTestId('slot-tab-tv').click();
+    await B.getByTestId('slot-place-tv-left-wall').click();
+    await expect(A.locator('[data-item="tv"]')).toHaveAttribute('data-spot', 'left-wall', { timeout: 3000 });
+    await expect(A.locator('[data-item="cabinet"]')).toHaveAttribute('data-spot', 'mid-left', {
+      timeout: 3000,
+    });
 
     // 8. B leaves: A is home alone again and Her resumes strolling on her own.
     await ctxB.close();

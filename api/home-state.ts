@@ -3,7 +3,6 @@
  *
  *   GET  /api/home-state                     -> { state, backend }
  *   PUT  /api/home-state  { patch }          -> field-level merge, revision + 1
- *   PUT  /api/home-state  { reset: true }    -> restore defaults, revision + 1
  *
  * Zero external dependencies: standard Node http types + built-in fetch.
  * Persistence is auto-detected in priority order:
@@ -255,7 +254,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       }
       const request = parseHomeStateRequest(body);
       if (request.kind === 'invalid') {
-        return send(res, 400, { error: 'Expected { patch } or { reset: true }' });
+        return send(res, 400, { error: 'Expected { patch }' });
       }
       if (!store) return send(res, 200, { state: null, backend: 'unconfigured' satisfies Backend });
 

@@ -12,13 +12,15 @@ export {
   applySharedHomePatch,
   createDefaultHomeState,
   isEmptyPatch,
+  isMovableSlotId,
   isSameHomeChoices,
+  occupantAtSpot,
   patchFromState,
-  createResetHomeState,
+  resolvePlacementMove,
   sanitizeSharedHomePatch,
   sanitizeSharedHomeState,
 } from './sharedHomeCore';
-export type { SharedHomePatch, SharedHomeState } from './sharedHomeCore';
+export type { MovableSlotId, PlacementMap, SharedHomePatch, SharedHomeState } from './sharedHomeCore';
 
 /** Local mirror of the one shared save, so first paint is instant and offline play works. */
 export const STORAGE_KEY = SHARED_SAVE_KEY;
@@ -106,9 +108,4 @@ export function fetchSharedHomeState(signal?: AbortSignal): Promise<SharedHomeRe
 /** `PUT /api/home-state` with a field-level patch. */
 export function patchSharedHomeState(patch: SharedHomePatch): Promise<SharedHomeResponse | null> {
   return requestHomeState({ method: 'PUT', body: JSON.stringify({ patch }) });
-}
-
-/** `PUT /api/home-state` restoring the shared room to its defaults. */
-export function resetSharedHomeState(): Promise<SharedHomeResponse | null> {
-  return requestHomeState({ method: 'PUT', body: JSON.stringify({ reset: true }) });
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { depthOf, itemSize, type SlotDef, type SlotOption } from '../game/layout';
+import { depthOf, itemSize, type Pos, type SlotDef, type SlotOption } from '../game/layout';
 import { versionedAssetUrl } from '../game/version';
 
 const MOUSE_TAP_SLOP = 6;
@@ -19,7 +19,7 @@ const SWING: Keyframe[] = [
   { transform: 'rotate(3deg)' },
   { transform: 'rotate(0deg)' },
 ];
-/** Played when a slot's art is swapped: a cozy squash-and-pop. */
+/** Played when a slot's art is swapped or moved: a cozy squash-and-pop. */
 const POP_FLOOR: Keyframe[] = [
   { transform: 'scale(0.82, 0.7)', opacity: 0.4 },
   { transform: 'scale(1.08, 1.1)', opacity: 1, offset: 0.45 },
@@ -37,7 +37,10 @@ const EASE = 'cubic-bezier(.3,.7,.4,1)';
 interface Props {
   slot: SlotDef;
   option: SlotOption;
+  pos: Pos;
+  spotId?: string;
   lampOn: boolean;
+  tvOn: boolean;
   /** Decorate mode: tapping selects the slot instead of using it. */
   decorating: boolean;
   selected: boolean;
@@ -47,26 +50,38 @@ interface Props {
 }
 
 /**
- * A furniture piece anchored at its fixed slot. It never moves: a tap plays a
- * small animation, while a swipe that starts on it is left to the Stage so
- * portrait phones keep panning the camera smoothly.
+ * A furniture or backdrop decor piece anchored at its current slot spot. A tap plays
+ * a small animation (or toggles lamps / TVs), while a swipe that starts on it is left
+ * to the Stage so portrait phones keep panning the camera smoothly.
  */
-export function Furniture({ slot, option, lampOn, decorating, selected, onTap, pulse = 0 }: Props) {
+export function Furniture({
+  slot,
+  option,
+  pos,
+  spotId,
+  lampOn,
+  tvOn,
+  decorating,
+  selected,
+  onTap,
+  pulse = 0,
+}: Props) {
   const { w, h } = itemSize(option);
   const artRef = useRef<HTMLDivElement>(null);
   const press = useRef<{ id: number; sx: number; sy: number; slop: number; moved: boolean } | null>(null);
-  const shownOption = useRef(option.id);
+  const shownKey = useRef(`${option.id}:${spotId ?? ''}`);
 
   const play = (frames: Keyframe[], duration: number) => {
     artRef.current?.animate?.(frames, { duration, easing: EASE });
   };
 
-  // Swapping the art pops it in so the change feels tactile.
+  // Swapping the art or moving to another spot pops it in so the change feels tactile.
   useEffect(() => {
-    if (shownOption.current === option.id) return;
-    shownOption.current = option.id;
+    const key = `${option.id}:${spotId ?? ''}`;
+    if (shownKey.current === key) return;
+    shownKey.current = key;
     artRef.current?.animate?.(slot.mount === 'wall' ? POP_WALL : POP_FLOOR, { duration: 520, easing: EASE });
-  }, [option.id, slot.mount]);
+  }, [option.id, spotId, slot.mount]);
 
   const playTap = () => {
     if (slot.tap === 'swing') play(SWING, 700);
@@ -144,17 +159,19 @@ export function Furniture({ slot, option, lampOn, decorating, selected, onTap, p
       className={classes}
       data-item={slot.id}
       data-option={option.id}
+      data-spot={spotId}
+      data-tv-on={option.screenGlow ? (tvOn ? 'true' : 'false') : undefined}
       data-pulse={pulse || undefined}
       role={decorating ? 'button' : undefined}
       tabIndex={decorating ? 0 : undefined}
       aria-label={decorating ? `${slot.label}: ${option.label}` : undefined}
       aria-pressed={decorating ? selected : undefined}
       style={{
-        left: slot.pos.x - w / 2,
-        top: slot.pos.y - h,
+        left: pos.x - w / 2,
+        top: pos.y - h,
         width: w,
         height: h,
-        zIndex: depthOf(slot.mount, slot.pos.y),
+        zIndex: depthOf(slot.mount, pos.y),
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -175,6 +192,17 @@ export function Furniture({ slot, option, lampOn, decorating, selected, onTap, p
       )}
       <div ref={artRef} className={`item-art item-art--${slot.tap}`}>
         <img src={versionedAssetUrl(`/sprites/${option.sprite}.png`)} alt="" draggable={false} />
+        {option.screenGlow && (
+          <div
+            className={`tv-glow${tvOn ? ' is-on' : ''}`}
+            style={{
+              left: `${option.screenGlow.x}%`,
+              top: `${option.screenGlow.y}%`,
+              width: `${option.screenGlow.w}%`,
+              height: `${option.screenGlow.h}%`,
+            }}
+          />
+        )}
       </div>
       {decorating && <span className="slot-ring" aria-hidden="true" />}
     </div>

@@ -43,25 +43,66 @@ const SPRITE_SPECS = {
   plum_braided_rug: { height: 250, inkBlend: 0.12, wobble: 0.7, uneven: 0.3 },
   woven_tassel_rug: { height: 245, inkBlend: 0.38, wobble: 1.5, uneven: 0.75 },
 
-  // Back-right alcove (bookshelf / reading nook slot)
+  // Back-right alcove (bookshelf slot)
   arched_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4, uneven: 0.2 },
   sage_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4, uneven: 0.2 },
+  walnut_display_bookshelf: { height: 340, inkBlend: 0.0, wobble: 0.4, uneven: 0.2 },
   arched_window_seat: { height: 335, inkBlend: 0.12, wobble: 0.55, uneven: 0.3 },
+
+  // Under-window reading nooks (reading-nook slot)
+  window_bench_nook: { height: 198, inkBlend: 0.45, wobble: 1.3, uneven: 0.65 },
+  reading_nook_armchair: { height: 205, inkBlend: 0.45, wobble: 1.3, uneven: 0.65 },
+  daybed_reading_nook: { height: 150, inkBlend: 0.45, wobble: 1.3, uneven: 0.65 },
+  rattan_reading_chair: { height: 210, inkBlend: 0.48, wobble: 1.35, uneven: 0.68 },
+
+  // Cottage TVs (tv slot)
+  cottage_tv_console: { height: 220, inkBlend: 0.48, wobble: 1.35, uneven: 0.68 },
+  retro_wood_tv: { height: 215, inkBlend: 0.48, wobble: 1.35, uneven: 0.68 },
+  teal_media_tv: { height: 220, inkBlend: 0.48, wobble: 1.35, uneven: 0.68 },
+
+  // Cozy armchairs (armchair slot)
+  sage_wingback_chair: { height: 205, inkBlend: 0.45, wobble: 1.35, uneven: 0.65 },
+  cottage_rocking_chair: { height: 208, inkBlend: 0.5, wobble: 1.4, uneven: 0.7 },
+  plum_tub_armchair: { height: 195, inkBlend: 0.45, wobble: 1.35, uneven: 0.65 },
+
+  // Side & record tables (side-table slot)
+  oak_end_table: { height: 155, inkBlend: 0.62, wobble: 1.85, uneven: 0.85 },
+  vinyl_record_stand: { height: 162, inkBlend: 0.6, wobble: 1.8, uneven: 0.82 },
+  candle_side_table: { height: 158, inkBlend: 0.62, wobble: 1.85, uneven: 0.85 },
 
   // Floor lighting (lamp slot)
   standing_globe_floor_lamp: { height: 280, inkBlend: 0.85, wobble: 1.8, uneven: 0.85 },
   pedestal_reading_lamp: { height: 248, inkBlend: 0.58, wobble: 1.7, uneven: 0.8 },
   greenhouse_lantern: { height: 175, inkBlend: 0.65, wobble: 1.8, uneven: 0.85 },
 
+  // Accent rugs (accent-rug slot)
+  hearth_braided_mat: { height: 136, inkBlend: 0.35, wobble: 1.2, uneven: 0.55 },
+  oat_fleece_rug: { height: 140, inkBlend: 0.35, wobble: 1.2, uneven: 0.55 },
+  botanical_runner_rug: { height: 145, inkBlend: 0.38, wobble: 1.25, uneven: 0.58 },
+
+  // Hanging ceiling-beam decor (hanging-decor slot)
+  hanging_terracotta_plant: { height: 185, inkBlend: 0.52, wobble: 1.4, uneven: 0.7 },
+  hanging_ivy_basket: { height: 190, inkBlend: 0.52, wobble: 1.45, uneven: 0.7 },
+  hanging_cottage_lantern: { height: 185, inkBlend: 0.55, wobble: 1.45, uneven: 0.72 },
+  hanging_dried_herbs: { height: 185, inkBlend: 0.52, wobble: 1.45, uneven: 0.7 },
+
+  // Ceiling-beam garlands (garland slot)
+  ceiling_vine_garland: { height: 115, inkBlend: 0.58, wobble: 1.35, uneven: 0.68 },
+  ceiling_fairy_lights: { height: 118, inkBlend: 0.58, wobble: 1.35, uneven: 0.68 },
+  ceiling_fabric_bunting: { height: 115, inkBlend: 0.58, wobble: 1.35, uneven: 0.68 },
+  ceiling_flower_swag: { height: 118, inkBlend: 0.58, wobble: 1.35, uneven: 0.68 },
+
   // Left wall decor (pinboard slot)
   wall_pinboard_trio: { height: 175, inkBlend: 0.9, wobble: 1.7, uneven: 0.8 },
   botanical_framed_art: { height: 165, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
   wall_floating_shelf: { height: 170, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
+  botanical_wall_tapestry: { height: 175, inkBlend: 0.52, wobble: 1.4, uneven: 0.68 },
 
   // Center wall decor (clock slot)
   wall_clock: { height: 145, inkBlend: 0.82, wobble: 1.7, uneven: 0.8 },
   cottage_oval_mirror: { height: 165, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
   macrame_wall_hanging: { height: 175, inkBlend: 0.45, wobble: 1.35, uneven: 0.65 },
+  cottage_gallery_frames: { height: 165, inkBlend: 0.55, wobble: 1.45, uneven: 0.7 },
 
   // Back-left cabinet (cabinet slot)
   seed_drawer_cabinet: { height: 210, inkBlend: 0.8, wobble: 1.6, uneven: 0.75 },
@@ -77,6 +118,7 @@ const SPRITE_SPECS = {
   patchwork_floor_cushion: { height: 105, inkBlend: 0.68, wobble: 2.35, uneven: 1.0 },
   woven_pet_basket: { height: 118, inkBlend: 0.52, wobble: 1.8, uneven: 0.82 },
   curved_orchard_stool: { height: 128, inkBlend: 0.62, wobble: 2.0, uneven: 0.85 },
+  knit_ottoman: { height: 112, inkBlend: 0.62, wobble: 2.0, uneven: 0.85 },
 
   // Left corner plant (tree slot)
   potted_calamondin_tree: { height: 240, inkBlend: 0.62, wobble: 1.5, uneven: 0.7 },

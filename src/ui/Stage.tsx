@@ -123,9 +123,9 @@ export function Stage({ children, overlay, onCameraMove, onRoomTap }: Props) {
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
-    // Characters, pets, and HUD controls handle their own gestures.
+    // Characters, pets, HUD controls, and decorate placement markers handle their own gestures.
     const target = e.target as HTMLElement | null;
-    if (target?.closest('.pet, .character, .hud-overlay')) return;
+    if (target?.closest('.pet, .character, .hud-overlay, .place-marker')) return;
 
     // Fixed furniture never moves, so swipes that start on it pan the camera too. We skip
     // pointer capture there so the item still receives its own pointerup to detect taps

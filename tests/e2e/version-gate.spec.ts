@@ -16,7 +16,7 @@ test('serves version.json with no-store and cache-busts static art assets', asyn
   const srcs = await page
     .locator('.room img')
     .evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src') ?? ''));
-  expect(srcs.length).toBe(15);
+  expect(srcs.length).toBe(22);
   for (const src of srcs) {
     expect(src).toContain(`?v=${encodeURIComponent(manifest.version)}`);
   }

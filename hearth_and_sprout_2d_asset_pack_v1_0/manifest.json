@@ -1,10 +1,10 @@
 {
-  "pack_name": "Hearth & Sprout \u2014 Original Home, Living Room & Garden 2D Game Asset Pack",
+  "pack_name": "Hearth & Sprout — Original Home, Living Room & Garden 2D Game Asset Pack",
   "version": "6.0.0",
   "style_pass": "hand_drawn_sofa_benchmark_unified_v6_0",
   "creation_date": "2026-11-25",
   "clean_room_status": "original_from_scratch_no_third_party_reference_assets_included",
-  "total_sprites": 60,
+  "total_sprites": 88,
   "total_backgrounds": 1,
   "total_previews": 1,
   "category_counts": {
@@ -12,7 +12,7 @@
     "garden": 7,
     "characters": 18,
     "small_props": 5,
-    "living_room": 24
+    "living_room": 52
   },
   "style_guide": "STYLE_GUIDE.md",
   "qa_report": "QA_REPORT.md",
@@ -57,7 +57,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
       "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
       "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
@@ -329,7 +329,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
       "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
       "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
@@ -465,7 +465,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (User ChatGPT anchor / Antigravity AI Assistant; not human-authored)",
       "tool": "Antigravity image-generator (hand-drawn refinement benchmarked to approved cottage_lounge_sofa.png) + Python (OpenCV/Pillow) white-bg alpha extraction, edge decontamination & 512x512 normalization",
       "source": "ai_refined_hand_drawn_sofa_benchmark_v6",
@@ -975,7 +975,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1043,7 +1043,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1077,7 +1077,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1111,7 +1111,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1145,7 +1145,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1315,7 +1315,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1349,7 +1349,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1383,7 +1383,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1417,7 +1417,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -1451,7 +1451,7 @@
         }
       },
       "scale_tier": "large",
-      "recommended_world_scale": 1.0,
+      "recommended_world_scale": 1,
       "creator": "AI-assisted creation (Antigravity image-generator using docs/art-style benchmarks)",
       "tool": "Antigravity image-generator + scripts/slice-sheet.py --align-strip + scripts/import-sprites.mjs",
       "source": "our_home_art_style_embedded",
@@ -2074,6 +2074,958 @@
       "usage_terms_notes": "Hearth & Sprout living room customization option harmonized to #312210 ink and matte botanical gouache palette.",
       "file_size_bytes": 122183,
       "sha256": "c7ec4db262a5cf69e0a666a1c5364ecacf966eb33a114d494e0e958a7061bda4"
+    },
+    {
+      "id": "hanging_terracotta_plant",
+      "filename": "sprites/living_room/hanging_terracotta_plant.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout hanging terracotta plant living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.807,
+        "padding_px": {
+          "top": 32,
+          "right": 121,
+          "bottom": 32,
+          "left": 120
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 142876,
+      "sha256": "0b7d0f49eb3efea764e825ebe70d20528a4bcf373929c0a49107c356d4a8d961"
+    },
+    {
+      "id": "hanging_ivy_basket",
+      "filename": "sprites/living_room/hanging_ivy_basket.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout hanging ivy basket living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7608,
+        "padding_px": {
+          "top": 32,
+          "right": 87,
+          "bottom": 32,
+          "left": 86
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 205795,
+      "sha256": "fafcbf80ab0f8b16e7ba5793a805159c453d2017869393f2d37a776445444dba"
+    },
+    {
+      "id": "hanging_cottage_lantern",
+      "filename": "sprites/living_room/hanging_cottage_lantern.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout hanging cottage lantern living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.8531,
+        "padding_px": {
+          "top": 32,
+          "right": 158,
+          "bottom": 32,
+          "left": 158
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 120325,
+      "sha256": "9649d55050e036ca6089ac9e2dc2e1c84c0777a4671daa5ddd0e678675e05ba9"
+    },
+    {
+      "id": "hanging_dried_herbs",
+      "filename": "sprites/living_room/hanging_dried_herbs.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout hanging dried herbs living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.8052,
+        "padding_px": {
+          "top": 32,
+          "right": 110,
+          "bottom": 32,
+          "left": 110
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 171412,
+      "sha256": "dc78cce4bb3e36a5c310ccb0ff82f842adafcc1834697eaccb3eaa1c25b25544"
+    },
+    {
+      "id": "window_bench_nook",
+      "filename": "sprites/living_room/window_bench_nook.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout window bench nook living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6453,
+        "padding_px": {
+          "top": 120,
+          "right": 32,
+          "bottom": 121,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 223647,
+      "sha256": "a9eb11329b32d70e43151c0299a6eafb196f93c15e07dc153e9e3b160fb1629d"
+    },
+    {
+      "id": "reading_nook_armchair",
+      "filename": "sprites/living_room/reading_nook_armchair.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout reading nook armchair living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5749,
+        "padding_px": {
+          "top": 57,
+          "right": 32,
+          "bottom": 57,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 237355,
+      "sha256": "58ec316ad1363f6a02f681a781c4b15bd85f5d21bb7974c2b911f4ff7ff6766d"
+    },
+    {
+      "id": "daybed_reading_nook",
+      "filename": "sprites/living_room/daybed_reading_nook.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout daybed reading nook living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7279,
+        "padding_px": {
+          "top": 160,
+          "right": 32,
+          "bottom": 161,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 162577,
+      "sha256": "b2af9e11a9bc4c6d569542668bf8cbfb7aff7c7a67d33b2e946c0eeb6c089f9d"
+    },
+    {
+      "id": "rattan_reading_chair",
+      "filename": "sprites/living_room/rattan_reading_chair.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout rattan reading chair living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6177,
+        "padding_px": {
+          "top": 32,
+          "right": 62,
+          "bottom": 32,
+          "left": 61
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 289629,
+      "sha256": "a31a380bcb5c3d793886c0eb20ae31c3c892602049a14b30b87ca0ab5a32dea5"
+    },
+    {
+      "id": "cottage_tv_console",
+      "filename": "sprites/living_room/cottage_tv_console.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout cottage tv console living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.4989,
+        "padding_px": {
+          "top": 65,
+          "right": 32,
+          "bottom": 66,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 328180,
+      "sha256": "b60e0d09ef32cd86243d6310f091e74762ac8163b8e5d03032e20b0f5ad34b8e"
+    },
+    {
+      "id": "retro_wood_tv",
+      "filename": "sprites/living_room/retro_wood_tv.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout retro wood tv living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5946,
+        "padding_px": {
+          "top": 32,
+          "right": 68,
+          "bottom": 32,
+          "left": 67
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 272993,
+      "sha256": "31d18bef3410c35e4d7e622b18423b88db9f3d5b04426d2d1b754c795fe41b37"
+    },
+    {
+      "id": "teal_media_tv",
+      "filename": "sprites/living_room/teal_media_tv.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout teal media tv living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5491,
+        "padding_px": {
+          "top": 81,
+          "right": 32,
+          "bottom": 82,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 251370,
+      "sha256": "53f5c11b9f401e2b3bdd46b10ec027082a8e0dc7b52cc4357a72e81f2fa941c0"
+    },
+    {
+      "id": "walnut_display_bookshelf",
+      "filename": "sprites/living_room/walnut_display_bookshelf.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout walnut display bookshelf living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.4477,
+        "padding_px": {
+          "top": 32,
+          "right": 86,
+          "bottom": 32,
+          "left": 86
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 371823,
+      "sha256": "e41d8bb7e64a973c097ea95c7fd78616b99b23e3f8112e8ea18a3810570990b8"
+    },
+    {
+      "id": "sage_wingback_chair",
+      "filename": "sprites/living_room/sage_wingback_chair.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout sage wingback chair living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5108,
+        "padding_px": {
+          "top": 32,
+          "right": 57,
+          "bottom": 32,
+          "left": 56
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 321252,
+      "sha256": "ecea3dfc1a0f465fa42e134b0ab48a07894ba250f7e64efbec42200a89840cde"
+    },
+    {
+      "id": "cottage_rocking_chair",
+      "filename": "sprites/living_room/cottage_rocking_chair.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout cottage rocking chair living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6758,
+        "padding_px": {
+          "top": 32,
+          "right": 95,
+          "bottom": 32,
+          "left": 95
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 256409,
+      "sha256": "b6904646b1537bc4c053cae3a6c544a364e00a56820f15d28ad0a2fe3c3cdf74"
+    },
+    {
+      "id": "plum_tub_armchair",
+      "filename": "sprites/living_room/plum_tub_armchair.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout plum tub armchair living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.44,
+        "padding_px": {
+          "top": 32,
+          "right": 34,
+          "bottom": 32,
+          "left": 33
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 287619,
+      "sha256": "695113018391038fce477b45090f47f3cbaecd68d5cea0c832afe2763dd17a5e"
+    },
+    {
+      "id": "oak_end_table",
+      "filename": "sprites/living_room/oak_end_table.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout oak end table living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7158,
+        "padding_px": {
+          "top": 32,
+          "right": 92,
+          "bottom": 32,
+          "left": 91
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 218037,
+      "sha256": "7b5ccb779c43422d170855ee025435f187092154b9317abc91b9c78c3c85f92f"
+    },
+    {
+      "id": "vinyl_record_stand",
+      "filename": "sprites/living_room/vinyl_record_stand.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout vinyl record stand living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.4819,
+        "padding_px": {
+          "top": 32,
+          "right": 79,
+          "bottom": 32,
+          "left": 79
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 331676,
+      "sha256": "1f574dc7adfe3ad323e56c3cb075c6f33a9f51c4d59f53138ffe0ecb0e25bd2e"
+    },
+    {
+      "id": "candle_side_table",
+      "filename": "sprites/living_room/candle_side_table.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout candle side table living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7174,
+        "padding_px": {
+          "top": 32,
+          "right": 80,
+          "bottom": 32,
+          "left": 80
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 198986,
+      "sha256": "8b299b90489d2db55592e1d9d467dff68ad7b2ab7f47cbb4b97675837b50e4b7"
+    },
+    {
+      "id": "ceiling_vine_garland",
+      "filename": "sprites/living_room/ceiling_vine_garland.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout ceiling vine garland living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.8546,
+        "padding_px": {
+          "top": 159,
+          "right": 32,
+          "bottom": 159,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 119558,
+      "sha256": "00cf780a100f2aada4bfadea3d40842994ea606572adf152e63849bf48cbeef3"
+    },
+    {
+      "id": "ceiling_fairy_lights",
+      "filename": "sprites/living_room/ceiling_fairy_lights.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout ceiling fairy lights living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.9271,
+        "padding_px": {
+          "top": 169,
+          "right": 32,
+          "bottom": 169,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 65467,
+      "sha256": "140f4291519e457080b8d22d5a11b13d4a7c8a64b302b6a1a716cbb1368deeb6"
+    },
+    {
+      "id": "ceiling_fabric_bunting",
+      "filename": "sprites/living_room/ceiling_fabric_bunting.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout ceiling fabric bunting living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.9056,
+        "padding_px": {
+          "top": 166,
+          "right": 32,
+          "bottom": 167,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 74157,
+      "sha256": "925c39ad56b92a7bfce436290c12192af1d75778f69cc99cfa765ee8820bcaf1"
+    },
+    {
+      "id": "ceiling_flower_swag",
+      "filename": "sprites/living_room/ceiling_flower_swag.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout ceiling flower swag living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.861,
+        "padding_px": {
+          "top": 164,
+          "right": 32,
+          "bottom": 164,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 116351,
+      "sha256": "a4d321c4eb7ffc595b71b381bbabc901f28d2fd7ec4d0d9dedbfa61799d961e2"
+    },
+    {
+      "id": "botanical_wall_tapestry",
+      "filename": "sprites/living_room/botanical_wall_tapestry.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout botanical wall tapestry living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6743,
+        "padding_px": {
+          "top": 32,
+          "right": 102,
+          "bottom": 32,
+          "left": 101
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 194636,
+      "sha256": "6f41d1ab415ab6edbf9191576d0ee184d452b59108d64e9d4ccf2c7176199e5b"
+    },
+    {
+      "id": "cottage_gallery_frames",
+      "filename": "sprites/living_room/cottage_gallery_frames.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout cottage gallery frames living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.5249,
+        "padding_px": {
+          "top": 32,
+          "right": 59,
+          "bottom": 32,
+          "left": 58
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 272222,
+      "sha256": "6588542076e87940b73085e94baa301a0888dabec75f518b9735ad9059e2410c"
+    },
+    {
+      "id": "hearth_braided_mat",
+      "filename": "sprites/living_room/hearth_braided_mat.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout hearth braided mat living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6676,
+        "padding_px": {
+          "top": 134,
+          "right": 32,
+          "bottom": 134,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 210758,
+      "sha256": "2247b40b9b8afb52936fec93c991a16ab983f15b77160d8f016d7eb54c99e899"
+    },
+    {
+      "id": "oat_fleece_rug",
+      "filename": "sprites/living_room/oat_fleece_rug.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout oat fleece rug living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.6873,
+        "padding_px": {
+          "top": 132,
+          "right": 32,
+          "bottom": 132,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 143924,
+      "sha256": "cc7e0a2cc4e9ef46cd877c5702c7ac54cf44db25ea08d250abcfaa009a05285e"
+    },
+    {
+      "id": "botanical_runner_rug",
+      "filename": "sprites/living_room/botanical_runner_rug.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout botanical runner rug living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.7881,
+        "padding_px": {
+          "top": 118,
+          "right": 32,
+          "bottom": 119,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 156378,
+      "sha256": "70a4e7132508d8a9eeace84f01a701248dbe523f95652dc689d109f4db1b68fa"
+    },
+    {
+      "id": "knit_ottoman",
+      "filename": "sprites/living_room/knit_ottoman.png",
+      "category": "living_room",
+      "description": "Hearth & Sprout knit ottoman living room asset.",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "format": "PNG",
+      "color_mode": "RGBA",
+      "transparency": {
+        "has_alpha_channel": true,
+        "transparent_pixel_ratio": 0.47,
+        "padding_px": {
+          "top": 71,
+          "right": 32,
+          "bottom": 71,
+          "left": 32
+        }
+      },
+      "scale_tier": "medium",
+      "recommended_world_scale": 1,
+      "creator": "AI-assisted creation (Antigravity living room expansion)",
+      "tool": "Antigravity image-generator + scripts/slice-sheet.mjs + scripts/import-sprites.mjs",
+      "source": "our_home_art_style_embedded",
+      "ai_generated": true,
+      "editable_source_file": null,
+      "creation_date": "2026-11-28",
+      "license_status": "unverified",
+      "usage_terms_notes": "Hearth & Sprout living room asset harmonized to #312210 ink and matte botanical gouache palette.",
+      "file_size_bytes": 360220,
+      "sha256": "8ecaafdf5ca38ceed933a1fe891e9e55bcab876144489c0238bcdb9f54506a6e"
     }
   ],
   "backgrounds": [
@@ -2104,8 +3056,8 @@
       "editable_source_file": null,
       "creation_date": "2026-11-25",
       "license_status": "unverified",
-      "file_size_bytes": 1693136,
-      "sha256": "ea96574761bf06b4e4811b3a5e933deca9dc392b581e64e0a19b069ea2559d21"
+      "file_size_bytes": 2479087,
+      "sha256": "76070884705c0d99f5dcd4240e0384788366e62e8ed6e7b01d0c2ff3e457c181"
     }
   ],
   "previews": [

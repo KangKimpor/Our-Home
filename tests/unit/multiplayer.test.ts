@@ -228,14 +228,26 @@ describe('live event sanitization', () => {
   it('sanitizes shared home states pushed live', () => {
     const e = sanitizeLiveEvent({
       type: 'home_state',
-      state: { slots: { sofa: 'sage', rug: 'lava' }, pet: 'dragon', revision: 4, lampOn: false },
+      state: {
+        slots: { sofa: 'sage', rug: 'lava', tv: 'retro-tv' },
+        placements: { tv: 'left-wall', 'accent-rug': 'nook' },
+        pet: 'dragon',
+        revision: 4,
+        lampOn: false,
+        tvOn: false,
+      },
     });
     expect(e?.type).toBe('home_state');
     if (e?.type !== 'home_state') return;
     expect(e.state.slots.sofa).toBe('sage');
+    expect(e.state.slots.tv).toBe('retro-tv');
     expect(e.state.slots.rug).toBe('terracotta');
+    expect(e.state.placements.tv).toBe('left-wall');
+    expect(e.state.placements.cabinet).not.toBe('left-wall');
+    expect(e.state.placements['accent-rug']).toBe('nook');
     expect(e.state.pet).toBe('hedgehog');
     expect(e.state.lampOn).toBe(false);
+    expect(e.state.tvOn).toBe(false);
     expect(e.state.revision).toBe(4);
   });
 
@@ -339,7 +351,6 @@ describe('HomeSync.adoptExternal (live partner updates)', () => {
   const idleApi: HomeSyncApi = {
     fetch: async () => null,
     patch: async () => null,
-    reset: async () => null,
   };
 
   it('adopts newer partner states and ignores older ones', () => {

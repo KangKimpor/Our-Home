@@ -1,5 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { FURNITURE_SLOTS, resolveSlotOption, SLOT_BY_ID, type SlotSelections } from '../game/layout';
+import {
+  FURNITURE_SLOTS,
+  resolveSlotOption,
+  resolveSlotSpot,
+  SLOT_BY_ID,
+  type SlotSelections,
+} from '../game/layout';
+import { isMovableSlotId, occupantAtSpot, type PlacementMap } from '../game/homeState';
 import { PET_OPTIONS, resolvePetOption } from '../game/pet';
 import type { SlotId } from '../game/sharedHomeCore';
 import { versionedAssetUrl } from '../game/version';
@@ -11,9 +18,11 @@ export type DecorateTarget = SlotId | 'pet';
 interface Props {
   active: DecorateTarget;
   slots: SlotSelections;
+  placements: PlacementMap;
   petId: string;
   onSelectTarget: (target: DecorateTarget) => void;
   onPickSlotOption: (slotId: SlotId, optionId: string) => void;
+  onMoveSlot: (slotId: SlotId, spotId: string) => void;
   onPickPet: (petId: string) => void;
   onClose: () => void;
 }
@@ -38,15 +47,18 @@ function revealHorizontally(container: HTMLElement | null, child: HTMLElement | 
 }
 
 /**
- * Hand-painted drawer for swapping the art in each fixed furniture slot (and the pet).
- * Lives in the HUD overlay, outside `.room`, so it never adds sprites to the scene.
+ * Hand-painted drawer for swapping art and placement spots across the living room
+ * (plus the pet). Lives in the HUD overlay, outside `.room`, so it never adds sprites
+ * to the scene.
  */
 export function DecoratePanel({
   active,
   slots,
+  placements,
   petId,
   onSelectTarget,
   onPickSlotOption,
+  onMoveSlot,
   onPickPet,
   onClose,
 }: Props) {
@@ -56,6 +68,8 @@ export function DecoratePanel({
   const slot = isPet ? null : SLOT_BY_ID[active];
   const title = isPet ? 'Pet' : slot!.label;
   const selectedId = isPet ? resolvePetOption(petId).id : resolveSlotOption(slot!, slots[slot!.id]).id;
+  const activeSpotId =
+    slot && isMovableSlotId(slot.id) ? resolveSlotSpot(slot, placements[slot.id])?.id : undefined;
   const cards: readonly Card[] = isPet ? PET_OPTIONS : slot!.options;
 
   useEffect(() => {
@@ -114,6 +128,45 @@ export function DecoratePanel({
           );
         })}
       </div>
+
+      {slot?.spots && slot.spots.length > 1 && (
+        <div
+          className="decorate-places"
+          data-testid="decorate-placements"
+          role="group"
+          aria-label={`${slot.label} placement`}
+        >
+          <span className="decorate-place-kicker">Place</span>
+          {slot.spots.map((spot) => {
+            const spotSelected = spot.id === activeSpotId;
+            const occupant = isMovableSlotId(slot.id)
+              ? occupantAtSpot(placements, slot.id, spot.id)
+              : null;
+            return (
+              <button
+                key={spot.id}
+                type="button"
+                className={`decorate-place-btn${spotSelected ? ' is-selected' : ''}`}
+                data-testid={`slot-place-${slot.id}-${spot.id}`}
+                aria-pressed={spotSelected}
+                aria-label={
+                  occupant
+                    ? `${spot.label} (swaps with ${SLOT_BY_ID[occupant].label})`
+                    : spot.label
+                }
+                onClick={() => onMoveSlot(slot.id, spot.id)}
+              >
+                <span>{spot.label}</span>
+                {occupant && (
+                  <span className="decorate-place-swap" aria-hidden="true">
+                    ⇄
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <div id="decorate-options" className="decorate-options" role="tabpanel" aria-label={`${title} options`}>
         {cards.map((card) => {

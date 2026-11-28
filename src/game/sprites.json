@@ -51,9 +51,65 @@
     "w": 274,
     "h": 340
   },
+  "walnut_display_bookshelf": {
+    "w": 258,
+    "h": 340
+  },
   "arched_window_seat": {
     "w": 256,
     "h": 335
+  },
+  "window_bench_nook": {
+    "w": 326,
+    "h": 198
+  },
+  "reading_nook_armchair": {
+    "w": 231,
+    "h": 205
+  },
+  "daybed_reading_nook": {
+    "w": 348,
+    "h": 150
+  },
+  "rattan_reading_chair": {
+    "w": 183,
+    "h": 210
+  },
+  "cottage_tv_console": {
+    "w": 259,
+    "h": 220
+  },
+  "retro_wood_tv": {
+    "w": 182,
+    "h": 215
+  },
+  "teal_media_tv": {
+    "w": 282,
+    "h": 220
+  },
+  "sage_wingback_chair": {
+    "w": 184,
+    "h": 205
+  },
+  "cottage_rocking_chair": {
+    "w": 150,
+    "h": 208
+  },
+  "plum_tub_armchair": {
+    "w": 195,
+    "h": 195
+  },
+  "oak_end_table": {
+    "w": 114,
+    "h": 155
+  },
+  "vinyl_record_stand": {
+    "w": 128,
+    "h": 162
+  },
+  "candle_side_table": {
+    "w": 126,
+    "h": 158
   },
   "standing_globe_floor_lamp": {
     "w": 154,
@@ -67,6 +123,50 @@
     "w": 121,
     "h": 175
   },
+  "hearth_braided_mat": {
+    "w": 249,
+    "h": 136
+  },
+  "oat_fleece_rug": {
+    "w": 252,
+    "h": 140
+  },
+  "botanical_runner_rug": {
+    "w": 236,
+    "h": 145
+  },
+  "hanging_terracotta_plant": {
+    "w": 112,
+    "h": 185
+  },
+  "hanging_ivy_basket": {
+    "w": 145,
+    "h": 190
+  },
+  "hanging_cottage_lantern": {
+    "w": 82,
+    "h": 185
+  },
+  "hanging_dried_herbs": {
+    "w": 120,
+    "h": 185
+  },
+  "ceiling_vine_garland": {
+    "w": 264,
+    "h": 115
+  },
+  "ceiling_fairy_lights": {
+    "w": 302,
+    "h": 118
+  },
+  "ceiling_fabric_bunting": {
+    "w": 286,
+    "h": 115
+  },
+  "ceiling_flower_swag": {
+    "w": 284,
+    "h": 118
+  },
   "wall_pinboard_trio": {
     "w": 167,
     "h": 175
@@ -79,6 +179,10 @@
     "w": 252,
     "h": 170
   },
+  "botanical_wall_tapestry": {
+    "w": 121,
+    "h": 175
+  },
   "wall_clock": {
     "w": 117,
     "h": 145
@@ -90,6 +194,10 @@
   "macrame_wall_hanging": {
     "w": 139,
     "h": 175
+  },
+  "cottage_gallery_frames": {
+    "w": 146,
+    "h": 165
   },
   "seed_drawer_cabinet": {
     "w": 210,
@@ -126,6 +234,10 @@
   "curved_orchard_stool": {
     "w": 137,
     "h": 128
+  },
+  "knit_ottoman": {
+    "w": 136,
+    "h": 112
   },
   "potted_calamondin_tree": {
     "w": 157,

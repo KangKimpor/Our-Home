@@ -1,16 +1,14 @@
 import {
   applySharedHomePatch,
   createDefaultHomeState,
-  createResetHomeState,
   fetchSharedHomeState,
   isEmptyPatch,
   isSameHomeChoices,
   loadCachedHomeState,
   patchFromState,
   patchSharedHomeState,
-  resetSharedHomeState,
-  sanitizeSharedHomeState,
   saveCachedHomeState,
+  sanitizeSharedHomeState,
   type SharedHomePatch,
   type SharedHomeResponse,
   type SharedHomeState,
@@ -24,26 +22,17 @@ interface StorageLike {
 export interface HomeSyncApi {
   fetch: (signal?: AbortSignal) => Promise<SharedHomeResponse | null>;
   patch: (patch: SharedHomePatch) => Promise<SharedHomeResponse | null>;
-  reset: () => Promise<SharedHomeResponse | null>;
 }
 
 export const DEFAULT_HOME_SYNC_API: HomeSyncApi = {
   fetch: fetchSharedHomeState,
   patch: patchSharedHomeState,
-  reset: resetSharedHomeState,
 };
-
-type WriteRequest = { kind: 'patch'; patch: SharedHomePatch } | { kind: 'reset' };
-
-/** Local changes that could not reach the server yet (offline / server error). */
-interface Outbox {
-  reset: boolean;
-  patch: SharedHomePatch;
-}
 
 export function mergePatches(a: SharedHomePatch, b: SharedHomePatch): SharedHomePatch {
   const merged: SharedHomePatch = { ...a, ...b };
   if (a.slots || b.slots) merged.slots = { ...a.slots, ...b.slots };
+  if (a.placements || b.placements) merged.placements = { ...a.placements, ...b.placements };
   if (a.outfits || b.outfits) merged.outfits = { ...a.outfits, ...b.outfits };
   return merged;
 }
@@ -52,8 +41,6 @@ export interface HomeSync {
   getState: () => SharedHomeState;
   /** Applies a field-level change locally right away and queues it for the shared save. */
   update: (patch: SharedHomePatch) => void;
-  /** Restores the shared room to its defaults for everyone. */
-  reset: () => void;
   /** Fetches the shared save and adopts it when no local write is in flight. */
   pull: (signal?: AbortSignal) => Promise<void>;
   /**
@@ -88,7 +75,8 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
   let mutationSeq = 0;
   let pendingWrites = 0;
   let chain: Promise<void> = Promise.resolve();
-  let outbox: Outbox | null = null;
+  /** Local changes that could not reach the server yet (offline / server error). */
+  let outbox: SharedHomePatch | null = null;
   let seeded = false;
   /** Bumped whenever a live partner state is adopted, so slower in-flight pulls never undo it. */
   let externalSeq = 0;
@@ -104,38 +92,32 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
     commit(server);
   };
 
-  const addToOutbox = (request: WriteRequest) => {
-    if (request.kind === 'reset') {
-      outbox = { reset: true, patch: {} };
-    } else {
-      const prev = outbox ?? { reset: false, patch: {} };
-      outbox = { reset: prev.reset, patch: mergePatches(prev.patch, request.patch) };
-    }
+  const addToOutbox = (patch: SharedHomePatch) => {
+    outbox = outbox ? mergePatches(outbox, patch) : patch;
   };
 
   const flushOutbox = () => {
     const waiting = outbox;
     if (!waiting) return false;
     outbox = null;
-    if (waiting.reset) enqueue({ kind: 'reset' });
-    if (!isEmptyPatch(waiting.patch)) enqueue({ kind: 'patch', patch: waiting.patch });
+    if (!isEmptyPatch(waiting)) enqueue(waiting);
     return true;
   };
 
-  function enqueue(request: WriteRequest): void {
+  function enqueue(patch: SharedHomePatch): void {
     const seq = ++mutationSeq;
     pendingWrites += 1;
     chain = chain.then(async () => {
       let res: SharedHomeResponse | null = null;
       try {
-        res = request.kind === 'reset' ? await api.reset() : await api.patch(request.patch);
+        res = await api.patch(patch);
       } catch {
         res = null;
       } finally {
         pendingWrites -= 1;
       }
       if (!res) {
-        addToOutbox(request); // Keep the change locally and retry on the next sync.
+        addToOutbox(patch); // Keep the change locally and retry on the next sync.
         return;
       }
       if (res.backend === 'unconfigured') {
@@ -151,11 +133,7 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
     getState: () => state,
     update(patch) {
       commit(applySharedHomePatch(state, patch));
-      enqueue({ kind: 'patch', patch });
-    },
-    reset() {
-      commit(createResetHomeState(state));
-      enqueue({ kind: 'reset' });
+      enqueue(patch);
     },
     async pull(signal) {
       if (pendingWrites > 0) return;
@@ -182,7 +160,7 @@ export function createHomeSync(options: HomeSyncOptions = {}): HomeSync {
       ) {
         // The cloud save is empty: seed it with this device's room.
         seeded = true;
-        enqueue({ kind: 'patch', patch: patchFromState(state) });
+        enqueue(patchFromState(state));
       }
     },
     adoptExternal(incoming) {

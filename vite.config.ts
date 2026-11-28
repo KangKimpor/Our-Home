@@ -175,7 +175,7 @@ function sharedHomeDevApiPlugin(): Plugin {
         (body) => {
           const request = parseHomeStateRequest(body);
           if (request.kind === 'invalid')
-            return send(res, 400, { error: 'Expected { patch } or { reset: true }' });
+            return send(res, 400, { error: 'Expected { patch }' });
           const next = applyHomeStateRequest(roomOf(ns), request);
           rooms.set(ns, next);
           send(res, 200, { state: next, backend: 'memory' });

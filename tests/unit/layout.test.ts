@@ -2,20 +2,23 @@ import { describe, expect, it } from 'vitest';
 import sprites from '../../src/game/sprites.json';
 import {
   clampPosition,
+  DEFAULT_SLOT_PLACEMENTS,
   DEFAULT_SLOT_SELECTIONS,
   depthOf,
   FURNITURE_SLOTS,
   itemSize,
   resolveSlotOption,
+  resolveSlotPosition,
+  resolveSlotSpot,
   ROOM,
   SLOT_BY_ID,
 } from '../../src/game/layout';
-import { SLOT_CHOICES, SLOT_IDS } from '../../src/game/sharedHomeCore';
+import { isMovableSlotId, MOVABLE_SLOT_IDS, SLOT_CHOICES, SLOT_IDS, SLOT_PLACEMENTS } from '../../src/game/sharedHomeCore';
 
 const EXPECTED = {
   sofa: {
     label: 'Sofa',
-    pos: { x: 890, y: 722 },
+    pos: { x: 895, y: 735 },
     mount: 'floor',
     tap: 'bounce',
     default: 'teal',
@@ -28,7 +31,7 @@ const EXPECTED = {
   },
   rug: {
     label: 'Rug',
-    pos: { x: 890, y: 852 },
+    pos: { x: 895, y: 858 },
     mount: 'rug',
     tap: 'bounce',
     default: 'terracotta',
@@ -41,7 +44,7 @@ const EXPECTED = {
   },
   'coffee-table': {
     label: 'Table',
-    pos: { x: 895, y: 830 },
+    pos: { x: 895, y: 836 },
     mount: 'floor',
     tap: 'bounce',
     default: 'oak',
@@ -51,33 +54,46 @@ const EXPECTED = {
       ['walnut', 'Warm walnut', 'walnut_coffee_table', 160],
     ],
   },
+  'reading-nook': {
+    label: 'Reading nook',
+    pos: { x: 1435, y: 588 },
+    mount: 'floor',
+    tap: 'bounce',
+    default: 'window-bench',
+    options: [
+      ['window-bench', 'Window bench', 'window_bench_nook', 198],
+      ['reading-chair', 'Reading chair', 'reading_nook_armchair', 205],
+      ['floor-daybed', 'Floor daybed', 'daybed_reading_nook', 150],
+      ['rattan-nook', 'Rattan nook', 'rattan_reading_chair', 210],
+    ],
+  },
+  tv: {
+    label: 'TV',
+    pos: { x: 615, y: 582 },
+    mount: 'floor',
+    tap: 'tv',
+    default: 'wood-console',
+    options: [
+      ['wood-console', 'Oak console TV', 'cottage_tv_console', 220],
+      ['retro-tv', 'Retro wood TV', 'retro_wood_tv', 215],
+      ['teal-media', 'Teal media TV', 'teal_media_tv', 220],
+    ],
+  },
   bookshelf: {
-    label: 'Alcove',
-    pos: { x: 1215, y: 578 },
+    label: 'Bookshelf',
+    pos: { x: 1125, y: 578 },
     mount: 'floor',
     tap: 'bounce',
     default: 'oak',
     options: [
       ['oak', 'Oak bookshelf', 'arched_display_bookshelf', 340],
       ['sage', 'Sage bookshelf', 'sage_display_bookshelf', 340],
-      ['window-seat', 'Reading nook', 'arched_window_seat', 335],
-    ],
-  },
-  lamp: {
-    label: 'Lamp',
-    pos: { x: 1200, y: 730 },
-    mount: 'floor',
-    tap: 'lamp',
-    default: 'globe',
-    options: [
-      ['globe', 'Globe lamp', 'standing_globe_floor_lamp', 280],
-      ['reading', 'Table lamp', 'pedestal_reading_lamp', 248],
-      ['lantern', 'Candle lantern', 'greenhouse_lantern', 175],
+      ['walnut', 'Walnut shelf', 'walnut_display_bookshelf', 340],
     ],
   },
   cabinet: {
     label: 'Cabinet',
-    pos: { x: 605, y: 580 },
+    pos: { x: 365, y: 582 },
     mount: 'floor',
     tap: 'bounce',
     default: 'apothecary',
@@ -87,9 +103,45 @@ const EXPECTED = {
       ['trellis', 'Flower trellis', 'flowering_trellis', 255],
     ],
   },
+  armchair: {
+    label: 'Cozy chair',
+    pos: { x: 255, y: 830 },
+    mount: 'floor',
+    tap: 'bounce',
+    default: 'wingback',
+    options: [
+      ['wingback', 'Sage wingback', 'sage_wingback_chair', 205],
+      ['rocking', 'Oak rocker', 'cottage_rocking_chair', 208],
+      ['tub', 'Plum armchair', 'plum_tub_armchair', 195],
+    ],
+  },
+  'side-table': {
+    label: 'Side table',
+    pos: { x: 650, y: 738 },
+    mount: 'floor',
+    tap: 'bounce',
+    default: 'oak-end',
+    options: [
+      ['oak-end', 'Tea end table', 'oak_end_table', 155],
+      ['record-stand', 'Record stand', 'vinyl_record_stand', 162],
+      ['candle-table', 'Candle table', 'candle_side_table', 158],
+    ],
+  },
+  lamp: {
+    label: 'Lamp',
+    pos: { x: 1150, y: 738 },
+    mount: 'floor',
+    tap: 'lamp',
+    default: 'globe',
+    options: [
+      ['globe', 'Globe lamp', 'standing_globe_floor_lamp', 280],
+      ['reading', 'Table lamp', 'pedestal_reading_lamp', 248],
+      ['lantern', 'Candle lantern', 'greenhouse_lantern', 175],
+    ],
+  },
   trolley: {
     label: 'Fireside',
-    pos: { x: 1515, y: 722 },
+    pos: { x: 1585, y: 738 },
     mount: 'floor',
     tap: 'bounce',
     default: 'tea-trolley',
@@ -100,8 +152,8 @@ const EXPECTED = {
     ],
   },
   tree: {
-    label: 'Corner plant',
-    pos: { x: 265, y: 598 },
+    label: 'Plant',
+    pos: { x: 215, y: 635 },
     mount: 'floor',
     tap: 'bounce',
     default: 'calamondin',
@@ -113,7 +165,7 @@ const EXPECTED = {
   },
   cushion: {
     label: 'Floor seat',
-    pos: { x: 430, y: 806 },
+    pos: { x: 435, y: 838 },
     mount: 'floor',
     tap: 'bounce',
     default: 'pouf',
@@ -121,11 +173,50 @@ const EXPECTED = {
       ['pouf', 'Patchwork pouf', 'patchwork_floor_cushion', 105],
       ['pet-basket', 'Woven pet bed', 'woven_pet_basket', 118],
       ['stool', 'Orchard stool', 'curved_orchard_stool', 128],
+      ['ottoman', 'Knit ottoman', 'knit_ottoman', 112],
+    ],
+  },
+  'accent-rug': {
+    label: 'Accent rug',
+    pos: { x: 1775, y: 710 },
+    mount: 'rug',
+    tap: 'bounce',
+    default: 'hearth-mat',
+    options: [
+      ['hearth-mat', 'Hearth mat', 'hearth_braided_mat', 136],
+      ['fleece', 'Cloud fleece', 'oat_fleece_rug', 140],
+      ['botanical', 'Leaf runner', 'botanical_runner_rug', 145],
+    ],
+  },
+  'hanging-decor': {
+    label: 'Hanging decor',
+    pos: { x: 262, y: 226 },
+    mount: 'wall',
+    tap: 'swing',
+    default: 'terracotta-plant',
+    options: [
+      ['terracotta-plant', 'Hanging vine', 'hanging_terracotta_plant', 185],
+      ['ivy-basket', 'Ivy basket', 'hanging_ivy_basket', 190],
+      ['lantern', 'Hanging lantern', 'hanging_cottage_lantern', 185],
+      ['dried-herbs', 'Dried herbs', 'hanging_dried_herbs', 185],
+    ],
+  },
+  garland: {
+    label: 'Garland',
+    pos: { x: 890, y: 158 },
+    mount: 'wall',
+    tap: 'swing',
+    default: 'vine',
+    options: [
+      ['vine', 'Leaf garland', 'ceiling_vine_garland', 115],
+      ['lights', 'Fairy lights', 'ceiling_fairy_lights', 118],
+      ['bunting', 'Fabric bunting', 'ceiling_fabric_bunting', 115],
+      ['flowers', 'Flower swag', 'ceiling_flower_swag', 118],
     ],
   },
   pinboard: {
-    label: 'Left wall',
-    pos: { x: 480, y: 345 },
+    label: 'Wall decor A',
+    pos: { x: 455, y: 335 },
     mount: 'wall',
     tap: 'swing',
     default: 'pinboard',
@@ -133,11 +224,12 @@ const EXPECTED = {
       ['pinboard', 'Photo board', 'wall_pinboard_trio', 175],
       ['painting', 'Hillside art', 'botanical_framed_art', 165],
       ['shelf', 'Wall shelf', 'wall_floating_shelf', 170],
+      ['tapestry', 'Sun tapestry', 'botanical_wall_tapestry', 175],
     ],
   },
   clock: {
-    label: 'Center wall',
-    pos: { x: 890, y: 300 },
+    label: 'Wall decor B',
+    pos: { x: 890, y: 315 },
     mount: 'wall',
     tap: 'swing',
     default: 'clock',
@@ -145,18 +237,19 @@ const EXPECTED = {
       ['clock', 'Wall clock', 'wall_clock', 145],
       ['mirror', 'Wreath mirror', 'cottage_oval_mirror', 165],
       ['macrame', 'Macramé', 'macrame_wall_hanging', 175],
+      ['gallery', 'Gallery frames', 'cottage_gallery_frames', 165],
     ],
   },
 } as const;
 
-describe('fixed furniture slots', () => {
-  it('defines exactly the 11 fixed slots in order', () => {
+describe('living room furniture and decor catalog', () => {
+  it('defines all 18 slots in order', () => {
     expect(FURNITURE_SLOTS.map((s) => s.id)).toEqual(Object.keys(EXPECTED));
-    expect(FURNITURE_SLOTS).toHaveLength(11);
+    expect(FURNITURE_SLOTS).toHaveLength(18);
     expect(SLOT_IDS).toEqual(Object.keys(EXPECTED));
   });
 
-  it('matches the catalog: labels, fixed positions, mounts, taps, defaults, sprites, and heights', () => {
+  it('matches the catalog: labels, default positions, mounts, taps, defaults, sprites, and heights', () => {
     for (const slot of FURNITURE_SLOTS) {
       const want = EXPECTED[slot.id];
       expect(slot.label, slot.id).toBe(want.label);
@@ -176,28 +269,57 @@ describe('fixed furniture slots', () => {
     }
   });
 
-  it('gives every lamp option a glow inside its sprite, and nothing else', () => {
+  it('gives every lamp option a glow inside its sprite, and every TV option a screenGlow', () => {
     expect(SLOT_BY_ID.lamp.options.map((o) => o.glow)).toEqual([
       { x: 20, y: 33 },
       { x: 50, y: 24 },
       { x: 50, y: 58 },
     ]);
+    for (const option of SLOT_BY_ID.tv.options) {
+      expect(option.screenGlow).toBeDefined();
+      const g = option.screenGlow!;
+      expect(g.x).toBeGreaterThanOrEqual(0);
+      expect(g.y).toBeGreaterThanOrEqual(0);
+      expect(g.x + g.w).toBeLessThanOrEqual(100);
+      expect(g.y + g.h).toBeLessThanOrEqual(100);
+    }
     for (const slot of FURNITURE_SLOTS) {
-      if (slot.id === 'lamp') continue;
-      for (const option of slot.options) expect(option.glow).toBeUndefined();
+      if (slot.id !== 'lamp') {
+        for (const option of slot.options) expect(option.glow).toBeUndefined();
+      }
+      if (slot.id !== 'tv') {
+        for (const option of slot.options) expect(option.screenGlow).toBeUndefined();
+      }
     }
   });
 
-  it('stays in lockstep with the shared-save catalog', () => {
+  it('stays in lockstep with the shared-save choices and placements catalogs', () => {
     for (const slot of FURNITURE_SLOTS) {
       expect(SLOT_CHOICES[slot.id].defaultId).toBe(slot.defaultOptionId);
       expect([...SLOT_CHOICES[slot.id].optionIds]).toEqual(slot.options.map((o) => o.id));
+      if (slot.spots) {
+        expect(isMovableSlotId(slot.id)).toBe(true);
+        if (isMovableSlotId(slot.id)) {
+          expect(SLOT_PLACEMENTS[slot.id].defaultId).toBe(slot.defaultSpotId);
+          expect([...SLOT_PLACEMENTS[slot.id].optionIds]).toEqual(slot.spots.map((s) => s.id));
+        }
+      } else {
+        expect(isMovableSlotId(slot.id)).toBe(false);
+      }
     }
+    expect(Object.keys(DEFAULT_SLOT_PLACEMENTS)).toEqual(MOVABLE_SLOT_IDS);
   });
 
-  it('has defaults for every slot', () => {
+  it('has defaults for every slot and resolves placement positions cleanly', () => {
     expect(Object.keys(DEFAULT_SLOT_SELECTIONS)).toEqual(Object.keys(EXPECTED));
     for (const slot of FURNITURE_SLOTS) expect(DEFAULT_SLOT_SELECTIONS[slot.id]).toBe(slot.defaultOptionId);
+
+    const tv = SLOT_BY_ID.tv;
+    expect(resolveSlotSpot(tv)?.id).toBe('mid-left');
+    expect(resolveSlotSpot(tv, 'left-wall')?.pos).toEqual({ x: 365, y: 582 });
+    expect(resolveSlotPosition(tv, 'unknown')).toEqual(tv.pos);
+    expect(resolveSlotSpot(SLOT_BY_ID.sofa)).toBeNull();
+    expect(resolveSlotPosition(SLOT_BY_ID.sofa, 'left-wall')).toEqual(SLOT_BY_ID.sofa.pos);
   });
 
   it('resolves options and falls back to the slot default for unknown ids', () => {
@@ -208,14 +330,18 @@ describe('fixed furniture slots', () => {
     expect(resolveSlotOption(SLOT_BY_ID.rug, 'tassel').height).toBe(245);
   });
 
-  it('keeps every option of every slot inside the room at its fixed spot', () => {
+  it('keeps every option of every slot inside the room across every valid placement spot', () => {
     for (const slot of FURNITURE_SLOTS) {
-      for (const option of slot.options) {
-        const { w, h } = itemSize(option);
-        expect(slot.pos.x - w / 2, `${slot.id}/${option.id}`).toBeGreaterThanOrEqual(0);
-        expect(slot.pos.x + w / 2, `${slot.id}/${option.id}`).toBeLessThanOrEqual(ROOM.w);
-        expect(slot.pos.y - h, `${slot.id}/${option.id}`).toBeGreaterThanOrEqual(0);
-        expect(slot.pos.y, `${slot.id}/${option.id}`).toBeLessThanOrEqual(ROOM.h);
+      const spots = slot.spots ?? [{ id: 'fixed', label: 'Fixed', pos: slot.pos }];
+      for (const spot of spots) {
+        for (const option of slot.options) {
+          const { w, h } = itemSize(option);
+          const tag = `${slot.id}/${option.id}@${spot.id}`;
+          expect(spot.pos.x - w / 2, tag).toBeGreaterThanOrEqual(0);
+          expect(spot.pos.x + w / 2, tag).toBeLessThanOrEqual(ROOM.w);
+          expect(spot.pos.y - h, tag).toBeGreaterThanOrEqual(0);
+          expect(spot.pos.y, tag).toBeLessThanOrEqual(ROOM.h);
+        }
       }
     }
   });
